@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import { unixTime } from "../../component/base/Fuctions";
 import { Box, Button, TextField } from "@mui/material";
 import { TextareaAutosize } from "@mui/base";
 import { GetUrl, RspType, API, Cmd, HGET } from "../../component/api";
@@ -10,6 +9,7 @@ import { AppFrame } from "@/component/AppFrame";
 import "tailwindcss/tailwind.css"
 import { usePathname, useRouter } from "next/navigation";
 
+export const unixTime = () => Math.floor(new Date().getTime() / 1000)
 
 const Avatar = ({ id }) => {
   const [avatarUpdateTime, setAvatarUpdateTime] = useState(0)
