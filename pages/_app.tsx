@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactComponentElement, useEffect, useState } from 'react';
 import { AuthPages } from "../component/Auth";
 import { Jwt } from "../component/jwt"
 import type { AppProps /*, AppContext */ } from 'next/app'
@@ -23,6 +23,8 @@ interface GlobalContextType {
 
   openAlert: boolean,
   SetOpenAlert: (timeOut: number) => void
+  MenuL2: any,
+  setMenuL2: any
 
 }
 export const GlobalContext = React.createContext<GlobalContextType>({
@@ -38,6 +40,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [RedirectUrl, setRedirectUrl] = useState("")
 
   const [openAlert, setOpenAlert] = React.useState(false);
+  const [MenuL2, setMenuL2] = useState(null)
 
 
   useEffect(() => {
@@ -51,8 +54,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     })
     //handle event for:     dispatchEvent(new CustomEvent("auth", { detail: { page: AuthPage } }));
     window.addEventListener(CustomEvents.Redirect, (event: Event) => {
-        const page = (event as CustomEvent).detail.page
-        setRedirectUrl(page)
+      const page = (event as CustomEvent).detail.page
+      setRedirectUrl(page)
     })
     return () => {
       // window.removeEventListener(Jwt.eventName, LoadJwt)
@@ -68,6 +71,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     RedirectUrl,
     setRedirectUrl,
     openAlert, SetOpenAlert,
+    MenuL2, setMenuL2
   }
   return <GlobalContext.Provider value={store} >
     <Component {...pageProps} />

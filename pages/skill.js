@@ -13,9 +13,11 @@ import { AppFrame } from "../component/AppFrame"
 import { useRouter } from "next/navigation";
 import { GetStaticProps, GetServerSideProps } from "next";
 import { API } from "../component/api";
+import { GlobalContext } from "./_app";
 //https://github.com/JedWatson/react-select
 
 export default function ExploreComponent({ topic }) {
+    const { setMenuL2 } = useContext(GlobalContext)
     const [skillPoint, setSkillPoint] = useState({ Name: "", QAs: [] });
     //[{Name,Rank,Path,QAs,Ask,Answer,Correct,Wrong,EmotionValence,EmotionArousal,EmotionDominance},...]
     const [SkillPaths, setSkillPaths] = useState([]);
@@ -41,6 +43,13 @@ export default function ExploreComponent({ topic }) {
         }))
 
     }, [creditTM])
+    useEffect(() => {
+        setMenuL2(reward)
+    }, [creditTM, skillPoint])
+    const reward = <div className="flex flex-row overflow-hidden w-full items-center justify-between">
+        {/* <div>            {skillPoint?.Name}        </div> */}
+        <Rewards creditTM={creditTM}></Rewards>
+    </div>
     return <AppFrame ><div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center " style={{
         backgroundImage: "url(/MAUL0r_Reme_kawaii_anime_cumulonimbus_happily_floating_through__01999efc-f065-4823-bf48-40be9c285ec5.png)"
         //use boxShadow to create a shadow of 50% opacity
@@ -57,7 +66,6 @@ export default function ExploreComponent({ topic }) {
         {/* 底部的搜索结果,immerse chatbox */}
         <Box className="flex flex-col justify-start items-start w-full h-full overflow-scroll  max-w-screen-sm min-w-min" >
 
-            <Rewards creditTM={creditTM}></Rewards>
 
             <QAComponent SkillPoint={skillPoint} setCreditTM={setCreditTM}></QAComponent>
 

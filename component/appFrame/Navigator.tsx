@@ -23,14 +23,12 @@ import { request } from 'http';
 
 
 export default function Navigator() {
-  const { LoggedIn, RedirectUrl, setRedirectUrl } = useContext(GlobalContext)
+  const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2 } = useContext(GlobalContext)
   const router = useRouter()
   const pathName = usePathname()
   const [SubMenuItems, setSubMenuItems] = useState<MenuStruct[]>([])
   const selectMenuL1 = (menu: any) => {
     setSubMenuItems(menu.subMenu)
-  }
-  const sekectMenuL2 = (menu: any) => {
   }
   useEffect(() => {
     if (!RedirectUrl) return
@@ -75,22 +73,14 @@ export default function Navigator() {
 
         {/* display avatar if logged in */}
         {LoggedIn && <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={"/Auth/my-profile?to=" + pathName} >
-          <UserAvatar userID={Jwt.Pub()}  />
+          <UserAvatar userID={Jwt.Pub()} />
         </Link>}
       </div>
     </div >
 
     {/* layer 2 menu */}
     < div className=" bg-slate-100 min-h-fit flex flex-row w-full h-9 items-center whitespace-nowrap justify-start text-black text-lg " id="App-Nagivator-l2    " >
-      {
-        SubMenuItems.map(
-          (item, index) => <Button key={`menu_${item.name}`} variant={item.Variant(pathName)} size="small" onClick={e => sekectMenuL2(item)}
-            sx={{ height: "95%", width: "100%", fontSize: 16, backgroundColor: item.isCurrentPath() ? "#007E9B" : "#FFF", color: "black", borderRadius: 0 }}>
-            {item.name}
-            {/* icon */}
-            {item.icon}
-          </Button>)
-      }
+      {MenuL2}
     </div >
 
   </div >
