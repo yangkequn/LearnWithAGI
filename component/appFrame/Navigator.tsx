@@ -59,18 +59,11 @@ export default function Navigator() {
   return <div className="flex flex-col w-full font-sans font" id="appnavigator">
 
     {/* background-color: #2E4052; */}
-    <div className="bg-slate-300 flex  flex-row w-full h-12 items-center whitespace-nowrap justify-start text-white text-2xl " id="App-Nagivator-l1" >
-      {/* <div style={{ width: 190, height: 0, margin: "0em 0 0 0", alignSelf: "flex-start" }} >
-        <Link to={"/"} >
-          <Logo4 />
-        </Link>
-      </div> */}
+    <div id="App-Nagivator-l1" className="bg-slate-300 flex  flex-row w-full h-12 items-center whitespace-nowrap justify-center  min-w-max text-white text-2xl" >
 
-
-      <Container sx={{ display: "flex", flexDirection: "row", alignItems: "center" }} >
-
+      <div className='flex flex-row self-center max-w-2xl   gap-4 '>
         {/* home */}
-        <Link key={`menu_home`} className=" text-zinc-700 h-full text-lg w-fit px-3" size="large" href={"/"}>
+        <Link key={`menu_home`} className=" text-zinc-700 h-full text-lg w-fit px-3 self-center" size="large" href={"/"}>
           {MenuHome.name}
         </Link>
 
@@ -81,11 +74,10 @@ export default function Navigator() {
         </Link>)}
 
         {/* display avatar if logged in */}
-        {LoggedIn && <Link className={" text-zinc-700 h-full text-lg w-fit px-3"} href={"/Auth/my-profile?to=" + pathName} >
-          <UserAvatar userID={Jwt.Pub()} style={{ height: 32, width: 32, fontSize: 18 }} />
+        {LoggedIn && <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={"/Auth/my-profile?to=" + pathName} >
+          <UserAvatar userID={Jwt.Pub()}  />
         </Link>}
-
-      </Container >
+      </div>
     </div >
 
     {/* layer 2 menu */}
