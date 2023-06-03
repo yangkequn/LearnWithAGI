@@ -49,8 +49,8 @@ const Asks = new MenuStruct("提问", "/Asks", <ChatIcon fontSize={'large'} />, 
   //new MenuStruct("选择设备", "/Sleep/Device", null,[]),
 ])
 //learning new skills
-const learnSkill = new MenuStruct("新知强化", "/Skills", <SchoolIcon fontSize={'large'} />, [
-  new MenuStruct("探索", "/Skills", <PlayArrowIcon />, []),
+const learnSkill = new MenuStruct("新技", "/skill", <SchoolIcon fontSize={'large'} />, [
+  new MenuStruct("探索", "/skill", <PlayArrowIcon />, []),
   //new MenuStruct("选择设备", "/Sleep/Device", null,[]),
 ])
 //a health lifestye

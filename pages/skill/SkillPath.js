@@ -3,17 +3,7 @@ import React, { createRef, useContext, useEffect, useState } from "react"
 import { Button, Step, StepContent, StepLabel, Stepper, Typography, } from "@mui/material";
 import { Box } from "@mui/system";
 import { API, HGET } from "../../component/api";
-export const SkillPath = ({ skillPoint, setSkillPoint, SkillPaths, setSkillPaths }) => {
-    const AskANewSkillPoint = () => {
-        if (SkillPaths.length >= 1) return;
-
-        API("SkillPath").then((res) => {
-            if (!res || res.length == 0) return
-            //sort res by rank
-            res.sort((a, b) => a.Rank - b.Rank)
-            setSkillPaths(res);
-        })
-    }
+export const SkillPath = ({ skillPoint, setSkillPoint, SkillPaths }) => {
     useEffect(() => {
         //auto roll to the latest uncompleted skill path
         if (!SkillPaths || SkillPaths.length <= 1) return
@@ -39,9 +29,6 @@ export const SkillPath = ({ skillPoint, setSkillPoint, SkillPaths, setSkillPaths
     const LoadSkillPoint = (skllName) => API("SkillQAs", { Name: skllName }).then((res) => { setSkillPoint({ Name: skllName, QAs: res }) })
     const Complete = (skillPath) => (skillPath.Correct + skillPath.Ask)
 
-    useEffect(() => {
-        AskANewSkillPoint()
-    }, [])
 
     const [selectedSkillPath, setSelectedSkillPath] = useState(0);
     {/* 相关的主题 */ }
@@ -53,7 +40,7 @@ export const SkillPath = ({ skillPoint, setSkillPoint, SkillPaths, setSkillPaths
         , overflowX: "scroll", overflowY: "scroll"
 
     }}>
-        <Button onClick={AskANewSkillPoint}>
+        <Button>
             <Typography variant="h4" sx={{ fontWeight: 600, fontSize: 18, color: "#333", width: "100%", fontFamily: "Roboto, Arial, sans-serif", lineHeight: "22px", margin: "6px 0px", gap: "10px" }}>
                 主题展开
             </Typography>

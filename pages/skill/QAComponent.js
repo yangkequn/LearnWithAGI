@@ -7,30 +7,6 @@ import { API, HGET } from "../../component/api";
 
 export const QAComponent = ({ SkillPoint, setCreditTM }) => {
     const [QAIndex, setQAIndex] = useState(-1);
-    const [skillPathReport, setSkillPathReport] = useState(null);
-
-    const selectedCss = {
-        display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-start", width: "42%", fontSize: 20, color: "#333",
-        //text in center
-        alignItems: "center", justifyContent: "center",
-        //height should be content height * 2
-        minHeight: 80,
-
-        //set background color to conspicuous gold green
-        backgroundColor: "#d2f9d1", borderRadius: 2, fontWeight: "bold"
-        //shadow effect
-        , boxShadow: "5px 5px 10px 0px gold"
-    }
-    const unSelectedCss = {
-        display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-start", width: "29%", minHeight: 40, fontSize: 18, color: "#333",
-        //text in center
-        alignItems: "center", justifyContent: "center",
-        //align self in top
-        alignSelf: "flex-start",
-        //set background color to dim yellow
-        backgroundColor: "#f9f0d1", borderRadius: 2,
-    }
-    const [SelectedAnswer, setSelectedAnswer] = useState(0)
     const [refresh, setRefresh] = useState(1)
     const AnswersShuffled = (qa) => {
         //calculate hash of qa.question
@@ -131,12 +107,9 @@ export const QAComponent = ({ SkillPoint, setCreditTM }) => {
 
             {/* 当前问题 */}
             {!!SkillPoint.QAs && SkillPoint.QAs.length > 0 && SkillPoint.QAs.filter(qa => !qa.answer).length == 0 && <Box sx={{
-                display: "flex", flexDirection: "column", height: "100%", width: "55%", justifyContent: "flex-start", alignItems: "flex-start"
-                //font color black
-                , color: "#333", width: "400px", backgroundColor: "#f9f0d1", minHeight: "150px"
-                , borderRadius: "6px", boxShadow: "5px 5px 10px 0px gold"
+                 backgroundColor: "#f9f0d1", boxShadow: "5px 5px 10px 0px gold"
                 //, position: "relative"
-            }} className="fadeInOutLessNoticeable">
+            }} className=" flex flex-col h-full justify-start items-start rounded-md min-h-36 w-96 text-gray-700" >
 
                 <Typography variant="h4" sx={{ fontWeight: 600, fontSize: 18, color: "#333", fontFamily: "Roboto, Arial, sans-serif", lineHeight: "32px", margin: "16px 0px" }}>
                     {"^_^ 所有题目均已回答. 点击左侧主題"}
@@ -162,18 +135,12 @@ export const QAComponent = ({ SkillPoint, setCreditTM }) => {
                     }}
                 >
                     {SkillPoint.QAs.map((qa, index) => {
-                        return <Step key={`OtherQA${qa.Question}`}
-                            sx={{
-                                display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-start", width: "100%", height: 40, fontSize: 18, color: "#333"
-                                , boxShadow: index == QAIndex ? "inset 0px 0px 0px 200px gold" : "none"
-                                , marginTop: index == 0 ? 0 : "-22px"
-                            }}
+                        return <Step key={`OtherQA${qa.Question}`} className="flex flex-row justify-start items-center w-full h-10 text-lg text-gray-700 "
+                            sx={{ boxShadow: index == QAIndex ? "inset 0px 0px 0px 200px gold" : "none", marginTop: index == 0 ? 0 : "-22px" }}
                             onClick={() => {
                                 setQAIndex(index)
                             }} >
-                            <StepLabel key={`OtherQA${qa.Question}`} noWrap={true} sx={{
-                            }}
-                            >
+                            <StepLabel key={`OtherQA${qa.Question}`} noWrap={true} >
                                 {!qa.answer ? "" : (!!qa.correct ? "✅" : "❌")} {qa.Question}
                             </StepLabel>
                         </Step>
@@ -195,18 +162,17 @@ export const QAComponent = ({ SkillPoint, setCreditTM }) => {
             <Typography variant="h4" sx={{ fontWeight: 600, fontSize: 18, color: "#333", fontFamily: "Roboto, Arial, sans-serif", lineHeight: "32px", margin: "16px 0px" }}>
                 以下哪个回答是正确的:
             </Typography>
-            <Box sx={{
-                display: "flex", flexDirection: "row", width: "100%", justifyContent: "flex-start", gap: 0.5,
-                //lies in the center of the parent
-                alignItems: "center", justifyContent: "center"
-            }} >
+            <div className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-2" >
                 {
-                    QAIndex >= 0 && SkillPoint.QAs.length > QAIndex && AnswersShuffled(SkillPoint.QAs[QAIndex]).map((a, i) => <ListItem sx={i == SelectedAnswer ? selectedCss : (!!a.answer ? SelectedAnswer : unSelectedCss)}
-                        key={a} onClick={() => { Answer(a) }}>
+                    QAIndex >= 0 && SkillPoint.QAs.length > QAIndex && AnswersShuffled(SkillPoint.QAs[QAIndex]).map((a, i) => <ListItem key={`answer-item${a}`}
+                        className={`flex flex-row items-center justify-center rounded text-gray-800 
+                        ${SkillPoint.QAs[QAIndex].answer == a ? " text-lg w-5/12 bg-green-200 font-bold min-h-max  py-4" : " text-base w-4/12 bg-orange-200 min-h-min"}`}
+
+                        onClick={() => { Answer(a) }}>
                         {RightWrong(SkillPoint.QAs[QAIndex], a)}{a}
                     </ListItem>)
                 }
-            </Box>
+            </div>
         </Box>
 
     </Box >
