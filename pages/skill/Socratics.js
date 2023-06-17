@@ -62,7 +62,7 @@ export const Socratics = ({ SkillPoint, setcreditTM, SkillPaths }) => {
                             API("SkillPathReport", { Name: SkillPoint.Name, Ask: [QA.Q, QA.A] }).then((res) => {
                                 //update creditTM to refresh rewards
                                 setcreditTM(new Date().getTime())
-                            }).catch()
+                            })
                         }}
                     />
                 })
