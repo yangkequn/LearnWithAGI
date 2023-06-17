@@ -65,7 +65,7 @@ export const Login = ({ SetAuthPage, SetOpenAlert, openAlert }) => {
             } else {
                 Jwt.SaveOrClear(data)
             }
-        }).catch()
+        })
     }
 
     return <div className={AuthContainerCSS}>

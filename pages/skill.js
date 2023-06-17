@@ -7,23 +7,26 @@ import SendIcon from '@mui/icons-material/Send';
 import { QAComponent } from "./skill/QAComponent";
 import { SkillPath } from "./skill/SkillPath";
 import { Rewards } from "./skill/Rewards";
-import { SkillFocus } from "./skill/focus.js";
 import { Socratics } from "./skill/Socratics";
 import { AppFrame } from "../component/AppFrame"
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { GetStaticProps, GetServerSideProps } from "next";
 import { API } from "../component/api";
 import { GlobalContext } from "./_app";
 //https://github.com/JedWatson/react-select
 
 export default function ExploreComponent({ topic }) {
+    const router = useRouter()
     const { setMenuL2 } = useContext(GlobalContext)
     const [skillPoint, setSkillPoint] = useState({ Name: "", QAs: [] });
     //[{Name,Rank,Path,QAs,Ask,Answer,Correct,Wrong,EmotionValence,EmotionArousal,EmotionDominance},...]
     const [SkillPaths, setSkillPaths] = useState([]);
     const [creditTM, setCreditTM] = useState(0)
     useEffect(() => {
-        if (!topic) return
+        if (!topic) {
+            router.push("/")
+            return
+        }
         API("SkillPath", { Name: topic }).then((res) => {
             if (!res || res.length == 0) return
             //sort res by rank
@@ -83,7 +86,7 @@ export default function ExploreComponent({ topic }) {
 export const getServerSideProps = async (context) => {
     return {
         props: {
-            topic: context.query.t
+            topic: context.query.t ?? null
         }
     }
 }

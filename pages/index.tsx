@@ -13,36 +13,21 @@ import { useRouter } from 'next/navigation';
 const ListItem = ({ id }) => {
   const Router = useRouter()
   const [data, setData] = useState({
-    "Name": "《思考，快与慢》 丹尼尔·卡尼曼",
-    "Detail": "《思考，快与慢》 丹尼尔·卡尼曼",
-    "Rank": 4000.0,
-    "NumActive": 0,
-    "NumInactive": 0,
-    "NumDone": 0,
+    "Name": "《思考，快与慢》 丹尼尔·卡尼曼", "Detail": "《思考，快与慢》 丹尼尔·卡尼曼", "Rank": 4000.0, "NumActive": 0, "NumInactive": 0, "NumDone": 0,
     "Items": [
       "系统一与系统二的概念:系统一与系统二是卡尼曼对人的思维方式的划分，其中系统一快速、直观、自动，系统二慢速、理智、需要努力",
       "启发式与偏见:启发式是人们在决策时使用的简化策略或“经验法则”，偏见则是决策中的系统性误差",
       "决策与概率:讨论人们如何根据概率来做决策，以及在这个过程中可能出现的错误"
     ],
-    "Ranks": [
-      3000.0,
-      4000.0,
-      5000.0
-    ],
-    "Weights": [
-      3.3333333333333335,
-      5.833333333333334,
-      7.833333333333334
-    ],
-    "TotalWeights": 2.726950354609929
+    "Ranks": [.0, 4000.0, 5000.0], "Weights": [3.3333333333333335, 5.833333333333334, 7.833333333333334], "TotalWeights": 2.726950354609929
   });
   useEffect(() => {
     HGET("SkillPoint", id).then((data) => {
       setData(data)
-    }).catch()
+    })
   }, [])
   let details = [data.Detail, ...(data.Items ?? [])]
-  return <div key="skill-container" className='flex flex-col w-60 h-60 max-h-60 overflow-hidden flex-auto rounded-xl' style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)" }} >
+  return <div key="skill-container" className='flex flex-col w-60 h-60 max-h-60 max-w-md overflow-hidden flex-auto rounded-xl p-2 ' style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)" }} >
 
     < div key="title" className={"w-full h-12  bg-yellow-50"}>
       {data.Name}
@@ -54,20 +39,63 @@ const ListItem = ({ id }) => {
       }
     }  >
       {
-        details.map((item, _) => <div className=''>{item} <br /> </div>)
+        details.map((item, _) => <div key={`skill-topic-${item}`} className=''>{item} <br /> </div>)
       }
     </div>
   </div >
 }
 export default function Home() {
+  const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2, setMenuL2 } = useContext(GlobalContext)
+  const Router = useRouter()
   const [SkillNames, setSkillNames] = useState([]);
-  useEffect(() => {
-    HKEYS("SkillLibrary").then((data) => {
-      setSkillNames(data)
-    }).catch()
-  }, [])
+  const CreateSkill = (content: string) => {
+    const loadSkill = () => {
+      API("Skill", { Name: content, Action: "add" }).then((rsb: any) => {
+        if (!!rsb?.Name) {
+          Router.push("/skill?t=" + content)
+        } else if (rsb == "loading") {
+          setMenuL2(<div>正在创建技能，请稍后</div>)
+          //setTimeout(loadSkill, 100 * 1000)
+        } else if (rsb == "notAllowed") {
+          setMenuL2(<div className='flex flex-row w-full gap-12 mx-4'><div>创建技能失败，您没有权限</div><div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 让AI创建课程: {content}</div></div>)
+        } else if (rsb == "busy") {
+          setMenuL2(<div className='flex flex-row w-full gap-12 mx-4'><div>后台任务已达容量上限！</div><div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 继续让AI创建课程: {content}</div></div>)
+        }
+      })
+    }
+    return !!content && <div className='flex flex-row f-full items-center justify-between gap-8 mx-4'>
+      <div className='text-base font-bold'>对搜索结果不满意？</div>
+      <div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 让AI创建课程，需约两分钟: {content}</div>
+    </div>
+  }
+
+  const Loading = () => {
+    let search = new URLSearchParams(window.location.search).get("search")
+    if (!search) {
+      HKEYS("SkillLibrary").then((data) => { setSkillNames(data) })
+    }
+    //create a new skill
+    //API("SkillLibrary", { Name: search, Action: "add" }).then()
+    //search for a skill
+    API("SkillLibrary", { Name: search, Action: "search" }).then((data) => {
+      //if data of null or not array, then return
+      if (!data || !Array.isArray(data)) return
+      //take Names from data
+      setSkillNames(data.map((item) => item.Name))
+    })
+    setMenuL2(CreateSkill(search))
+  }
+  useEffect(Loading, [])
+  //create a new skill
+  // HSET("SkillLibrary", "《思考，快与慢》 丹尼尔·卡尼曼", JSON.stringify({
   return <AppFrame>
-    <div className=' h-full'>
+    <div className='w-full h-full px-4 pt-2'>
+      <div id="my-skill-list" className=' w-60 rounded '>
+        <div className='flex flex-row items-center justify-start w-full'>
+          <div className='text-xl font-bold'>以下是搜索结果</div>
+        </div>
+
+      </div>
       {/* <div>        a search box      </div> */}
       <div key={"search results"} className='flex flex-row columns-7 gap-8 flex-grow pt-2'>
         {SkillNames.map((name, _) => <ListItem key={`skill-item${name}`} id={name} />)}

@@ -37,7 +37,7 @@ const JwtRequest = (headers: any = {}) => {
         },
         (error: any) => {
             SignOut(error);
-            return Promise.reject(error);
+            //return Promise.reject(error);
         }
     );
     return req

@@ -33,7 +33,6 @@ export const GlobalContext = React.createContext<GlobalContextType>({
 
 
 function MyApp({ Component, pageProps }: AppProps) {
-  console.info("MyApp initialed")
   //const [LoggedIn, setLoggedIn] = useState(Jwt.Get().IsValid())
   const [LoggedIn, setLoggedIn] = useState(false)
 
@@ -44,7 +43,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 
   useEffect(() => {
-    console.info("MyApp1 initialed")
     setLoggedIn(Jwt.Get().IsValid())
 
     //handle event for:   dispatchEvent(new CustomEvent(Events.Login, { detail: { status: data.IsValid() } }));

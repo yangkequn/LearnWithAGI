@@ -57,7 +57,7 @@ export const Retrospect = () => {
                 return { ...dayItem, level: (dayItem.count / maxCnt * 5) << 0 }
             })
             setDayCnt(dayCntData)
-        }).catch((err) => { })
+        })
     }
     useEffect(() => {
         RefreshHistory()

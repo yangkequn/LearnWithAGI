@@ -26,7 +26,7 @@ const AuthPopper = () => {
         console.info("LoggedIn", LoggedIn, AuthBoxPage)
         let pathName = window.location.href
         //if LoggedIn and current page is AuthPages.Login, redirect to home page
-        if (LoggedIn && AuthBoxPage === AuthPages.Login || AuthBoxPage === AuthPages.SignUp) {
+        if (LoggedIn && (AuthBoxPage === AuthPages.Login || AuthBoxPage === AuthPages.SignUp)) {
             //get to parameter from url
             let to = new URLSearchParams(window.location.search).get("to") ?? "/"
             router.push(to)

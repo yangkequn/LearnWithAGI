@@ -18,9 +18,11 @@ module.exports = {
     'bg-red-500',
     'text-3xl',
     'lg:text-4xl'
-    , { pattern: /^(bg|min-h|h|hover)/ }
+    , { pattern: /^ring-|bg-|hover:|min-/ }
     , "hover:bg-orange-200"
     , "bg-[#E7EBF0]"
+    , "dark:bg-slate-900"
+    , "hover:w-100"
   ],
   plugins: [],
 }
