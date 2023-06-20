@@ -18,37 +18,16 @@ import { GlobalContext } from "./_app";
 export default function ExploreComponent({ topic }) {
     const router = useRouter()
     const { setMenuL2 } = useContext(GlobalContext)
-    const [skillPoint, setSkillPoint] = useState({ Name: "", QAs: [] });
     //[{Name,Rank,Path,QAs,Ask,Answer,Correct,Wrong,EmotionValence,EmotionArousal,EmotionDominance},...]
     const [SkillPaths, setSkillPaths] = useState([]);
+    const [skillPathSelected, setSkillPathSelected] = useState(-1);
     const [creditTM, setCreditTM] = useState(0)
     useEffect(() => {
-        if (!topic) {
-            router.push("/")
-            return
-        }
-        API("SkillPath", { Name: topic }).then((res) => {
-            if (!res || res.length == 0) return
-            //sort res by rank
-            res.sort((a, b) => a.Rank - b.Rank)
-            setSkillPaths(res);
-        })
+        if (!topic) return router.push("/")
     }, [])
     useEffect(() => {
-        if (creditTM <= 0) return
-        //for skillPath in SkillPaths, if skillPath.Path[0] == SkillPoint.Name, then skillPath.Correct++
-        setSkillPaths(SkillPaths.map((skillPath) => {
-            if (skillPath.Path[0] == skillPoint.Name) {
-                skillPath.Correct++
-                skillPath.Answer++
-            }
-            return skillPath
-        }))
-
-    }, [creditTM])
-    useEffect(() => {
         setMenuL2(reward)
-    }, [creditTM, skillPoint])
+    }, [creditTM])
     const reward = <div className="flex flex-row overflow-hidden w-full items-center justify-between">
         {/* <div>            {skillPoint?.Name}        </div> */}
         <Rewards creditTM={creditTM}></Rewards>
@@ -61,23 +40,19 @@ export default function ExploreComponent({ topic }) {
 
         <div className="flex flex-col justify-between items-start w-1/4 h-full overflow-scroll  max-w-screen-sm min-w-min" >
             <Divider sx={{ width: 280, m: 0.5 }} orientation="horizontal" />
-            <SkillPath skillPoint={skillPoint} setSkillPoint={setSkillPoint} SkillPaths={SkillPaths} setSkillPaths={setSkillPaths} ></SkillPath>
+            <SkillPath topic={topic} SkillPaths={SkillPaths} setSkillPaths={setSkillPaths}  skillPathSelected={skillPathSelected} setSkillPathSelected={setSkillPathSelected} ></SkillPath>
         </div>
 
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
         {/* 底部的搜索结果,immerse chatbox */}
         <Box className="flex flex-col justify-start items-start w-full h-full overflow-scroll  max-w-screen-sm min-w-min" >
-
-
-            <QAComponent SkillPoint={skillPoint} setCreditTM={setCreditTM}></QAComponent>
-
-
+            <QAComponent SkillPaths={SkillPaths} setSkillPaths={setSkillPaths} skillPathSelected={skillPathSelected} setCreditTM={setCreditTM} topic={topic}></QAComponent>
         </Box>
 
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
-        <Socratics SkillPoint={skillPoint} setcreditTM={setCreditTM} SkillPaths={SkillPaths}></Socratics>
+        <Socratics SkillPaths={SkillPaths} setSkillPaths={setSkillPaths} skillPathSelected={skillPathSelected} setcreditTM={setCreditTM} topic={topic}></Socratics>
         {/* right side panel */}
     </div >
     </AppFrame>
