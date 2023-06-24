@@ -6,7 +6,7 @@ export const UserAvatar = ({ userID, style }) => {
     const [name, setName] = useState("")
 
     useEffect(() => {
-        !!userID && HGET("UserInfoPublic", userID).then((data) => { setName(data["Nick"]) })
+        !!userID && HGET("UserInfoPublic", userID).then((data) => { !!data && setName(data["Nick"]) })
     }, [])
     return <Tooltip title={name} placement="left" className="h-full self-center items-center justify-center">
         {!!userID ? <Avatar src={GetUrl(Cmd.HGET, "UserAvatar", userID, RspType.jpeg, "*")} style={style} alt={name} /> : <Avatar style={style} alt={name} />}
@@ -15,7 +15,7 @@ export const UserAvatar = ({ userID, style }) => {
 export const UserName = ({ pub }) => {
     const [name, setName] = useState("")
     useEffect(() => {
-        if (!!pub) HGET("UserInfoPublic", pub).then((data) => { setName(data["Nick"]) })
+        if (!!pub) HGET("UserInfoPublic", pub).then((data) => { !!data && setName(data["Nick"]) })
         else setName("")
     }, [pub])
     return <div>
