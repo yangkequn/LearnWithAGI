@@ -5,66 +5,52 @@ import { Box } from "@mui/system";
 import { API, HGET } from "../../component/api";
 import Checkbox from '@mui/material/Checkbox';
 export const SkillTree = ({ topic, skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace }) => {
-    //auto select the first uncompleted skill path
+
+    //auto sort the skill paths 
+    const SortSkillTree = (skillTree) => {
+        if (!skillTree || skillTree?.length == 0) return skillTree
+        skillTree.sort((a, b) => {
+            let p1 = [...a.Path], p2 = [...b.Path]
+            p1.reverse(); p2.reverse()
+            return (a.Rank - b.Rank) + (p1.join("") <= p2.join("") * 100)
+        })
+        return [...skillTree]
+    }
+    //auto load skillTree
     useEffect(() => {
         API("SkillTree", { Name: topic }).then((res) => {
             if (!res || res.length == 0) return
             //sort res by rank
             res = SortSkillTree(res)
             setSkillTree(res);
-
-            //set default skillTreeSelected
-            for (var i = 0; i < res.length; i++) {
-                if (Complete(res[i]) >= 2) continue
-                setSkillTreeSelected(i)
-                break
-            }
-            setSkillTreeSelected(res.length - 1)
         })
     }, [])
 
-    //auto sort the skill paths 
-    const [sortType, setSortType] = useState("difficulty")
-    const SortSkillTree = (skillTree) => {
-        if (!skillTree || skillTree?.length == 0) return skillTree
-        if (sortType == "difficulty") skillTree.sort((a, b) => {
-            let p1 = [...a.Path], p2 = [...b.Path]
-            p1.reverse(); p2.reverse()
-            return (a.Rank - b.Rank) + ((p1.join("") <= p2.join("")) * 100)
-        })
-        else if (sortType == "path") skillTree.sort((a, b) => {
-            let p1 = [...a.Path], p2 = [...b.Path]
-            p1.reverse(); p2.reverse()
-            return (a.Rank - b.Rank) + (p1.join("") <= p2.join("") * 5000)
-        })
-        return [...skillTree]
-    }
+    //auto select the first uncompleted skill path as default
     useEffect(() => {
-        if (!skillTree || skillTree.length == 0) return
-        setSkillTree(SortSkillTree(skillTree))
-    }, [sortType])
+        //allow set only once. in order to avoid disturbing user
+        if (skillTreeSelected >= 0) return
+        for (var i = 0; i < skillTree.length; i++) {
+            if (Complete(skillMyTrace[skillTree[i].Name + ":" + skillTree[i].Detail]) >= 2) continue
+            return setSkillTreeSelected(i)
+        }
+    }, [skillTree, skillMyTrace])
 
-    const Complete = (skillPoint) => {
-        let myTrace = skillMyTrace[skillPoint.Name];
-        if (!myTrace) return false
-        let correctAsks = myTrace.Asks.length, correctQAs = myTrace.QAs.filter((qa) => qa.indexOf("|||0") > 0).length
-        return (correctAsks / 2) + correctQAs >= 3
+
+    const Complete = (myTrace) => {
+        if (!myTrace) return 0
+        let correctAsks = myTrace.Asks?.length ?? 0, correctQAs = myTrace.QAs?.filter((qa) => qa.indexOf("|||0") > 0)?.length ?? 0
+        return (correctAsks / 2) + correctQAs
     }
 
     {/* 相关的主题 */ }
-    return <div className="flex flex-col justify-start items-start w-full h-full overflow-scroll gap-1"    >
+    return <div className="flex flex-col justify-start items-start w-full h-full overflow-scroll gap-1 max-w-lg"    >
+        <div key="title" className="flex flex-row pt-1 whitespace-normal text-lg bg-yellow-50 w-full rounded pl-2 gap-2" >
+            <div className=" font-semibold ">课程</div>
+            <div className=" font-semibold "> {topic}</div>
+        </div>
         <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 pb-2"            >
-            <div className="flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-sky-600 font-sans font-medium leading-6 gap-3"            >
-                {/* add a check box here to show only uncompleted skill paths */}
-                <Checkbox sx={{ color: "#333" }} checked={sortType === "difficulty"} onChange={(e) => setSortType("difficulty")} />
-                按难度排序
-            </div>
-
-            <div className="flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-sky-600 font-sans font-medium leading-6 gap-3"            >
-                {/* add a check box here to show only uncompleted skill paths */}
-                <Checkbox sx={{ color: "#333" }} checked={sortType === "path"} onChange={(e) => setSortType("path")} />
-                按目录排序
-            </div>
+            目录：
         </div>
 
 
@@ -94,15 +80,13 @@ export const SkillTree = ({ topic, skillTree, setSkillTree, skillTreeSelected, s
 
                                     <div className=" flex flex-row justify-end items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 mr-2" >
                                         <div>难度:{Point.Rank}</div>
-                                        <div className="mr-2">{Complete(Point) >= 2 ? "✅" : "-"}</div>
+                                        <div className="mr-2">{Complete(skillMyTrace[Point.Name + ":" + Point.Detail]) >= 2 ? "✅" : "⬜"}</div>
                                     </div>
                                 </div>
 
                                 <div key="second-row" className="flex flex-row justify-start items-start w-full overflow-hidden whitespace-nowrap text-base text-gray-700" >
                                     {
-                                        sortType === "path" ?
-                                            [...Point.Path].reverse().slice(1).map((path) => path.split(":")[0]).join(" / ") :
-                                            Point.Path.slice(0, Point.Path.length - 1).map((path) => path.split(":")[0]).join(" / ")
+                                        "/ " + [...Point.Path].reverse().slice(1).map((path) => path.split(":")[0]).join(" / ")
                                     }
                                 </div>
                             </div>

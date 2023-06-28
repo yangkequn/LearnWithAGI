@@ -1,13 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import { Container, Divider, Grow, Typography, } from "@mui/material";
 import { Box } from "@mui/system";
 import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
 import { KeyYMD, KeyYW } from "../../component/api/APIKey";
 export const Rewards = ({ creditTM }) => {
-    const [credit, setCredit] = useState({ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 })
+    //使用localStorage缓存credit
+    const [credit, setCredit] = useState(JSON.parse(localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
+    //上一次的credit. 创建此变量主要为使用方便
+    const lastCredit = useMemo(() => credit?.SkillAnswer + credit?.SkillAsk + credit?.HealthAgendaDo, [credit]);
+
     const [rewardScore, setRewardScore] = useState(0)
+    const [showReward, setShowReward] = useState(false)
     useEffect(() => {
         let today = new Date()
         //to format 20230101
@@ -19,37 +24,32 @@ export const Rewards = ({ creditTM }) => {
                 return;
             }
             let res = data[0]
-            var deltaAnser = res.SkillAnswer - credit.SkillAnswer
-            var deltaAsk = res.SkillAsk - credit.SkillAsk
-            var deltaHealthAgendaDo = res.HealthAgendaDo - credit.HealthAgendaDo
-            if (deltaAnser + deltaAsk + deltaHealthAgendaDo > 0 && creditTM > 0) {
+            var credit = res.SkillAnswer + res.SkillAsk + res.HealthAgendaDo
+            if (credit > lastCredit && creditTM > 0) {
                 //play mario ding sound, when reward is given and > 0
                 let audio = new Audio("/mario-money-sound.mp3")
                 audio.play()
                 //show reward amimation for 1 second
-                setRewardScore(deltaAnser + deltaAsk + deltaHealthAgendaDo)
-                setTimeout(() => { setRewardScore(0) }, 1000)
+                setRewardScore(credit - lastCredit)
+                setShowReward(true)
+                setTimeout(() => setShowReward(false), 1000)
             }
+            localStorage.setItem("Credit", JSON.stringify(res))
             setCredit(res)
         })
     }, [creditTM])
 
     return <Box sx={{ marginTop: "10px", minWidth: "250px" }} >
-        <Box sx={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
-            <Grow in={!!rewardScore} timeout={1000}>
-                <Box sx={{
-                    //text and icon size large
-                    fontSize: "1.5em"
-                }}>
-                    {"+"}<StarIcon></StarIcon>
-                </Box>
+        <Box key={`credit${lastCredit}`} sx={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
+            <Grow in={showReward} timeout={1000} >
+                <div className="text-xl" > {`+${rewardScore}`}<StarIcon></StarIcon> </div>
             </Grow>
             <Typography variant="h4" sx={{
                 fontWeight: 600, fontSize: 18, color: "#333", fontFamily: "Roboto, Arial, sans-serif", lineHeight: "22px", margin: "6px 0px"
                 //single line text
                 , overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
             }}>
-                今日积分：{(credit.SkillAnswer + credit.SkillAnswer)}. 回答正确：{credit.SkillAnswer}. 提问：{credit.SkillAsk} 日程：{credit.HealthAgendaDo}
+                今日积分：{lastCredit}. 回答正确：{credit?.SkillAnswer}. 提问：{credit?.SkillAsk} 日程：{credit?.HealthAgendaDo}
             </Typography>
 
         </Box>

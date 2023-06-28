@@ -13,13 +13,15 @@ export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcredit
     //CurrentQAs QA that use has selected. format [question,answer,question,answer,...]
     const [QATraces, setQAsTraces] = useState([])
     const FullName = () => `${skillPoint?.Name}:${skillPoint?.Detail}`
+    const loadSkillPoint = (Name, topic) => API("SkillSocratic", { Name, Topic: topic, Rebuild: false })
+        .then((res) => Name === skillPoint.Name && setQAs(res ?? []))
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
         setQAsTraces([])
-        if (!FullName()) return
-        API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: false })
-            .then((res) => setQAs(res ?? []))
+        let Name = FullName()
+        if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
+        loadSkillPoint(Name, topic)
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
 
     }, [skillPoint])
@@ -29,7 +31,7 @@ export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcredit
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
     }, [skillPoint, skillMyTrace])
 
-    if (!FullName(skillPoint)) return <div className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-screen-sm" ></div>
+    if (!FullName(skillPoint)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-screen-sm" ></div>
     return <div key={`socratic-container-${skillPoint}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-screen-sm"    >
         {/* //list Tags of QAs,using mui tag */}
         <div className="flex flex-row flex-wrap justify-start items-start overflow-scroll w-full py-3 gap-1 max-h-max min-h-min "        >
@@ -37,7 +39,7 @@ export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcredit
             <div className="flex flow-row text-xl text-gray-800 font-sans leading-4 w-fit bg-slate-300 rounded-md px-4 py-2 gap-2 items-center">
                 <div> 苏格拉底演练场</div>
 
-                <div onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: false })
+                <div onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: true })
                     .then((res) => setQAs(res ?? []))
                 } className="pr-1">
                     <Tooltip title={"自动修复错误的问答列表"} placement="left" className="h-full self-center items-center justify-center"><BuildIcon></BuildIcon></Tooltip>
@@ -60,17 +62,17 @@ export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcredit
         {/* <div className="bg" style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)" }}>        </div> */}
 
         {/* The whole chat box is scrollable */}
-        <div className="flex flex-col justify-start items-start w-full  max-h-max min-h-min overflow-scroll my-2 " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
+        <div key="what-is-my-answered" className="flex flex-col justify-start items-start w-full  max-h-max min-h-min overflow-scroll my-2 " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
             {
                 //display CurrentQAs as dialog box,question on the left,answer on the right
-                QATraces.map((qa, index) => {
-                    return <div key={qa.Q} className="flex flex-col justify-start items-start w-full h-fit py-3">
+                QATraces.reverse().map((qa, index) => {
+                    return <div key={`question-answer-q-${qa.Q}-${index}`} className="flex flex-col justify-start items-start w-full h-fit py-3">
                         <div variant="18px" className="flex flex-col justify-start items-start  text-base text-gray-800 font-sans w-fit bg-orange-100 rounded-full  px-2 mb-2">
                             {qa.split("|||")[0]}
                         </div>
 
                         {/* align answer to the right */}
-                        <div key={`anser${qa[1]}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
+                        <div key={`question-answer-a${qa[1]}-${index}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
                             className="flex flex-col justify-start items-start self-end text-sm text-gray-800 font-sans w-fit rounded-lg  px-2 py-2"
                         >
                             {qa.split("|||")[1]}

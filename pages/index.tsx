@@ -20,11 +20,12 @@ const ListItem = ({ id }) => {
     HGET("SkillPoint", id).then((data) => !!data && setData(data))
   }, [])
   let details = [data.Detail, ...(data.Items ?? [])]
-  return data.Name != "" && <div key="skill-container" className='flex flex-col w-60 h-60 max-h-60 max-w-md overflow-hidden flex-auto rounded-xl p-2 ' style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)" }} >
+  return data.Name != "" && <div key="skill-container" className='flex flex-col w-60 h-60 max-h-60 max-w-md flex-auto rounded-xl'
+    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", minWidth: 330 }} >
 
-    < div key="title" className={"w-full h-12  bg-yellow-50"}>      {data.Name}    </div>
+    < div key="title" className={"w-full h-12  bg-yellow-50  rounded-t-xl p-1"}>      {data.Name}    </div>
     {/* when hover on this, show the detail,swich between details  */}
-    <div key="detail" className={"flex flex-col w-full h-full  overflow-scroll text-sky-700 gap-4 hover:bg-stone-100 "} onClick={() => Router.push("/skill?t=" + id)}  >
+    <div key="detail" className={"flex flex-col w-full h-full  overflow-scroll text-sky-700 gap-4 hover:bg-stone-100 p-1"} onClick={() => Router.push("/skill?t=" + id)}  >
       {
         details.map((item, _) => <div key={`skill-topic-${item}`} className=''>{item} <br /> </div>)
       }
@@ -41,7 +42,7 @@ export default function Home() {
         if (!!rsb?.Name) {
           Router.push("/skill?t=" + content)
         } else if (rsb == "loading") {
-          setMenuL2(<div>正在创建技能，请稍后</div>)
+          setMenuL2(<div className='flex flex-row w-full gap-12 mx-4'><div>正在创建技能，请稍后</div><div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 继续让AI创建课程: {content}</div></div>)
           //setTimeout(loadSkill, 100 * 1000)
         } else if (rsb == "notAllowed") {
           setMenuL2(<div className='flex flex-row w-full gap-12 mx-4'><div>创建技能失败，您没有权限</div><div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 让AI创建课程: {content}</div></div>)
@@ -84,7 +85,7 @@ export default function Home() {
 
       </div>
       {/* <div>        a search box      </div> */}
-      <div key={"search results"} className='flex flex-row columns-7 gap-8 flex-grow pt-2'>
+      <div key={"search results"} className='flex flex-row w-full flex-wrap columns-7 gap-8 flex-grow pt-2'>
         {SkillNames.map((name, _) => <ListItem key={`skill-item${name}`} id={name} />)}
       </div>
     </div>

@@ -51,7 +51,7 @@ export default function ExploreComponent({ topic }) {
 
     useEffect(() => {
         setMenuL2(<div className="flex justify-between w-full items-center">
-            <div key="title" className="flex flex-row pt-2 ml-4  whitespace-nowrap text-base" > 主题:<div className=" font-semibold "> {topic}</div>                        </div>
+           
             <div key="reward" className="flex flex-row overflow-hidden w-full items-center justify-between">
                 <Rewards creditTM={creditTM}></Rewards>
             </div>

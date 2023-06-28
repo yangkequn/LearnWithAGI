@@ -76,14 +76,21 @@ export default function Navigator() {
         <Autocomplete id="search-skill-box" options={options} freeSolo className='self-center gap-4'
 
           onChange={(event: React.SyntheticEvent, value: T | Array<T>, reason: string, details?: string) => {
-            if (value.toString().startsWith("create topic:")) {
+            if (value?.toString().startsWith("create topic:")) {
               router.push("/?create=" + value.toString().replace("create topic:", ""))
-            } else if (value.toString().startsWith("search topic:")) {
+            } else if (value?.toString().startsWith("search topic:")) {
               router.push("/?search=" + value.toString().replace("search topic:", ""))
-            } else {
+            } else if (!!value) {
               router.push("/?search=" + value)
             }
-
+          }}
+          onKeyDown={(event: React.KeyboardEvent) => {
+            if (event.key == "Enter") {
+              let value = (event.target as HTMLInputElement).value
+              if (!!value) {
+                router.push("/?search=" + value)
+              }
+            }
           }}
           onInputChange={(event: object, value: string, reason: string) => {
             // if (value.length < 5) {

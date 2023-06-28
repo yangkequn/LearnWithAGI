@@ -48,13 +48,19 @@ export const Retrospect = () => {
                     return dayItem
                 }
             })
-            //get max count
-            let maxCnt = dayCntData.reduce((max, dayItem) => {
-                return Math.max(max, dayItem.count)
-            }, 0)
+            //均分。每个档次一样多
+            let counts = dayCntData.map((dayItem) => dayItem.count).filter((count) => count > 0)
+            counts.push(0)
+            counts.sort((a, b) => a - b)
+            console.log("counts", counts)
+            let countToIndexMap = counts.map((count, i) => [count, Math.floor(5 * i / (counts.length - 1))])
+            countToIndexMap = Object.fromEntries(countToIndexMap)
+
             //set level for each dayItem
             dayCntData = dayCntData.map((dayItem) => {
-                return { ...dayItem, level: (dayItem.count / maxCnt * 5) << 0 }
+                let level = countToIndexMap[dayItem.count];
+                if (dayItem.count > 0) level = Math.max(1, level)
+                return { ...dayItem, level }
             })
             setDayCnt(dayCntData)
         })
