@@ -32,7 +32,7 @@ const ListItem = ({ id }) => {
     </div>
   </div >
 }
-export default function Home() {
+export default function Home({ search }) {
   const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2, setMenuL2 } = useContext(GlobalContext)
   const Router = useRouter()
   const [SkillNames, setSkillNames] = useState([]);
@@ -57,8 +57,7 @@ export default function Home() {
     </div>
   }
 
-  const Loading = () => {
-    let search = new URLSearchParams(window.location.search).get("search")
+  useEffect(() => {
     if (!search) {
       HKEYS("SkillLibrary").then((data) => { setSkillNames(data) })
     }
@@ -72,8 +71,7 @@ export default function Home() {
       setSkillNames(data.map((item) => item.Name))
     })
     setMenuL2(CreateSkill(search))
-  }
-  useEffect(Loading, [])
+  }, [search])
   //create a new skill
   // HSET("SkillLibrary", "《思考，快与慢》 丹尼尔·卡尼曼", JSON.stringify({
   return <AppFrame>
@@ -86,9 +84,16 @@ export default function Home() {
       </div>
       {/* <div>        a search box      </div> */}
       <div key={"search results"} className='flex flex-row w-full flex-wrap columns-7 gap-8 flex-grow pt-2'>
-        {SkillNames.map((name, _) => <ListItem key={`skill-item${name}`} id={name} />)}
+        {SkillNames?.map((name, _) => <ListItem key={`skill-item${name}`} id={name} />)}
       </div>
     </div>
   </AppFrame>
+}
+export const getServerSideProps = async (context) => {
+  return {
+    props: {
+      search: context.query.search ?? null
+    }
+  }
 }
 

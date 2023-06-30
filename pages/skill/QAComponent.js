@@ -26,7 +26,7 @@ export const QAComponent = ({ skillPoint, skillMyTrace, setSkillMyTrace, setCred
     const FullName = () => `${skillPoint?.Name}:${skillPoint?.Detail}`
 
     //loadSkillPoint according to skillTreeSelected
-    const LoadSkillQAs = (Name, topic, useCallback) => API("SkillQAs", { Name: Name, Topic: topic }).then((qas) => useCallback && !!qas?.length > 0 && skillPoint.Name === Name && setQAs(qas))
+    const LoadSkillQAs = (Name, topic, useCallback) => API("SkillQAs", { Name: Name, Topic: topic }).then((qas) => useCallback && !!qas?.length > 0 && (Name === FullName()) && setQAs(qas))
     useEffect(() => {
         setQAs([])
         setQAIndex(-1)

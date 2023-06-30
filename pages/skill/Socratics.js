@@ -14,7 +14,7 @@ export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcredit
     const [QATraces, setQAsTraces] = useState([])
     const FullName = () => `${skillPoint?.Name}:${skillPoint?.Detail}`
     const loadSkillPoint = (Name, topic) => API("SkillSocratic", { Name, Topic: topic, Rebuild: false })
-        .then((res) => Name === skillPoint.Name && setQAs(res ?? []))
+        .then((res) => (Name === FullName()) && setQAs(res ?? []))
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
