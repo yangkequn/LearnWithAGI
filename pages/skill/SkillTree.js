@@ -21,7 +21,7 @@ export const SkillTree = ({ topic, skillTree, setSkillTree, skillTreeSelected, s
         API("SkillTree", { Name: topic }).then((res) => {
             if (!res || res.length == 0) return
             //sort res by rank
-            res = SortSkillTree(res)
+            //res = SortSkillTree(res)
             setSkillTree(res);
         })
     }, [])
