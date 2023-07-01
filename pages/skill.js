@@ -38,7 +38,13 @@ export default function ExploreComponent({ topic }) {
         if (skillTree?.length == 0) return
         let names = skillTree.map((skill) => `${skill.Name}:${skill.Detail}`)
         !!names && names.length > 0 && HMGET("SkillMyTrace:@id", names).then((res) => {
-            let _myTrace = { ...skillMyTrace, ...res }
+            //zip names and res to dict
+            if (names.length != res.length) return console.log("error in fetch skillMyTrace ,in equal length returned")
+            var _res = {}
+            for (var i = 0; i < names.length; i++) {
+                _res[names[i]] = res[i]
+            }
+            let _myTrace = { ...skillMyTrace, ..._res }
             setSkillMyTrace(_myTrace)
         })
     }, [skillTree])
@@ -51,7 +57,7 @@ export default function ExploreComponent({ topic }) {
 
     useEffect(() => {
         setMenuL2(<div className="flex justify-between w-full items-center">
-           
+
             <div key="reward" className="flex flex-row overflow-hidden w-full items-center justify-between">
                 <Rewards creditTM={creditTM}></Rewards>
             </div>
