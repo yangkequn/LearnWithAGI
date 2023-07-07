@@ -25,8 +25,11 @@ export const Rewards = ({ creditTM }) => {
                 return;
             }
             let res = data[0]
-            var credit = res.SkillAnswer + res.SkillAsk + res.HealthAgendaDo
-            if (credit > lastCredit && creditTM > 0) {
+            var creditToday = res.SkillAnswer + res.SkillAsk + res.HealthAgendaDo
+            var creditGain = creditToday - lastCredit
+            //day change, creditGain should be creditToday
+            if (creditGain < 0 && creditToday == 1) creditGain = creditToday
+            if (creditGain && creditTM > 0) {
                 //play mario ding sound, when reward is given and > 0
                 let audio = new Audio("/mario-money-sound.mp3")
                 audio.play()
