@@ -5,6 +5,7 @@ import { Box } from "@mui/system";
 import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
 import { KeyYMD, KeyYW } from "../../component/api/APIKey";
+import { isDebuggerStatement } from "typescript";
 export const Rewards = ({ creditTM }) => {
     //使用localStorage缓存credit
     const [credit, setCredit] = useState(JSON.parse(localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
@@ -33,6 +34,21 @@ export const Rewards = ({ creditTM }) => {
                 setRewardScore(credit - lastCredit)
                 setShowReward(true)
                 setTimeout(() => setShowReward(false), 1000)
+            }
+            if (res.Operates.length >= 10 && credit > lastCredit) {
+                var timeSpans = []
+                for (var i = 0; i < res.Operates.length - 1; i++) {
+                    timeSpans.push(res.Operates[i + 1] - res.Operates[i])
+                }
+                var lastTS = timeSpans[timeSpans.length - 1]
+                timeSpans.sort((a, b) => a - b)
+                if (timeSpans[0] == lastTS) {
+                    let audio = new Audio("/kids_woah-6272.mp3")
+                    audio.play()
+                } else if (timeSpans[4] >= lastTS) {
+                    let audio = new Audio("/wow-113128.mp3")
+                    audio.play()
+                }
             }
             localStorage.setItem("Credit", JSON.stringify(res))
             setCredit(res)

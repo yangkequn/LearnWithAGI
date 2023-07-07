@@ -6,8 +6,12 @@ import { API } from "../../component/api";
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 import "tailwindcss/tailwind.css"
 import BuildIcon from '@mui/icons-material/Build';
+import { Context } from "./Context"
+import { GlobalContext } from "../_app";
 
-export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcreditTM, topic }) => {
+export const Socratics = ({ topic }) => {
+    const {  setCreditTM} = useContext(GlobalContext)
+    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
     //CurrentQAs QA that use has selected. format [question,answer,question,answer,...]
@@ -53,7 +57,7 @@ export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcredit
                             let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                             setSkillMyTrace(newMySkillTrace)
                             //update creditTM to refresh rewards
-                            setcreditTM(new Date().getTime())
+                            setCreditTM(new Date().getTime())
                         })} />
                 })
             }
@@ -100,7 +104,7 @@ export const Socratics = ({ skillPoint, skillMyTrace, setSkillMyTrace, setcredit
                                     let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                                     setSkillMyTrace(newMySkillTrace)
                                     //update creditTM to refresh rewards
-                                    setcreditTM(new Date().getTime())
+                                    setCreditTM(new Date().getTime())
                                 })
                             }
                         }

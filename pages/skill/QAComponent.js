@@ -6,8 +6,15 @@ import { Box } from "@mui/system";
 import { API, HGET } from "../../component/api";
 import BuildIcon from '@mui/icons-material/Build';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { Context } from "./Context"
+import { GlobalContext } from "../_app";
+import DeleteIcon from '@mui/icons-material/Delete';
 
-export const QAComponent = ({ skillPoint, skillMyTrace, setSkillMyTrace, setCreditTM, topic }) => {
+export const QAComponent = ({ topic }) => {
+    const { setCreditTM } = useContext(GlobalContext)
+    const [QANum, setQANum] = useState(5)
+    const [loading, setLoading] = useState(false)
+    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
     //QAs: []struct {	Type     string	Question string	Answers  []string	Shown    int64	Answer   int64	Correct  int64}
     const [QAs, setQAs] = useState([]);
     const [qaIndex, setQAIndex] = useState(-1);
@@ -53,7 +60,7 @@ export const QAComponent = ({ skillPoint, skillMyTrace, setSkillMyTrace, setCred
         }
     }, [QAs, skillMyTrace])
 
-    const AnserRight = (QA) => {
+    const AnswerRight = (QA) => {
         if (TraceQAsStr?.indexOf(QA.Question + "|||0") >= 0) return "✅"
         if (TraceQAsStr?.indexOf(QA.Question) >= 0) return "❌"
         return "⬜"
@@ -67,21 +74,64 @@ export const QAComponent = ({ skillPoint, skillMyTrace, setSkillMyTrace, setCred
         if (!correct && TraceQAsStr.indexOf(QA.Question + "|||" + QA.Answers.indexOf(aswItem)) >= 0) return "❌"
         return "⬜"
     }
-    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-between items-start w-full ">
+    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-between items-start w-full px-1">
 
         <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-3 w-full">
-            <div className="flex flex-row gap-2 items-center leading-8 w-fit min-w-fit">
-                <div className=" text-lg font-sans font-semibold " > 当前练习 </div>
-            </div>
-            <div className="flex flex-row gap-2 items-center justify-between leading-8 w-full">
-                <div>{FullName()}  </div>
-                <div onClick={() => {
-                    !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Rebuild: true })
-                        .then((res) => setQAs(res ?? []))
-                }} className="pr-1">
-                    <Tooltip title={"申请重建练习列表"} placement="left" className="h-full self-center items-center justify-center"><BuildIcon></BuildIcon></Tooltip>
+            <div key="question-box" className="flex flex-row w-full flex-grow items-center md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
+            rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-10 "  >
+                <div key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
+                    API("SkillMyTraceReport", { Name: FullName(), Action: "reset-qas" }).then((res) => {
+                        let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                        setSkillMyTrace(newMySkillTrace)
+                    })
+                }}>
+                    <Tooltip title="reset all practice" ><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabindex="-1" title="RestartAlt"><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></Tooltip>
                 </div>
+
+                <textarea className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none "
+                    //style="max-height: 200px; height: 24px; overflow-y: hidden;"
+                    //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
+                    style={{ maxHeight: 200, height: 24, overflowY: "hidden" }}
+                    value={`练习：${FullName()}`}
+                    //placeholder={FullName()}
+                    onChange={(e) => {
+                        setQuestion(e.target.value)
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.keyCode !== 13) return
+                        //if not empty
+                        let Question = e.target.value
+                        if (!Question) return
+                        OnSubmitQuestion(Question)
+                        // stop propagation
+                        e.preventDefault()
+                    }}
+                    disabled={true}
+                />
+                <div className="flex self-center absolute  right-10 md:right-9">
+                    {/* select how many questions to ask */}
+                    <select className="bg-transparent border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1" disabled={loading} value={QANum}
+                        onChange={(e) => {
+                            setQANum(e.target.value)
+                        }} >
+                        {
+                            // options betwenn 1 to 100, default 10 
+                            [...Array(10).keys()].map((i) => <option value={(i + 1) * 5}>{(i + 1) * 5}题</option>)
+
+                        }
+                    </select>
+                </div>
+                <button class="self-center absolute p-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2"
+                    onClick={e => {
+                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
+                            .then((res) => setQAs(res ?? []))
+                    }}>
+                    {loading ? <LoadingElement /> :
+                        <Tooltip title={"申请重建练习列表"} placement="left" className="h-full self-center items-center justify-center">
+                            <div className="w-6 h-6"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabindex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></div></Tooltip>}
+                </button>
             </div>
+
         </div>
 
         <div key="knowledge-point-questions" className="flex flex-row h-full w-full justify-start text-gra-800 gap-5"        >
@@ -97,9 +147,34 @@ export const QAComponent = ({ skillPoint, skillMyTrace, setSkillMyTrace, setCred
             }
 
             {/* 已经回答的题目 */}
-            <div className="flex flex-row justify-start items-start rounded-md min-h-36 max-h-100 w-full text-gray-800 text-lg overflow-y-hidden bg-slate-300" >
+            <div className="flex flex-row justify-start items-start rounded-md w-full h-full text-gray-800 text-lg min-h-[300px]  max-h-[460px] flex-auto overflow-x-auto flex-wrap" >
+                <div activeStep={qaIndex} variant="dots" position="static"
+                    className=" flex flex-col justify-start rounded-md h-full w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
+                    sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
+                    {QAs?.map((qa, index) => {
+                        return <div key={`OtherQA${qa.Question}`} className={`flex flex-row justify-start items-center h-fit  text-lg leading-7 text-gray-700 max-w-[100%] min-w-[200px] flex-grow 
+                         ${[" bg-red-100 ", "  bg-lime-100", " bg-amber-100 "][index % 3]} `}
+                            onClick={() => setQAIndex(index)} >
+                            <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between max-w-[300px] w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
+                                <div className="flex flex-row justify-between pr-2 gap-1">
+                                    <div className="rounded self-center ">{AnswerRight(qa)}</div>
+                                    <div>{qa.Question}</div>
+                                    <div className="flex flex-row w-min gap-1 items-center">
+                                        {qaIndex == index && <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon>}
+                                        {qaIndex == index && <Tooltip title="删除该条目" ><DeleteIcon onClick={() => {
+                                            API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Question}`  })
+                                                .then((res) => setQAs(res ?? []))
+                                        }}></DeleteIcon></Tooltip>}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    })}
+                </div>
+
                 {/* Dots stepper, current index is {QAIndex}, length is {QAS.length} */}
-                <Stepper activeStep={qaIndex} orientation="vertical" variant="dots" position="static"
+                {/* <Stepper activeStep={qaIndex} orientation="vertical" variant="dots" position="static"
                     className=" w-full flex flex-col justify-between rounded-md h-full  text-gray-800 text-lg leading-5 overflow-y-hidden bg-slate-300"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
                     {QAs?.map((qa, index) => {
@@ -117,7 +192,7 @@ export const QAComponent = ({ skillPoint, skillMyTrace, setSkillMyTrace, setCred
                             </StepLabel>
                         </Step>
                     })}
-                </Stepper>
+                </Stepper> */}
             </div>
 
 
@@ -127,33 +202,34 @@ export const QAComponent = ({ skillPoint, skillMyTrace, setSkillMyTrace, setCred
         {/* 主题下相关的问题 */}
         <Divider sx={{ width: 280, m: 0.5 }} orientation="horizontal" />
 
-        {!!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start items-start w-full" >
-            <div variant="h4" className=" font-semibold text-lg text-gray-800  font-sans leading-8 my-2 " >
-                以下哪个回答是正确的:
-            </div>
-            <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3" >
-                {AnswersShuffled(QAs[qaIndex]).map((a, i) => <ListItem key={`answer-item${a}-${i}`}
-                    className={`flex flex-row items-center justify-center rounded text-gray-800 
+        {
+            !!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start items-start w-full" >
+                <div variant="h4" className=" font-semibold text-lg text-gray-800  font-sans leading-8 my-2 " >
+                    以下哪个回答是正确的:
+                </div>
+                <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3" >
+                    {AnswersShuffled(QAs[qaIndex]).map((a, i) => <ListItem key={`answer-item${a}-${i}`}
+                        className={`flex flex-row items-center justify-center rounded text-gray-800 
                         ${AnswerItemRightWrong(QAs[qaIndex], a) == "✅" ? " text-lg w-5/12 bg-green-200 font-bold min-h-max  py-4" : " text-base w-4/12 bg-orange-200 min-h-min"}`}
-                    //response of  answer action
-                    onClick={() => {
-                        let answerIndex = QAs[qaIndex]?.Answers?.indexOf(a)
-                        if (answerIndex === undefined) return
+                        //response of  answer action
+                        onClick={() => {
+                            let answerIndex = QAs[qaIndex]?.Answers?.indexOf(a)
+                            if (answerIndex === undefined) return
 
-                        //	Name    string	Answer  int32	Ask     int32
-                        API("SkillMyTraceReport", { Name: FullName(), QA: QAs[qaIndex].Question + "|||" + answerIndex }).then((res) => {
-                            //update creditTM to refresh rewards
-                            setCreditTM(new Date().getTime())
-                            let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
-                            setSkillMyTrace(newMySkillTrace)
-                            if (qaIndex + 1 < QAs.length) setQAIndex(qaIndex + 1)
-                        })
-                    }}>
-                    {AnswerItemRightWrong(QAs[qaIndex], a)} {a}
-                </ListItem>)
-                }
+                            //	Name    string	Answer  int32	Ask     int32
+                            API("SkillMyTraceReport", { Name: FullName(), QA: QAs[qaIndex].Question + "|||" + answerIndex }).then((res) => {
+                                //update creditTM to refresh rewards
+                                setCreditTM(new Date().getTime())
+                                let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                                setSkillMyTrace(newMySkillTrace)
+                                if (qaIndex + 1 < QAs.length) setQAIndex(qaIndex + 1)
+                            })
+                        }}>
+                        {AnswerItemRightWrong(QAs[qaIndex], a)} {a}
+                    </ListItem>)
+                    }
+                </div>
             </div>
-        </div>
         }
 
     </div >

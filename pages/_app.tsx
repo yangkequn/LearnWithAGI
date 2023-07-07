@@ -25,6 +25,8 @@ interface GlobalContextType {
   SetOpenAlert: (timeOut: number) => void
   MenuL2: any,
   setMenuL2: any
+  creditTM: number,
+  setCreditTM: any
 
 }
 export const GlobalContext = React.createContext<GlobalContextType>({
@@ -35,11 +37,10 @@ export const GlobalContext = React.createContext<GlobalContextType>({
 function MyApp({ Component, pageProps }: AppProps) {
   //const [LoggedIn, setLoggedIn] = useState(Jwt.Get().IsValid())
   const [LoggedIn, setLoggedIn] = useState(false)
-
   const [RedirectUrl, setRedirectUrl] = useState("")
-
   const [openAlert, setOpenAlert] = React.useState(false);
   const [MenuL2, setMenuL2] = useState(null)
+  const [creditTM, setCreditTM] = useState(0)
 
 
   useEffect(() => {
@@ -69,7 +70,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     RedirectUrl,
     setRedirectUrl,
     openAlert, SetOpenAlert,
-    MenuL2, setMenuL2
+    MenuL2, setMenuL2,
+    creditTM, setCreditTM
   }
   return <GlobalContext.Provider value={store} >
     <Component {...pageProps} />

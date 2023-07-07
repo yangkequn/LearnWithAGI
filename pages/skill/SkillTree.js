@@ -4,7 +4,9 @@ import { Button, Step, StepContent, StepLabel, Stepper, Typography, } from "@mui
 import { Box } from "@mui/system";
 import { API, HGET } from "../../component/api";
 import Checkbox from '@mui/material/Checkbox';
-export const SkillTree = ({ topic, skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace }) => {
+import { Context } from "./Context";
+export const SkillTree = ({ topic }) => {
+    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
 
     //auto sort the skill paths 
     const SortSkillTree = (skillTree) => {
