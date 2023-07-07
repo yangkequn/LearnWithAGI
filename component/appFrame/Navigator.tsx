@@ -34,7 +34,7 @@ const MenuAsks = new MenuStruct("提问", "/Asks", <ChatIcon fontSize={'large'} 
 const MenuSkill = new MenuStruct("课程", "/skill", <SchoolIcon fontSize={'large'} />)
 const MenuRetro = new MenuStruct(`回顾`, "/Retrospect", null)
 const MenuSignIn = new MenuStruct("登录", "/Auth", null)
-export const MenuItems: Array<MenuStruct> = [MenuSkill, MenuAsks,  MenuRetro]
+export const MenuItems: Array<MenuStruct> = [MenuRetro]
 
 
 export default function Navigator() {
@@ -69,89 +69,62 @@ export default function Navigator() {
   return <div id="navigator" className="flex flex-col w-full font-sans font" >
 
     {/* background-color: #2E4052; */}
-    <div id="nagivator-l1" className="bg-slate-300 flex  flex-row w-full h-12 items-center whitespace-nowrap justify-center  min-w-max text-white text-2xl gap-4 " >
+    <div id="nagivator-l1" className="bg-slate-300 flex w-full flex-row h-12 items-center whitespace-nowrap justify-center text-white text-2xl gap-4 " >
+      <div key="retrict-width" className='flex flex-row max-w-2xl  min-w-[500px] w-full '>
 
-      {/* <div key="seach-panel" className='flex flex-row items-center w-fit min-w-max justify-center'>
-        <Link key={`menu-home-with-search`} className=" text-zinc-700 h-full text-lg w-fit px-3 self-center" size="large" href={"/"}>
-          {MenuHome.icon}
-        </Link>
+        <div key="searchbox-and-icon-buttons" className="flex flex-row h-5 w-96 active:w-full " >
+          <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center  h-5  "  >
+            <div className='flex flex-row w-full active:w-full '>
+              <textarea className={`m-0 w-full  border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-4 pr-20   outline-none self-center overflow-hidden text-gray-700 ${loading && " bg-gray-400"}`}
+                //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
+                style={{ height: 20, ":activef": "width: 200px" }}
+                value={question}
+                placeholder="Ask me anything..."
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.keyCode !== 13) return
+                  //if not empty
+                  let value = (event.target as HTMLInputElement).value
+                  if (!!value) {
+                    router.push("/?search=" + value)
+                  }
+                  // stop propagation
+                  e.preventDefault()
+                }}
+                disabled={loading}
+              />
+            </div>
+            <div className="absolute right-1 flex flex-row gap-3 text-3xl leading-8   px-1">
+              <div className=" w-fit h-fit bg-transparent   hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
+                onClick={e => router.push("/?search=" + question)}>
+                📚
+              </div>
+              {/* <div className='w-fit h-full ' >📄</div> */}
+              <div className='w-fit h-full' onClick={e => {
+                if (question.length == 0) return
+                router.push("/Asks?q=" + question)
+              }} >❓</div>
 
-        <Autocomplete id="search-skill-box" options={options} freeSolo className='self-center gap-4'
-
-          onChange={(event: React.SyntheticEvent, value: T | Array<T>, reason: string, details?: string) => {
-            if (value?.toString().startsWith("create topic:")) {
-              router.push("/?create=" + value.toString().replace("create topic:", ""))
-            } else if (value?.toString().startsWith("search topic:")) {
-              router.push("/?search=" + value.toString().replace("search topic:", ""))
-            } else if (!!value) {
-              router.push("/?search=" + value)
-            }
-          }}
-          onKeyDown={(event: React.KeyboardEvent) => {
-            if (event.key == "Enter") {
-              let value = (event.target as HTMLInputElement).value
-              if (!!value) {
-                router.push("/?search=" + value)
-              }
-            }
-          }}
-          onInputChange={(event: object, value: string, reason: string) => {
-            // if (value.length < 5) {
-            //   return setOptions([])
-            // }
-            // if (reason === 'input') {
-            //   setOptions(["create topic:" + value, "search topic:" + value])
-            // }
-          }}
-          renderInput={(params) => <input ref={params.InputProps.ref} {...params.inputProps} placeholder=' what you want to explore' type="text"
-            className=' w-60 bg-slate-0 rounded hover:w-100 ring-2 text-gray-800 text-base self-center' />
-          }
-        />
-      </div> */}
-
-      <div className="flex flex-row h-5" >
-        <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center items-center  h-5  "  >
-          <div className='active:w-full '>
-            <textarea className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2  outline-none self-center overflow-hidden text-gray-700 "
-              //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
-              style={{ height: 20, ":activef": "width: 200px" }}
-              value={question}
-              placeholder="Ask me anything..."
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.keyCode !== 13) return
-                //if not empty
-                let value = (event.target as HTMLInputElement).value
-                if (!!value) {
-                  router.push("/?search=" + value)
-                }
-                // stop propagation
-                e.preventDefault()
-              }}
-              disabled={loading}
-            />
+              {loading && <LoadingElement />}
+            </div>
           </div>
-
-          <button class="absolute p-1  h-5 rounded-md text-gray-500 bottom-1.5  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2" onClick={e => router.push("/?search=" + question)}>
-            {loading ? <LoadingElement /> : <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>}
-          </button>
         </div>
-      </div>
 
 
-      <div id="nagivator-l1-to-restrict-width " className='flex flex-row self-center max-w-2xl gap-4 '>
+        <div id="nagivator-l1-menuitems " className='flex flex-row self-center max-w-2xl gap-4 '>
 
-        {!!MenuItems && MenuItems.map((item, index) => <Link key={`menu-item-${item.name}`} href={item.path}> <button key={`menu_${item.name}`} onClick={(e) => router.push(item.path)}
-          className={` h-full text-lg text-gray-800 w-fit px-2  hover:bg-orange-200 font-sans rounded-lg ${item.isCurrentPath(pathName) ? "text-black font-bold bg-orange-200" : ""}`}
-        >
-          <div className=''>{item.name}</div>
-        </button></Link>
-        )}
+          {!!MenuItems && MenuItems.map((item, index) => <Link key={`menu-item-${item.name}`} href={item.path}> <button key={`menu_${item.name}`} onClick={(e) => router.push(item.path)}
+            className={` h-full text-lg text-gray-800 w-fit px-2  hover:bg-orange-200 font-sans rounded-lg ${item.isCurrentPath(pathName) ? "text-black font-bold bg-orange-200" : ""}`}
+          >
+            <div className=''>{item.name}</div>
+          </button></Link>
+          )}
 
-        {/* display avatar if logged in */}
-        {LoggedIn && <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={"/Auth/my-profile?to=" + pathName} >
-          <UserAvatar userID={Jwt.Pub()} />
-        </Link>}
+          {/* display avatar if logged in */}
+          {LoggedIn && <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={"/Auth/my-profile?to=" + pathName} >
+            <UserAvatar userID={Jwt.Pub()} />
+          </Link>}
+        </div>
       </div>
     </div >
 

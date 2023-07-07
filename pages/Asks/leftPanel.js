@@ -9,38 +9,20 @@ import ListIcon from '@mui/icons-material/List';
 
 export function LeftPanel() {
     const { topics, setTopics, QA, setQA, } = useContext(AskContext)
-    useEffect(() => {
-        ZRANGEBYSCORE("MyQuestionsList:@id", 0, "+inf").then((item_times) => {
-            if (!item_times || item_times.length == 0) return setTopics([])
-            //kept no more than 200 topics
-            item_times = item_times.slice(0, 200)
-            //sort by time
-            item_times.sort((a, b) => {
-                return parseInt(a) - parseInt(b)
-            })
-            HMGET("MyQuestions:@id", item_times).then((data) => {
-                setTopics(data)
-                //if no QA, set the first one
-                if (!QA || !QA.Q) {
-                    setQA(data[0])
-                }
-            })
-        })
-    }, [])
-    return <div key="left-panel" className={"flex flex-col justify-start w-64 bg-gray-800 border-amber-200 text-base h-full  text-gray-100"}>
+    return <div key="left-panel" className={"flex flex-col justify-start w-64 bg-gray-900 border-amber-200 text-base h-full  text-gray-100"}>
         <div className="flex flex-row flex-nowrap w-full h-10 justify-start items-center gap-3 px-2">
             <div className="self-center"><ListIcon></ListIcon> </div>
             <div className=" self-center  w-full leading-7 " > 问题列表</div>
         </div>
 
-        <div key="list-of-topics" className="flex flex-col h-full w-full  gap-2 " >
+        <div key="list-of-topics" className="flex flex-col h-full w-full  gap-1 " >
             {
                 topics.map((topic, index) => {
-                    return <div key={index} className={"hover:bg-amber-200 flex-rowitems-center w-full self-start px-2 rounded-10 bg-gray-600 leading-5 text-base max-h-20 overflow-x-auto" + (QA?.Q === topic.Q ? " bg-amber-200" : "")}
+                    return <div key={index} className={"hover:bg-amber-200 flex-rowitems-center w-full self-start px-2 py-1 rounded  leading-5 text-base max-h-20 overflow-x-auto " + (QA?.Q === topic.Q ? "bg-gray-500" : "bg-gray-700")}
                         onClick={() => {
                             setQA(topic)
                         }}>
-                        {topic?.Q}
+                        <div> {topic?.Q} </div>
                     </div>
                 })
             }

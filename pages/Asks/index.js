@@ -10,14 +10,21 @@ import SendIcon from '@mui/icons-material/Send';
 import { API } from "@/component/api";
 import { QuestionAandAnswer } from "./QuestionAandAnswer";
 
-function Asks() {
+function Asks({ question }) {
     return <div className="bg-zinc-200 flex flex-row gap-x-2 w-full justify-start items-start h-full overflow-x-scroll overflow-scroll" >
         <LeftPanel></LeftPanel>
-        <QuestionAandAnswer/>
+        <QuestionAandAnswer question={question} />
     </div>
 }
-export default function Home() {
+export default function Home({ question }) {
     return <AskContextComponent>        <AppFrame >
-        <Asks />
+        <Asks question={question} />
     </AppFrame >    </AskContextComponent>
+}
+export const getServerSideProps = async (context) => {
+    return {
+        props: {
+            question: context.query.q ?? null
+        }
+    }
 }
