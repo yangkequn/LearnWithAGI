@@ -1,8 +1,12 @@
-import { HMGET, ZRANGEBYSCORE } from "@/component/api";
+import { HMGET, ZRANGEBYSCORE } from "../../component/api";
 import React, { useEffect, useState } from "react";
 
-export const AskContext = React.createContext(null)
-export const AskContextComponent = ({ children }) => {
+export const AskContext = React.createContext({
+    topics: [], setTopics: e => null,
+    QA: [], setQA: e => null,
+    topicLoaded: false, setTopicLoaded: e => null,
+})
+export default function AskContextComponent({ children }) {
     const [topics, setTopics] = useState([])
     const [QA, setQA] = useState([])
     const [topicLoaded, setTopicLoaded] = useState(false)

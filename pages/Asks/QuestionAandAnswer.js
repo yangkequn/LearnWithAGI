@@ -1,12 +1,15 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState } from "react"
-import { AskContext, AskContextComponent } from "./AskContext"
+import AskContextComponent, { AskContext } from "./AskContext"
 //use tailwindcss
 import "tailwindcss/tailwind.css"
 import { API, HMGET, ZRANGEBYSCORE } from "@/component/api"
 
-export function QuestionAandAnswer({ question }) {
+export const LoadingElement = () => {
+    return <div class="MuiLoadingButton-loadingIndicator MuiLoadingButton-loadingIndicatorCenter css-1vg7moz"><span class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorInherit css-8yzpf7" role="progressbar" aria-labelledby=":r2s:" style="width: 16px; height: 16px;"><svg class="MuiCircularProgress-svg css-13o7eu2" viewBox="22 22 44 44"><circle class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-14891ef" cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6"></circle></svg></span></div>
+}
+export default function QuestionAandAnswer({ question }) {
     const { topicLoaded, topics, setTopics, QA, setQA } = useContext(AskContext)
     const [loading, setLoading] = useState(false)
     useEffect(() => {
@@ -21,10 +24,12 @@ export function QuestionAandAnswer({ question }) {
             setLoading(false)
             setQA([question, answer])
             //add to topics if not exist
+            setTopics([{ Q: question, A: answer }, ...topics])
             if (topics.filter((topic) => topic.Q === question).length > 0) return
             setTopics([{ Q: question, A: answer }, ...topics])
         })
     }, [question, topicLoaded])
+
 
     return <div key="left-panel" className={"flex flex-col justify-between min-w-250 w-full bg-zinc-200 border-amber-200 rounded-xl text-base h-full"}>
         <div key="list-of-topics" className="flex flex-col h-full w-full" >
@@ -79,4 +84,3 @@ const RegenerateResponse = () => <div class="flex ml-1 md:w-full md:m-auto md:mb
     <button class="btn relative btn-neutral border-0 md:border"><div class="flex w-full items-center justify-center gap-2"><svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>Regenerate response</div>
     </button>
 </div>
-const LoadingElement = () => <div class="MuiLoadingButton-loadingIndicator MuiLoadingButton-loadingIndicatorCenter css-1vg7moz"><span class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorInherit css-8yzpf7" role="progressbar" aria-labelledby=":r2s:" style="width: 16px; height: 16px;"><svg class="MuiCircularProgress-svg css-13o7eu2" viewBox="22 22 44 44"><circle class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-14891ef" cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6"></circle></svg></span></div>

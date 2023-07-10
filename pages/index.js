@@ -1,5 +1,5 @@
 "use client";
-import { AppFrame } from '@/component/AppFrame';
+import AppFrame from '../component/AppFrame';
 import Image from 'next/image'
 import Link from 'next/link';
 import "tailwindcss/tailwind.css"
@@ -8,7 +8,7 @@ import { use, useContext, useEffect, useState } from 'react';
 import { GlobalContext } from './_app';
 import { Step, StepLabel, Stepper } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { API, HGET, HGETALL, HKEYS } from '@/component/api';
+import { API, HGET, HGETALL, HKEYS } from '../component/api';
 import { useRouter } from 'next/navigation';
 const ListItem = ({ id }) => {
   const Router = useRouter()
@@ -36,9 +36,9 @@ export default function Home({ search }) {
   const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2, setMenuL2 } = useContext(GlobalContext)
   const Router = useRouter()
   const [SkillNames, setSkillNames] = useState([]);
-  const CreateSkill = (content: string) => {
+  const CreateSkill = (content) => {
     const loadSkill = () => {
-      API("Skill", { Name: content, Action: "add" }).then((rsb: any) => {
+      API("Skill", { Name: content, Action: "add" }).then((rsb) => {
         if (!!rsb?.Name) {
           Router.push("/skill?t=" + content)
         } else if (rsb == "loading") {
@@ -92,7 +92,7 @@ export default function Home({ search }) {
 export const getServerSideProps = async (context) => {
   return {
     props: {
-      search: context.query.search ?? null
+      search: context.query.search ?? ""
     }
   }
 }

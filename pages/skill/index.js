@@ -4,21 +4,21 @@ import { Container, Divider, IconButton, InputAdornment, List, ListItem, Paper, 
 import AddIcon from '@mui/icons-material/Add';
 import { Box } from "@mui/system";
 import SendIcon from '@mui/icons-material/Send';
-import { QAComponent } from "./QAComponent";
-import { SkillTree } from "./SkillTree";
-import { Rewards } from "./Rewards";
-import { Socratics } from "./Socratics";
-import { AppFrame } from "../../component/AppFrame"
+import QAComponent from "./QAComponent";
+import SkillTree from "./SkillTree";
+import Rewards from "./Rewards";
+import Socratics from "./Socratics";
+import AppFrame from "../../component/AppFrame"
 import { useParams, useRouter } from "next/navigation";
 import { GetStaticProps, GetServerSideProps } from "next";
 import { API, HMGET } from "../../component/api";
 import { GlobalContext } from "../_app";
-import { ContextComponent, Context } from "./Context"
+import ContextComponent, { Context } from "./Context"
 //https://github.com/JedWatson/react-select
 
 function ExploreComponent({ topic }) {
     const router = useRouter()
-    const { setMenuL2 , creditTM, setCreditTM} = useContext(GlobalContext)
+    const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)
     const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
     useEffect(() => {
         if (!topic) return router.push("/")
@@ -69,12 +69,12 @@ function ExploreComponent({ topic }) {
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
         <Socratics topic={topic}></Socratics>
         {/* right side panel */}
-        
+
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
         {/* 底部的搜索结果,immerse chatbox */}
         <div className="flex flex-col justify-start items-start w-full h-full overflow-scroll  max-w-screen-sm min-w-min" >
-            {!!(skillPoint?.Name) && <QAComponent  setCreditTM={setCreditTM} topic={topic}></QAComponent>}
+            {!!(skillPoint?.Name) && <QAComponent setCreditTM={setCreditTM} topic={topic}></QAComponent>}
         </div>
 
     </div >
@@ -89,7 +89,7 @@ export default function Home({ topic }) {
 export const getServerSideProps = async (context) => {
     return {
         props: {
-            topic: context.query.t ?? null
+            topic: context.query.t ?? ""
         }
     }
 }

@@ -1,13 +1,13 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState } from "react"
-import { AskContext, AskContextComponent } from "./AskContext"
+import AskContextComponent, { AskContext } from "./AskContext"
 //use tailwindcss
 import "tailwindcss/tailwind.css"
-import { HMGET, ZRANGEBYSCORE, ZREM, ZREMRANGEBYSCORE } from "@/component/api"
+import { HMGET, ZRANGEBYSCORE, ZREM, ZREMRANGEBYSCORE } from "../../component/api"
 import ListIcon from '@mui/icons-material/List';
 
-export function LeftPanel() {
+export default function LeftPanel() {
     const { topics, setTopics, QA, setQA, } = useContext(AskContext)
     return <div key="left-panel" className={"flex flex-col justify-start w-64 bg-gray-900 border-amber-200 text-base h-full  text-gray-100"}>
         <div className="flex flex-row flex-nowrap w-full h-10 justify-start items-center gap-3 px-2">
@@ -18,7 +18,7 @@ export function LeftPanel() {
         <div key="list-of-topics" className="flex flex-col h-full w-full  gap-1 " >
             {
                 topics.map((topic, index) => {
-                    return <div key={index} className={"hover:bg-amber-200 flex-rowitems-center w-full self-start px-2 py-1 rounded  leading-5 text-base max-h-20 overflow-x-auto " + (QA?.Q === topic.Q ? "bg-gray-500" : "bg-gray-700")}
+                    return <div key={index} className={"hover:bg-amber-200 hover:text-black flex-rowitems-center w-full self-start px-2 py-1 rounded  leading-5 text-base max-h-20 overflow-x-auto " + (QA?.Q === topic.Q ? "bg-gray-500 " : "bg-gray-700")}
                         onClick={() => {
                             setQA(topic)
                         }}>

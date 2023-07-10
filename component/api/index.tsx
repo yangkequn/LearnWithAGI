@@ -4,7 +4,7 @@ import { CustomEvents } from "../../pages/_app"
 import { Jwt } from "../jwt";
 var msgpack = require('@ygoe/msgpack');
 const JwtRequest = (headers: any = {}) => {
-    let jwt = localStorage.getItem("Authorization");
+    let jwt = typeof window !== 'undefined' &&localStorage.getItem("Authorization");
     if (!!jwt) headers["Authorization"] = jwt;
     let req = axios.create({ headers });
     req.interceptors.request.use(

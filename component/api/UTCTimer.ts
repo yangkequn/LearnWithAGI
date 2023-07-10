@@ -15,7 +15,7 @@ export class UTCTimer {
             //use median as UTCTimeSync.offset
             UTCTimer.offset = UTCTimer.offsetRecords.sort((a, b) => a - b)[Math.floor(UTCTimer.offsetRecords.length / 2)];
             // save to local storage
-            localStorage.setItem(UTCTimer.localStorageKey, UTCTimer.offset.toString());
+            typeof window !== 'undefined' &&localStorage.setItem(UTCTimer.localStorageKey, UTCTimer.offset.toString());
         }
         Time().then(SycTimeCallBack)
         if (TryTimes > 0) setTimeout(() => UTCTimer.SyncWithServer(TryTimes - 1), 100);

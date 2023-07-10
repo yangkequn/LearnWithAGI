@@ -10,7 +10,7 @@ import { Context } from "./Context"
 import { GlobalContext } from "../_app";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export const QAComponent = ({ topic }) => {
+export default function QAComponent({ topic }) {
     const { setCreditTM } = useContext(GlobalContext)
     const [QANum, setQANum] = useState(5)
     const [loading, setLoading] = useState(false)
@@ -162,7 +162,7 @@ export const QAComponent = ({ topic }) => {
                                     <div className="flex flex-row w-min gap-1 items-center">
                                         {qaIndex == index && <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon>}
                                         {qaIndex == index && <Tooltip title="删除该条目" ><DeleteIcon onClick={() => {
-                                            API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Question}`  })
+                                            API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Question}` })
                                                 .then((res) => setQAs(res ?? []))
                                         }}></DeleteIcon></Tooltip>}
 
@@ -205,7 +205,8 @@ export const QAComponent = ({ topic }) => {
         {
             !!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start items-start w-full" >
                 <div variant="h4" className=" font-semibold text-lg text-gray-800  font-sans leading-8 my-2 " >
-                    以下哪个回答是正确的:
+                    回答正确的是:
+                    {/* <Tooltip title="注意，为提高效果，每8小时才能再次修改答案" placement="left" className="h-full "> <div>? </div></Tooltip> */}
                 </div>
                 <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3" >
                     {AnswersShuffled(QAs[qaIndex]).map((a, i) => <ListItem key={`answer-item${a}-${i}`}

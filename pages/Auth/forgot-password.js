@@ -34,23 +34,24 @@ const ToOneLanguage = (language_ind) => {
     return ret
 }
 
-export const ForgotPassword = ({ SetAuthPage }) => {
+export default function ForgotPassword() {
 
     const info = ToOneLanguage(1)
     const {
-        countryCode: [countryCode, setCountryCode, countryCodeError,],
-        phone: [phone, setPhone, phoneError,],
-        account: [account, setAccount, accountError,],
-        password: [password, setPassword, passwordError,],
-        foreignPhone: [foreignPhone, setForeignPhone],
-        SMSCode: [SMSCode, setSMSCode, SMSCodeError, SMSButtonText, SMSButtonDisabled,],
+        AuthBoxPage, SetAuthPage,
+        CountryCode, setCountryCode, countryCodeError,
+        phone, setPhone, phoneError,
+        account, setAccount, accountError,
+        password, setPassword, passwordError,
+        foreignPhone, setForeignPhone,
+        SMSCode, setSMSCode, SMSCodeError, SMSButtonText, SMSButtonDisabled,
         checkAccount, CheckPassword, checkCountryCode, checkPhone, checkSMSCode, SendSMSCode
     } = useContext(AuthContext);
 
     useEffect(() => { !!account && checkAccount() }, [account])
     useEffect(() => { !!password && CheckPassword() }, [password])
 
-    useEffect(() => { !!countryCode && checkCountryCode() }, [countryCode])
+    useEffect(() => { !!CountryCode && checkCountryCode() }, [CountryCode])
     useEffect(() => { !!phone && checkPhone() }, [phone])
     useEffect(() => { !!SMSCode && checkSMSCode() }, [SMSCode])
 
@@ -59,7 +60,7 @@ export const ForgotPassword = ({ SetAuthPage }) => {
         if (!ok) ok = !foreignPhone && checkAccount() && CheckPassword()
         if (!ok) return
         checkSMSCode()
-        API("userResetPassword", { countryCode, phone, SMSCode, password }).then((ret) => {
+        API("userResetPassword", { CountryCode, phone, SMSCode, password }).then((ret) => {
             //
         })
 
@@ -79,10 +80,7 @@ export const ForgotPassword = ({ SetAuthPage }) => {
                     error={!!accountError} onChange={e => setAccount(e.target.value)} />
                 :
                 <div className="flex flex-row self-start w-full  mx-4 w-90" >
-                    <CountrySelect width={"250px"} disableCloseOnSelect countryCodeError={countryCodeError}
-                        defaultValue={'CN'}
-                        setCountryCode={setCountryCode}
-                        key={`forgotPassword_CountrySelect_${foreignPhone}`}> </CountrySelect>
+                    <CountrySelect key={`forgotPassword_CountrySelect_${foreignPhone}`} width={"250px"} disableCloseOnSelect defaultValue={'CN'}> </CountrySelect>
 
                     {/*填写手机号码*/}
                     <TextField key="forgotPassword-phone" label={info["PhoneNumberTitle"]} size="small"

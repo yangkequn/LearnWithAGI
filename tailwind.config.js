@@ -18,7 +18,7 @@ module.exports = {
     'bg-red-500',
     'text-3xl',
     'lg:text-4xl'
-    , { pattern: /^ring-|^bg-|^hover:|^min-/ }
+    , { pattern: /^ring-|^bg-|^hover:|^min-|^h-/ }
     , "hover:bg-orange-200"
     , "bg-[#E7EBF0]"
     , "dark:bg-slate-900"

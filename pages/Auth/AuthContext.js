@@ -1,8 +1,23 @@
 import React, { useState } from "react";
 import { API, HEXISTS } from "../../component/api";
+import { AuthPages } from "./index";
 
-export const AuthContext = React.createContext(null)
-export const AuthContextComponent = ({ children }) => {
+export const AuthContext = React.createContext({
+    AuthBoxPage: AuthPages.Login, SetAuthPage: e => null,
+    nickname: "", setNickname: e => null, nicknameError: "",
+    CountryCode: "86", setCountryCode: e => null, countryCodeError: "",
+    Phone: "", setPhone: e => null, phoneError: "", setPhoneError: e => null,
+    account: null, setAccount: e => null, accountError: null, setAccountError: e => null,
+    password: null, setPassword: e => null, passwordError: null, setPasswordError: e => null,
+    foreignPhone: null, setForeignPhone: e => null,
+    SMSCode: null, setSMSCode: e => null, SMSCodeError: null, setSMSCodeError: e => null, SMSButtonText: null, SMSButtonDisabled: null,
+    SendSMSCode: null, checkSMSCode: null, CheckPassword: null, checkAccount: null, checkPhone: null, checkCountryCode: null,
+    CheckNickName: null
+
+})
+export default function AuthContextComponent({ children }) {
+
+    const [AuthBoxPage, SetAuthPage] = useState(AuthPages.Login)
     const [nickname, setNickname] = useState("")
     const [nicknameError, setNicknameError] = useState("")
     const CheckNickName = () => {
@@ -104,16 +119,16 @@ export const AuthContextComponent = ({ children }) => {
     const [foreignPhone, setForeignPhone] = useState(false)
 
     const store = {
-        nickname: [nickname, setNickname, nicknameError],
-        countryCode: [CountryCode, setCountryCode, countryCodeError],
-        phone: [Phone, setPhone, phoneError, setPhoneError],
-        account: [account, setAccount, accountError, setAccountError],
-        password: [password, setPassword, passwordError,],
-        foreignPhone: [foreignPhone, setForeignPhone],
-        SMSCode: [SMSCode, setSMSCode, SMSCodeError, setSMSCodeError, SMSButtonText, SMSButtonDisabled],
+        AuthBoxPage, SetAuthPage,
+        nickname, setNickname, nicknameError,
+        CountryCode, setCountryCode, countryCodeError,
+        Phone, setPhone, phoneError, setPhoneError,
+        account, setAccount, accountError, setAccountError,
+        password, setPassword, passwordError, setPasswordError,
+        foreignPhone, setForeignPhone,
+        SMSCode, setSMSCode, SMSCodeError, setSMSCodeError, SMSButtonText, SMSButtonDisabled,
         SendSMSCode, checkSMSCode, CheckPassword, checkAccount, checkPhone, checkCountryCode,
         CheckNickName
     }
-
     return <AuthContext.Provider value={store}>{children}</AuthContext.Provider>
 }

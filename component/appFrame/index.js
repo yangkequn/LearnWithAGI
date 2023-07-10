@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react';
-import Navigator from '../appFrame/Navigator';
 import "tailwindcss/tailwind.css"
+import Navigator from './navigator';
 
-export function AppFrame({ children }) {
+export default function AppFrame({ children }) {
 
   return <div id="appFrame" className="flex flex-col text-center h-full w-full" style={{ height: "100vh" }}>
     <Navigator />

@@ -5,7 +5,6 @@ import { TextareaAutosize } from "@mui/base";
 import { GetUrl, RspType, API, Cmd, HGET } from "../../component/api";
 import { Jwt } from "../../component/jwt";
 import { GlobalContext } from "../_app";
-import { AppFrame } from "@/component/AppFrame";
 import "tailwindcss/tailwind.css"
 import { usePathname, useRouter } from "next/navigation";
 
@@ -55,7 +54,7 @@ const MyProfileMenuTitle = (language_ind) => {
   }
   return info_languages
 }
-const MyProfile = () => {
+export default function MyProfile() {
   const router = useRouter();
   const path = usePathname();
   const { LoggedIn } = useContext(GlobalContext)
@@ -158,4 +157,3 @@ const MyProfile = () => {
   </div>
   </AppFrame >
 }
-export default MyProfile

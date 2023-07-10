@@ -1,6 +1,5 @@
 
 import React, { ReactComponentElement, useEffect, useState } from 'react';
-import { AuthPages } from "../component/Auth";
 import { Jwt } from "../component/jwt"
 import type { AppProps /*, AppContext */ } from 'next/app'
 import App from 'next/app'
@@ -24,13 +23,12 @@ interface GlobalContextType {
   openAlert: boolean,
   SetOpenAlert: (timeOut: number) => void
   MenuL2: any,
-  setMenuL2: any
+  setMenuL2: React.Dispatch<React.SetStateAction<any>>,
   creditTM: number,
-  setCreditTM: any
-
+  setCreditTM: React.Dispatch<React.SetStateAction<number>>,
 }
 export const GlobalContext = React.createContext<GlobalContextType>({
-  LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: "", SetOpenAlert: e => null
+  LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: false, SetOpenAlert: e => null, MenuL2: null, setMenuL2: e => null, creditTM: 0, setCreditTM: e => null
 });
 
 

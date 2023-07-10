@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { use, useContext, useEffect, useState } from "react";
-import { Login } from "./login";
-import { SignUp } from "./SignUp";
-import { MyProfile } from "./my-profile";
-import { ForgotPassword } from "./forgot-password";
-import { AuthContextComponent } from "./AuthContext";
+import Login from "./login";
+import SignUp from "./SignUp";
+import MyProfile from "./my-profile";
+import ForgotPassword from "./forgot-password";
+import AuthContextComponent, { AuthContext } from "./AuthContext";
 import "tailwindcss/tailwind.css"
-import { AppFrame } from "@/component/AppFrame";
-import { GlobalContext } from "@/pages/_app";
+import AppFrame from "../../component/AppFrame";
+import { GlobalContext } from "../../pages/_app";
 import { usePathname, useRouter } from "next/navigation";
 
 export const AuthContainerCSS = "flex flex-col w-full max-w-3xl h-90 bg-cyan-900 items-center"
@@ -19,8 +19,9 @@ export const AuthSubmitCss = "flex flex-row w-full mt-4 leading-6 h-9 bg-sky-500
 
 export const AuthPages = { None: "None", SignUp: "SignUp", MyProfile: "MyProfile", ForgotPassword: "ForgotPassword", Login: "Login" }
 
-const AuthPopper = () => {
+const AuthFrame = () => {
     const { LoggedIn } = useContext(GlobalContext)
+    const { AuthBoxPage, SetAuthPage, } = useContext(AuthContext)
     const router = useRouter()
     useEffect(() => {
         console.info("LoggedIn", LoggedIn, AuthBoxPage)
@@ -32,18 +33,18 @@ const AuthPopper = () => {
             router.push(to)
         }
     }, [LoggedIn])
-    const [AuthBoxPage, SetAuthPage] = useState<string>(AuthPages.Login)
-    const { SetOpenAlert, openAlert } = useState<string>("")
+    const [SetOpenAlert, openAlert] = useState<string>("")
+    return <div className="flex flex-row items-start self-center justify-start w-full h-full">
+        {AuthBoxPage === AuthPages.SignUp && <SignUp />}
+        {AuthBoxPage === AuthPages.MyProfile && <MyProfile />}
+        {AuthBoxPage === AuthPages.ForgotPassword && <ForgotPassword />}
+        {AuthBoxPage === AuthPages.Login && <Login SetOpenAlert={SetOpenAlert} openAlert={openAlert} />}
+    </div>
+}
+export default function AuthPopper() {
     return <AuthContextComponent>
         <AppFrame>
-            <div className="flex flex-row items-start self-center justify-start w-full h-full">
-                {AuthBoxPage === AuthPages.SignUp && <SignUp SetAuthPage={SetAuthPage} />}
-                {AuthBoxPage === AuthPages.MyProfile && <MyProfile LoggedIn={true} />}
-                {AuthBoxPage === AuthPages.ForgotPassword && <ForgotPassword SetAuthPage={SetAuthPage} />}
-                {AuthBoxPage === AuthPages.Login && <Login SetAuthPage={SetAuthPage} SetOpenAlert={SetOpenAlert} openAlert={openAlert} />}
-            </div>
+            <AuthFrame />
         </AppFrame>
     </AuthContextComponent>
 }
-export default AuthPopper
-

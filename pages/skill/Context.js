@@ -2,8 +2,10 @@
 
 import React, { useState } from "react";
 
-export const Context = React.createContext(null)
-export const ContextComponent = ({ children }) => {
+export const Context = React.createContext({
+    skillTree: [], setSkillTree: () => { }, skillTreeSelected: -1, setSkillTreeSelected: () => { }, skillMyTrace: {}, setSkillMyTrace: () => { }, skillPoint: null, setSkillPoint: () => { },
+})
+export default function ContextComponent({ children }) {
     //[{Name,Rank,Path,QAs,Ask,Answer,Correct,Wrong,EmotionValence,EmotionArousal,EmotionDominance},...]
     const [skillTree, setSkillTree] = useState([]);
     const [skillTreeSelected, setSkillTreeSelected] = useState(-1);

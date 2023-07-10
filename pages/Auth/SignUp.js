@@ -8,7 +8,7 @@ import { Jwt } from "../../component/jwt";
 import { API } from "../../component/api";
 import "tailwindcss/tailwind.css"
 
-export const SignUp = ({ SetAuthPage }) => {
+export default function SignUp() {
     const [aggreeToTerm, setAgreeToTerm] = useState(false)
     const [alert, setAlert] = useState("")
 
@@ -39,20 +39,21 @@ export const SignUp = ({ SetAuthPage }) => {
 
     const info = ToOneLanguage(1)
     const {
+        AuthBoxPage, SetAuthPage,
         // nickname: [nickname, setNickname, nicknameError ],
-        account: [account, setAccount, accountError, setAccountError],
-        countryCode: [countryCode, setCountryCode, countryCodeError],
-        phone: [phone, setPhone, phoneError, setPhoneError],
-        password: [password, setPassword, passwordError,],
-        SMSCode: [SMSCode, setSMSCode, SMSCodeError, setSMSCodeError, SMSButtonText, SMSButtonDisabled,],
+        account, setAccount, accountError, setAccountError,
+        CountryCode, setCountryCode, countryCodeError,
+        Phone, setPhone, phoneError, setPhoneError,
+        password, setPassword, passwordError, setPasswordError,
+        SMSCode, setSMSCode, SMSCodeError, setSMSCodeError, SMSButtonText, SMSButtonDisabled,
         checkSMSCode, checkAccount, CheckPassword, checkCountryCode, checkPhone, SendSMSCode
     } = useContext(AuthContext)
 
 
     useEffect(() => { !!account && checkAccount(true) }, [account])
     useEffect(() => { !!password && CheckPassword() }, [password])
-    useEffect(() => { !!countryCode && checkCountryCode() }, [countryCode])
-    useEffect(() => { !!phone && checkPhone() }, [phone])
+    useEffect(() => { !!CountryCode && checkCountryCode() }, [CountryCode])
+    useEffect(() => { !!Phone && checkPhone() }, [Phone])
     useEffect(() => { !!SMSCode && checkSMSCode() }, [SMSCode])
 
     const signUp = e => {
@@ -69,7 +70,7 @@ export const SignUp = ({ SetAuthPage }) => {
                 SetAuthPage(AuthPages.None)
             }
         }
-        var data = { Account: account.toLowerCase(), Password: password, CountryCode: countryCode, Phone: phone, SMSCode: parseInt(SMSCode) }
+        var data = { Account: account.toLowerCase(), Password: password, CountryCode: countryCode, Phone, SMSCode: parseInt(SMSCode) }
         API("userSignUp", data).then(signUpCallBack)
     }
     return <div key={"signUpBox"} className={AuthContainerCSS} >
@@ -89,9 +90,7 @@ export const SignUp = ({ SetAuthPage }) => {
 
 
             <div className={"flex flex-row gap-8 mx-4 w-90 mt-4"}>                 {/*选择国家*/}
-                <CountrySelect width={200} disableCloseOnSelect countryCodeError={countryCodeError}
-                    defaultValue={'CN'}
-                    setCountryCode={setCountryCode} key={"signUp-CountrySelect"}> </CountrySelect>
+                <CountrySelect key={"signUp-CountrySelect"} width={200} disableCloseOnSelect defaultValue={'CN'} > </CountrySelect>
                 {/*填写手机号码*/}
                 <TextField id="signUp-phone" label={phoneError || info["PhoneNumberTitle"]} size="small"
                     variant="standard"

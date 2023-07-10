@@ -9,9 +9,9 @@ import BuildIcon from '@mui/icons-material/Build';
 import { Context } from "./Context"
 import { GlobalContext } from "../_app";
 
-export const Socratics = ({ topic }) => {
-    const {  setCreditTM} = useContext(GlobalContext)
-    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
+export default function Socratics({ topic }) {
+    const { setCreditTM } = useContext(GlobalContext)
+    const { skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
     //CurrentQAs QA that use has selected. format [question,answer,question,answer,...]

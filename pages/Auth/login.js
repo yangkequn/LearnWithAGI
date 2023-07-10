@@ -9,11 +9,8 @@ import { API } from "../../component/api";
 import { Jwt } from "../../component/jwt";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import "tailwindcss/tailwind.css"
-import { request } from "http";
-import { useRouter, usePathname } from "next/navigation";
-import { CustomEvents } from "@/pages/_app";
 
-export const Login = ({ SetAuthPage, SetOpenAlert, openAlert }) => {
+export default function Login({ SetOpenAlert, openAlert }) {
     const ToOneLanguage = (l) => {
         const MenuText = {
             Title: ["Login", "账号登录"][l],
@@ -38,11 +35,12 @@ export const Login = ({ SetAuthPage, SetOpenAlert, openAlert }) => {
     const info = ToOneLanguage(1)
 
     const {
-        countryCode: [countryCode, setCountryCode, countryCodeError],
-        phone: [phone, setPhone, phoneError],
-        account: [account, setAccount, accountError, setAccountError],
-        password: [password, setPassword, passwordError],
-        foreignPhone: [foreignPhone, setForeignPhone],
+        AuthBoxPage, SetAuthPage,
+        countryCode, setCountryCode, countryCodeError,
+        phone, setPhone, phoneError,
+        account, setAccount, accountError, setAccountError,
+        password, setPassword, passwordError,
+        foreignPhone, setForeignPhone,
         checkCountryCode, checkPhone, checkAccount, CheckPassword
     } = useContext(AuthContext)
 
@@ -81,9 +79,7 @@ export const Login = ({ SetAuthPage, SetOpenAlert, openAlert }) => {
                 <div className="w-full flex flex-col">
                     <div className="flex flex-row self-start w-full " style={{ display: foreignPhone ? "flex" : "none" }}>
                         {/*选择国家*/}
-                        <CountrySelect width={"150px"} disableCloseOnSelect countryCodeError={countryCodeError}
-                            defaultValue={"CN"}
-                            setCountryCode={setCountryCode}> </CountrySelect>
+                        <CountrySelect width={"150px"} disableCloseOnSelect defaultValue={"CN"} > </CountrySelect>
                         {/*填写手机号码*/}
                         <TextField id="signUp-phone" label={phoneError || info["PhoneNumberTitle"]} size="small"
                             variant="standard"

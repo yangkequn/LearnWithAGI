@@ -6,9 +6,9 @@ import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
 import { KeyYMD, KeyYW } from "../../component/api/APIKey";
 import { isDebuggerStatement } from "typescript";
-export const Rewards = ({ creditTM }) => {
+export default function Rewards({ creditTM }) {
     //使用localStorage缓存credit
-    const [credit, setCredit] = useState(JSON.parse(localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
+    const [credit, setCredit] = useState(JSON.parse(typeof window !== 'undefined' && localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
     //上一次的credit. 创建此变量主要为使用方便
     const lastCredit = useMemo(() => credit?.SkillAnswer + credit?.SkillAsk + credit?.HealthAgendaDo, [credit]);
 
@@ -38,7 +38,7 @@ export const Rewards = ({ creditTM }) => {
                 setShowReward(true)
                 setTimeout(() => setShowReward(false), 1000)
             }
-            if (res.Operates.length >= 10 && credit > lastCredit) {
+            if (res.Operates.length >= 10 && creditGain > 0) {
                 var timeSpans = []
                 for (var i = 0; i < res.Operates.length - 1; i++) {
                     timeSpans.push(res.Operates[i + 1] - res.Operates[i])
@@ -53,7 +53,7 @@ export const Rewards = ({ creditTM }) => {
                     audio.play()
                 }
             }
-            localStorage.setItem("Credit", JSON.stringify(res))
+            typeof window !== 'undefined' &&localStorage.setItem("Credit", JSON.stringify(res))
             setCredit(res)
         })
     }, [creditTM])
