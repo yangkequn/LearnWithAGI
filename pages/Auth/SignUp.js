@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState, } from "react";
-import { Alert, Box, Button, Checkbox, Stack, TextField } from "@mui/material";
-import CountrySelect from "./countrySelect";
+import { Alert, Autocomplete, Box, Button, Checkbox, Stack, TextField } from "@mui/material";
+import CountrySelect, { Countries, CountryCodes, CountryToFlag } from "./countrySelect";
 import { AuthContext } from "./AuthContext";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from "./index";
+import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from ".";
 import { Jwt } from "../../component/jwt";
 import { API } from "../../component/api";
 import "tailwindcss/tailwind.css"
+import { useRouter } from "next/navigation";
 
-export default function SignUp() {
+export default function SignUp({ To }) {
     const [aggreeToTerm, setAgreeToTerm] = useState(false)
     const [alert, setAlert] = useState("")
+    const router = useRouter()
 
     const ToOneLanguage = language_ind => {
         const info_languages = {
@@ -39,11 +41,10 @@ export default function SignUp() {
 
     const info = ToOneLanguage(1)
     const {
-        AuthBoxPage, SetAuthPage,
         // nickname: [nickname, setNickname, nicknameError ],
         account, setAccount, accountError, setAccountError,
-        CountryCode, setCountryCode, countryCodeError,
-        Phone, setPhone, phoneError, setPhoneError,
+        countryCode, setCountryCode, countryCodeError,
+        phone, setPhone, phoneError, setPhoneError,
         password, setPassword, passwordError, setPasswordError,
         SMSCode, setSMSCode, SMSCodeError, setSMSCodeError, SMSButtonText, SMSButtonDisabled,
         checkSMSCode, checkAccount, CheckPassword, checkCountryCode, checkPhone, SendSMSCode
@@ -52,8 +53,8 @@ export default function SignUp() {
 
     useEffect(() => { !!account && checkAccount(true) }, [account])
     useEffect(() => { !!password && CheckPassword() }, [password])
-    useEffect(() => { !!CountryCode && checkCountryCode() }, [CountryCode])
-    useEffect(() => { !!Phone && checkPhone() }, [Phone])
+    useEffect(() => { !!countryCode && checkCountryCode() }, [countryCode])
+    useEffect(() => { !!phone && checkPhone() }, [phone])
     useEffect(() => { !!SMSCode && checkSMSCode() }, [SMSCode])
 
     const signUp = e => {
@@ -67,10 +68,10 @@ export default function SignUp() {
             else if (error === "SMSCode") setSMSCodeError("短信验证码错误")
             else if (!error) {
                 Jwt.Save(ret.data)
-                SetAuthPage(AuthPages.None)
+                router.push(To)
             }
         }
-        var data = { Account: account.toLowerCase(), Password: password, CountryCode: countryCode, Phone, SMSCode: parseInt(SMSCode) }
+        var data = { Account: account.toLowerCase(), Password: password, CountryCode: countryCode, phone, SMSCode: parseInt(SMSCode) }
         API("userSignUp", data).then(signUpCallBack)
     }
     return <div key={"signUpBox"} className={AuthContainerCSS} >
@@ -90,7 +91,24 @@ export default function SignUp() {
 
 
             <div className={"flex flex-row gap-8 mx-4 w-90 mt-4"}>                 {/*选择国家*/}
-                <CountrySelect key={"signUp-CountrySelect"} width={200} disableCloseOnSelect defaultValue={'CN'} > </CountrySelect>
+                {/* <CountrySelect key={"signUp-CountrySelect"} width={200} setCountryCode={setCountryCode} disableCloseOnSelect defaultValue={'CN'} countryCodeError={countryCodeError} > </CountrySelect> */}
+                <Autocomplete key={"signUp-CountrySelect"} style={{ width: 200, border: "0px", }} options={CountryCodes} defaultValue={"CN"} autoComplete={true} autoHighlight={true}
+                    getOptionLabel={option => {
+                        let country = Countries[option]
+                        return `${CountryToFlag(country.code)} ${country.phone} ${country.label}`
+                    }}
+                    onChange={(event, newValue) => {
+                        if (newValue) {
+                            let country = Countries[newValue]
+                            setCountryCode(country.phone)
+                        }
+                    }}
+                    renderInput={params => <TextField {...params} label={countryCodeError || "选择所在国家"} variant="standard"
+                        size="small"
+                        inputProps={{ ...params.inputProps, autoComplete: 'new-password', }}
+                        error={!!countryCodeError} />
+                    }
+                />
                 {/*填写手机号码*/}
                 <TextField id="signUp-phone" label={phoneError || info["PhoneNumberTitle"]} size="small"
                     variant="standard"
@@ -133,7 +151,8 @@ export default function SignUp() {
 
                 <div className="flex flex-row items-center mx-4  w-fit">
                     <div className="text-sm">{info.HaveAccountAlready}</div>
-                    <button className="flex leading-6 text-sm w-28 h-9 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e => SetAuthPage(AuthPages.Login)}>{info.Login}</button>
+                    <button className="flex leading-6 text-sm w-28 h-9 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e =>
+                        router.push(`/Auth?page=${AuthPages.Login}&to=${To}`)}>{info.Login}</button>
                 </div>
             </div>
         </div>

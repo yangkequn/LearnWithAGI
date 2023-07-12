@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect } from "react";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss, AuthCss, AuthInputContainerCss, AuthPages, AuthSubmitCss } from "./index";
+import { AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss, AuthCss, AuthInputContainerCss, AuthPages, AuthSubmitCss } from ".";
 import { AuthContext } from "./AuthContext";
 import CountrySelect from "./countrySelect";
 import { GlobalContext } from "../_app"
 import { Box, Button, TextField } from "@mui/material";
 import { API } from "../../component/api";
 import "tailwindcss/tailwind.css"
+import { useRouter } from "next/navigation";
 
 const ToOneLanguage = (language_ind) => {
     const infoMultiLanguages = {
@@ -14,9 +15,9 @@ const ToOneLanguage = (language_ind) => {
         Annotation: ["Check code will sent to e-mailbox or phone", "验证码将会发送至邮箱或手机"],
         CountryCodeTitle: ["US +", "美国 +"],
         AccountTitle: ["Type Account Here", "输入手机号/邮箱"],
-        ForeignPhoneMode: ["Foreign Phone Reset Password", "海外手机号找回"],
+        ForeignPhoneMode: ["Foreign phone Reset Password", "海外手机号找回"],
         ForgotPassword: ["Forgot password", "忘记密码?"],
-        MailAccountLogin: ["Login with Phone or email", "邮箱帐号登录"],
+        MailAccountLogin: ["Login with phone or email", "邮箱帐号登录"],
         CountryCode: [1, 86],
         PhoneNumberTitle: ["phone Number", "请输入手机号"],
         AccountPasswordError: ["Error account or password ", "账号或密码错误"],
@@ -34,12 +35,11 @@ const ToOneLanguage = (language_ind) => {
     return ret
 }
 
-export default function ForgotPassword() {
-
+export default function ForgotPassword({ To }) {
+    const router = useRouter()
     const info = ToOneLanguage(1)
     const {
-        AuthBoxPage, SetAuthPage,
-        CountryCode, setCountryCode, countryCodeError,
+        countryCode, setCountryCode, countryCodeError,
         phone, setPhone, phoneError,
         account, setAccount, accountError,
         password, setPassword, passwordError,
@@ -51,7 +51,7 @@ export default function ForgotPassword() {
     useEffect(() => { !!account && checkAccount() }, [account])
     useEffect(() => { !!password && CheckPassword() }, [password])
 
-    useEffect(() => { !!CountryCode && checkCountryCode() }, [CountryCode])
+    useEffect(() => { !!countryCode && checkCountryCode() }, [countryCode])
     useEffect(() => { !!phone && checkPhone() }, [phone])
     useEffect(() => { !!SMSCode && checkSMSCode() }, [SMSCode])
 
@@ -60,7 +60,7 @@ export default function ForgotPassword() {
         if (!ok) ok = !foreignPhone && checkAccount() && CheckPassword()
         if (!ok) return
         checkSMSCode()
-        API("userResetPassword", { CountryCode, phone, SMSCode, password }).then((ret) => {
+        API("userResetPassword", { countryCode, phone, SMSCode, password }).then((ret) => {
             //
         })
 
@@ -80,7 +80,7 @@ export default function ForgotPassword() {
                     error={!!accountError} onChange={e => setAccount(e.target.value)} />
                 :
                 <div className="flex flex-row self-start w-full  mx-4 w-90" >
-                    <CountrySelect key={`forgotPassword_CountrySelect_${foreignPhone}`} width={"250px"} disableCloseOnSelect defaultValue={'CN'}> </CountrySelect>
+                    <CountrySelect key={`forgotPassword_CountrySelect_${foreignPhone}`} width={"250px"} disableCloseOnSelect defaultValue={'CN'} setCountryCode={setCountryCode} countryCodeError={countryCodeError}> </CountrySelect>
 
                     {/*填写手机号码*/}
                     <TextField key="forgotPassword-phone" label={info["PhoneNumberTitle"]} size="small"
@@ -126,7 +126,7 @@ export default function ForgotPassword() {
 
                 <div className="flex flex-row self-center items-center" >
                     <div className="flex flex-row self-center items-center">{info.WithoutAnAccount}</div>
-                    <button className="flex flex-row w-40 leading-6 h-9 bg-sky-500 justify-center text-white rounded mx-4 items-center" onClick={e => SetAuthPage(AuthPages.SignUp)}>{info.Signup}</button>
+                    <button className="flex flex-row w-40 leading-6 h-9 bg-sky-500 justify-center text-white rounded mx-4 items-center" onClick={e => router.push(`/Auth?page=${AuthPages.SignUp}&to=${To}`)}>{info.Signup}</button>
                 </div>
             </div>
         </div>

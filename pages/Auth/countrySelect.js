@@ -6,7 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import { AuthContext } from './AuthContext';
 // ISO 3166-1 alpha-2
 // ⚠️ No support for IE 11
-function countryToFlag(isoCode) {
+export function CountryToFlag(isoCode) {
     if (isoCode === undefined) {
         debugger
     }
@@ -17,45 +17,40 @@ function countryToFlag(isoCode) {
         : isoCode;
 }
 
-const theme = createTheme();
 //<ThemeProvider theme={theme}></ThemeProvider>
-export default function CountrySelect({ width, defaultValue }) {
-    // @ts-ignore
-    // const classes = useStyles();    const {
-    const { countryCode, setCountryCode, countryCodeError,
-        phone, setPhone, phoneError,
-        account, setAccount, accountError, setAccountError,
-        password, setPassword, passwordError,
-        foreignPhone, setForeignPhone,
-        checkCountryCode, checkPhone, checkAccount, CheckPassword
-    } = useContext(AuthContext)
+export default function CountrySelect({ width, defaultValue, setCountryCode, countryCodeError }) {
+    const theme = createTheme();
 
-    return (
-        <ThemeProvider theme={theme}><Autocomplete
-            id="country-select-demo"
-            style={{ width: width, border: "0px", }}
-            options={codes}
-            defaultValue={defaultValue}
-            autoComplete={true}
-            autoHighlight={true}
-            getOptionLabel={option => {
-                let country = countries[option]
+    return <ThemeProvider theme={theme}><Autocomplete
+        id="country-select-demo"
+        style={{ width: width, border: "0px", }}
+        options={CountryCodes}
+        defaultValue={defaultValue}
+        autoComplete={true}
+        autoHighlight={true}
+        getOptionLabel={option => {
+            let country = Countries[option]
+            return `${CountryToFlag(country.code)} ${country.phone} ${country.label}`
+        }}
+
+        onChange={(event, newValue) => {
+            if (newValue) {
+                let country = Countries[newValue]
                 setCountryCode(country.phone)
-                return `${countryToFlag(country.code)} ${country.phone} ${countries[option].label}`
             }
-            }
-            renderInput={params => <TextField {...params} label={countryCodeError || "选择所在国家"} variant="standard"
-                size="small"
-                inputProps={{ ...params.inputProps, autoComplete: 'new-password', }}
-                error={!!countryCodeError} />
-            }
-        />
-        </ThemeProvider>
-    );
+        }}
+        renderInput={params => <TextField {...params} label={countryCodeError || "选择所在国家"} variant="standard"
+            size="small"
+            inputProps={{ ...params.inputProps, autoComplete: 'new-password', }}
+            error={!!countryCodeError} />
+        }
+    />
+    </ThemeProvider>
+        ;
 }
 
 // From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js
-const countries = {
+export const Countries = {
     'AD': { code: 'AD', label: 'Andorra', phone: '376' },
     'AE': { code: 'AE', label: 'United Arab Emirates', phone: '971' },
     'AF': { code: 'AF', label: 'Afghanistan', phone: '93' },
@@ -305,4 +300,4 @@ const countries = {
     'ZM': { code: 'ZM', label: 'Zambia', phone: '260' },
     'ZW': { code: 'ZW', label: 'Zimbabwe', phone: '263' },
 };
-const codes = Object.keys(countries)
+export const CountryCodes = Object.keys(Countries)

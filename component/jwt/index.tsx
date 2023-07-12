@@ -5,7 +5,7 @@ export const SaveStorage = (url: string, data: any) => typeof window !== 'undefi
 export const DelStorage = (key: string) => typeof window !== 'undefined' && localStorage.removeItem(key);
 export const GetStorage = (key: string, setState: Function | null = null): object | null => {
     let data = typeof window !== 'undefined' && localStorage.getItem(key);
-    if (!!data) return null;
+    if (!data) return null;
     let ret: object | null = null;
     try {
         ret = JSON.parse(data as string);

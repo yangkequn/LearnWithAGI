@@ -7,6 +7,7 @@ import { Jwt } from "../../component/jwt";
 import { GlobalContext } from "../_app";
 import "tailwindcss/tailwind.css"
 import { usePathname, useRouter } from "next/navigation";
+import AppFrame from "@/component/appFrame";
 
 export const unixTime = () => Math.floor(new Date().getTime() / 1000)
 

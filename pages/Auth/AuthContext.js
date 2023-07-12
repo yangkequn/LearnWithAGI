@@ -1,23 +1,20 @@
 import React, { useState } from "react";
 import { API, HEXISTS } from "../../component/api";
-import { AuthPages } from "./index";
 
 export const AuthContext = React.createContext({
-    AuthBoxPage: AuthPages.Login, SetAuthPage: e => null,
     nickname: "", setNickname: e => null, nicknameError: "",
-    CountryCode: "86", setCountryCode: e => null, countryCodeError: "",
-    Phone: "", setPhone: e => null, phoneError: "", setPhoneError: e => null,
+    countryCode: "86", setCountryCode: e => null, countryCodeError: "",
+    phone: "", setPhone: e => null, phoneError: "", setPhoneError: e => null,
     account: null, setAccount: e => null, accountError: null, setAccountError: e => null,
     password: null, setPassword: e => null, passwordError: null, setPasswordError: e => null,
     foreignPhone: null, setForeignPhone: e => null,
     SMSCode: null, setSMSCode: e => null, SMSCodeError: null, setSMSCodeError: e => null, SMSButtonText: null, SMSButtonDisabled: null,
-    SendSMSCode: null, checkSMSCode: null, CheckPassword: null, checkAccount: null, checkPhone: null, checkCountryCode: null,
+    SendSMSCode: null, checkSMSCode: null, CheckPassword: null, checkAccount: e => null, checkPhone: null, checkCountryCode: null,
     CheckNickName: null
 
 })
 export default function AuthContextComponent({ children }) {
 
-    const [AuthBoxPage, SetAuthPage] = useState(AuthPages.Login)
     const [nickname, setNickname] = useState("")
     const [nicknameError, setNicknameError] = useState("")
     const CheckNickName = () => {
@@ -32,31 +29,31 @@ export default function AuthContextComponent({ children }) {
     }
 
 
-    const [CountryCode, setCountryCode] = useState("86")
+    const [countryCode, setCountryCode] = useState("86")
     const [countryCodeError, setCountryCodeError] = useState("")
     const checkCountryCode = () => {
         let e = "";
-        if (!CountryCode || isNaN(CountryCode)) e = "无效国家，重新选择"
+        if (!countryCode || isNaN(countryCode)) e = "无效国家，重新选择"
         setCountryCodeError(e)
         return !e
     }
 
 
-    const [Phone, setPhone] = useState("")
+    const [phone, setPhone] = useState("")
     const [phoneError, setPhoneError] = useState("")
     const checkPhone = () => {
         const callback = (exist) => exist === true && setPhoneError("该账号已经注册")
         let e = "";
-        if (!Phone) e = "常用手机号必填"
-        if (!(Phone.length >= 7 && Phone.length <= 13)) e = "手机号码7-13位"
-        else if (!Phone.match(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im))
+        if (!phone) e = "常用手机号必填"
+        if (!(phone.length >= 7 && phone.length <= 13)) e = "手机号码7-13位"
+        else if (!phone.match(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im))
             e = "不是完整有效手机号码"
         setPhoneError(e);
         if (!e && checkCountryCode()) {
-            var phone = Phone
-            if (!(CountryCode === "086" || CountryCode === "86")) phone = "86" + phone
+            var _phone = phone
+            if (!(countryCode === "086" || countryCode === "86")) _phone = "86" + _phone
 
-            HEXISTS("UserRootAccount", phone).then(callback).catch(e => null)
+            HEXISTS("UserRootAccount", _phone).then(callback).catch(e => null)
         }
         return !e
     }
@@ -88,7 +85,7 @@ export default function AuthContextComponent({ children }) {
         if (!ok) return
         //to do 开发测试代码，上线前修改
         ModifySMSButtonText(60)
-        API("userSendSMSCode", { CountryCode, Phone })
+        API("userSendSMSCode", { countryCode, phone })
     }
 
 
@@ -119,10 +116,9 @@ export default function AuthContextComponent({ children }) {
     const [foreignPhone, setForeignPhone] = useState(false)
 
     const store = {
-        AuthBoxPage, SetAuthPage,
         nickname, setNickname, nicknameError,
-        CountryCode, setCountryCode, countryCodeError,
-        Phone, setPhone, phoneError, setPhoneError,
+        countryCode, setCountryCode, countryCodeError,
+        phone, setPhone, phoneError, setPhoneError,
         account, setAccount, accountError, setAccountError,
         password, setPassword, passwordError, setPasswordError,
         foreignPhone, setForeignPhone,

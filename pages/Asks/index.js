@@ -5,7 +5,7 @@ import LeftPanel from "./leftPanel"
 //use tailwindcss
 import "tailwindcss/tailwind.css"
 import QuestionAandAnswer from "./QuestionAandAnswer";
-import AppFrame from "../../component/AppFrame";
+import AppFrame from "../../component/appFrame";
 
 function Asks({ question }) {
     return <div className="bg-zinc-200 flex flex-row gap-x-2 w-full justify-start items-start h-full overflow-x-scroll overflow-scroll" >

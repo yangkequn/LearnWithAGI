@@ -1,5 +1,5 @@
 "use client";
-import AppFrame from '../component/AppFrame';
+import AppFrame from '../component/appFrame';
 import Image from 'next/image'
 import Link from 'next/link';
 import "tailwindcss/tailwind.css"

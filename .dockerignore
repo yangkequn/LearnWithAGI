@@ -1,0 +1,9 @@
+# Ignore specific file or directory
+# path/to/file.ext
+# path/to/directory/
+Dockerfile
+.dockerignore
+npm-debug.log
+README.md
+.next
+.git

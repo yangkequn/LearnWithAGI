@@ -20,12 +20,18 @@ export default function SkillTree({ topic }) {
     }
     //auto load skillTree
     useEffect(() => {
-        API("SkillTree", { Name: topic }).then((res) => {
+        HGET("SkillTree", topic).then((res) => {
             if (!res || res.length == 0) return
-            //sort res by rank
-            //res = SortSkillTree(res)
-            setSkillTree(res);
+            //keeps only leafs, which means items.length == 0
+            let leafs = res.filter((item) => !item.Items || item.Items.length == 0)
+            setSkillTree(leafs);
         })
+        // API("SkillTree", { Name: topic }).then((res) => {
+        //     if (!res || res.length == 0) return
+        //     //sort res by rank
+        //     //res = SortSkillTree(res)
+        //     setSkillTree(res);
+        // })
     }, [])
 
     //auto select the first uncompleted skill path as default

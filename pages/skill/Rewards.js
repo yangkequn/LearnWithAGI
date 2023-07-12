@@ -4,8 +4,6 @@ import { Container, Divider, Grow, Typography, } from "@mui/material";
 import { Box } from "@mui/system";
 import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
-import { KeyYMD, KeyYW } from "../../component/api/APIKey";
-import { isDebuggerStatement } from "typescript";
 export default function Rewards({ creditTM }) {
     //使用localStorage缓存credit
     const [credit, setCredit] = useState(JSON.parse(typeof window !== 'undefined' && localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
@@ -53,7 +51,7 @@ export default function Rewards({ creditTM }) {
                     audio.play()
                 }
             }
-            typeof window !== 'undefined' &&localStorage.setItem("Credit", JSON.stringify(res))
+            typeof window !== 'undefined' && localStorage.setItem("Credit", JSON.stringify(res))
             setCredit(res)
         })
     }, [creditTM])

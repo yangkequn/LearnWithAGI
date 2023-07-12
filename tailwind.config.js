@@ -18,17 +18,18 @@ module.exports = {
     'bg-red-500',
     'text-3xl',
     'lg:text-4xl'
-    , { pattern: /^ring-|^bg-|^hover:|^min-|^h-/ }
+    , {
+      pattern: /(bg-|min-|h-|right-|shadow-|rounded-)/,
+      variants: ['lg', 'hover', 'focus', 'lg:hover', "md", "dark"],
+    }
     , "hover:bg-orange-200"
     , "bg-[#E7EBF0]"
     , "dark:bg-slate-900"
     , "hover:w-100"
-    ,"dark:border-gray-900/50"
-    ,"shadow-[0_0_10px_rgba(0,0,0,0.10)]"
-    ,"dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]"
-    ,"md:py-2"
-    ,"md:py-1"
-    , { pattern: /^min-|^pr-/ }
+    , "dark:border-gray-900/50"
+    , "shadow-[0_0_10px_rgba(0,0,0,0.10)]"
+    , "dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]"
+
   ],
-  plugins: [],
+
 }

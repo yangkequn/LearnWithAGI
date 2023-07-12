@@ -11,7 +11,6 @@ import Link from 'next/link';
 import "tailwindcss/tailwind.css"
 import { LoadingElement } from '../../pages/Asks/QuestionAandAnswer';
 
-
 const MenuHome = { name: `🏠`, path: "/", icon: <SearchIcon fontSize={'large'} /> }
 const MenuAsks = { name: `提问`, path: "/Asks", icon: <ChatIcon fontSize={'large'} /> }
 const MenuSkill = { name: `课程`, path: "/skill", icon: <SchoolIcon fontSize={'large'} /> }
@@ -35,7 +34,7 @@ export default function Navigator() {
 
   //dynamic set signin menu's redirect url
   useEffect(() => {
-    MenuSignIn.path = "/Auth/login?to=" + pathName
+    MenuSignIn.path = "/Auth?page=Login&to=" + pathName
     //if logged in, set menu to null
     if (!LoggedIn && !MenuItems.find(e => e.name == "登录")) MenuItems.push(MenuSignIn)
     else if (LoggedIn && MenuItems.find(e => e.name == "登录")) MenuItems.pop()
@@ -47,11 +46,15 @@ export default function Navigator() {
   return <div id="navigator" className="flex flex-col w-full font-sans font" >
 
     {/* background-color: #2E4052; */}
-    <div id="nagivator-l1" className="bg-slate-300 flex w-full flex-row h-12 items-center whitespace-nowrap justify-center text-white text-2xl gap-4 " >
-      <div key="retrict-width" className='flex flex-row max-w-2xl  min-w-[500px] w-full items-center'>
+    <div id="nagivator-l1" className="bg-slate-300 flex w-full flex-row h-12 items-center whitespace-nowrap justify-center text-white text-2xl" >
+      <div key="retrict-width" className='flex flex-row max-w-2xl  min-w-[500px] w-full items-center  gap-2 '>
+        <div key="Home" onClick={e => { if (pathName != "/") router.push("/") }} className=' text-3xl h-full w-7 justify-center self-center'>
+          {MenuHome.name}
+        </div>
 
-        <div key="searchbox-and-icon-buttons" className="flex flex-row h-full w-96 active:w-full items-center" >
-          <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center  h-full  "  >
+        <div key="searchbox-and-icon-buttons" className="flex flex-row h-full w-96 active:w-full hover:w-full items-center gap-2" >
+          <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 relative border border-black/10 bg-white
+           dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center w-full h-full  "  >
             <div className='flex flex-row w-full active:w-full h-full items-center'>
               <textarea className={`m-0 w-full h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-4 pr-20  outline-none self-center overflow-hidden text-gray-700 ${loading && " bg-gray-400"}`}
                 //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
@@ -72,22 +75,26 @@ export default function Navigator() {
                 disabled={loading}
               />
             </div>
-            <div className="absolute right-1 flex flex-row gap-3 text-3xl leading-8   px-1">
-              <div className=" w-fit h-fit bg-transparent   hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
-                onClick={e => router.push("/?search=" + question)}>
-                📚
-              </div>
-              {/* <div className='w-fit h-full ' >📄</div> */}
-              <div className='w-fit h-full' onClick={e => {
-                if (question.length == 0) return
-                router.push("/Asks?q=" + question)
-              }} >❓</div>
 
-              {loading && <LoadingElement />}
+            <div key="create-skill" className="absolute right-0 block  text-3xl leading-8 px-1">
+              <div className="flex flex-row gap-1 w-fit items-center  text-gray-700 bg-slate-300 h-fit bg-transparent   dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent rounded-lg  border-black hover:bg-orange-200 px-1"
+                onClick={e => router.push("/?search=" + question)}>
+                <div >📚</div> <div className=' text-lg'>课程</div>
+              </div>
             </div>
+
+          </div>
+
+          <div className="flex flex-row gap-1 text-3xl leading-8 items-center  px-1 ml-6 text-gray-700  hover:bg-orange-200 rounded-lg ">
+            {/* <div className='w-fit h-full ' >📄</div> */}
+            <div className='w-fit h-full' onClick={e => {
+              //为避免以极高的误点击率错误提问，禁用直接提问：if (question.length == 0) return router.push("/Asks") else router.push("/Asks?q=" + question)
+              router.push("/Asks")
+            }} >💬</div> <div className=' text-lg'>对话</div>
+
+            {loading && <LoadingElement />}
           </div>
         </div>
-
 
         <div id="nagivator-l1-menuitems " className='flex flex-row self-center max-w-2xl gap-4 '>
 

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, } from "react";
 import { Alert, Button, Collapse, Container, TextField, } from "@mui/material";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from "./index";
+import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from ".";
 import CountrySelect from "./countrySelect";
 import { AuthContext } from "./AuthContext";
 import Box from '@mui/material/Box';
@@ -9,16 +9,18 @@ import { API } from "../../component/api";
 import { Jwt } from "../../component/jwt";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import "tailwindcss/tailwind.css"
+import { useRouter } from "next/navigation";
 
-export default function Login({ SetOpenAlert, openAlert }) {
+export default function Login({ To }) {
+    const router = useRouter()
     const ToOneLanguage = (l) => {
         const MenuText = {
             Title: ["Login", "账号登录"][l],
             CountryCodeTitle: ["US +", "美国 +"][l],
             AccountTitle: ["Type Account Here", "手机号/账号"][l],
-            ForeignPhoneMode: ["Foreign Phone login", "海外手机号登录"][l],
+            ForeignPhoneMode: ["Foreign phone login", "海外手机号登录"][l],
             ForgotPassword: ["Forgot password", "忘记密码?"][l],
-            MailAccountLogin: ["Login with Phone or email", "邮箱帐号登录"][l],
+            MailAccountLogin: ["Login with phone or email", "邮箱帐号登录"][l],
             CountryCode: [1, 86][l],
             PhoneNumberTitle: ["phone Number", "请输入手机号"][l],
             AccountPasswordError: ["Error account or password ", "账号或密码错误"][l],
@@ -35,7 +37,7 @@ export default function Login({ SetOpenAlert, openAlert }) {
     const info = ToOneLanguage(1)
 
     const {
-        AuthBoxPage, SetAuthPage,
+        openAlert, setOpenAlert,
         countryCode, setCountryCode, countryCodeError,
         phone, setPhone, phoneError,
         account, setAccount, accountError, setAccountError,
@@ -58,7 +60,7 @@ export default function Login({ SetOpenAlert, openAlert }) {
             if ("error" in data) {
                 const error = data["error"]
                 if (error === "account or password error") setAccountError(info.AccountPasswordError)
-                SetOpenAlert(10000)
+                setOpenAlert("账号或密码错误")
                 Jwt.SaveOrClear(data)
             } else {
                 Jwt.SaveOrClear(data)
@@ -72,14 +74,14 @@ export default function Login({ SetOpenAlert, openAlert }) {
 
                 <Box sx={{ m: "0 0 0 1em" }}><h2> {info["Title"]} </h2></Box>
                 <Collapse in={openAlert}>
-                    <Alert severity="info"  >账号或密码错误</Alert>
+                    <Alert severity="info"  >{openAlert}</Alert>
                 </Collapse>
 
 
                 <div className="w-full flex flex-col">
                     <div className="flex flex-row self-start w-full " style={{ display: foreignPhone ? "flex" : "none" }}>
                         {/*选择国家*/}
-                        <CountrySelect width={"150px"} disableCloseOnSelect defaultValue={"CN"} > </CountrySelect>
+                        <CountrySelect width={"150px"} disableCloseOnSelect defaultValue={"CN"} setCountryCode={setCountryCode} countryCodeError={countryCodeError}> </CountrySelect>
                         {/*填写手机号码*/}
                         <TextField id="signUp-phone" label={phoneError || info["PhoneNumberTitle"]} size="small"
                             variant="standard"
@@ -111,7 +113,7 @@ export default function Login({ SetOpenAlert, openAlert }) {
                         </Button>
 
 
-                        <div onClick={e => SetAuthPage(AuthPages.ForgotPassword)} key={"user_forgot_password"}
+                        <div onClick={e => router.push(`/Auth?page=${AuthPages.ForgotPassword}&to=${To}`)} key={"user_forgot_password"}
                             style={{ color: "#8590a6" }}>
                             {info.ForgotPassword}
                         </div>
@@ -123,7 +125,7 @@ export default function Login({ SetOpenAlert, openAlert }) {
 
                         <div key="SignUP" className={"flex flex-row items-center mx-4 w-90 w-fit"}  >
                             <div>{info.WithoutAnAccount}</div>
-                            <button className="flex leading-6 text-sm w-32 h-9 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e => SetAuthPage(AuthPages.SignUp)}>{info.Signup}</button>
+                            <button className="flex leading-6 text-sm w-32 h-9 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e => router.push(`/Auth?page=${AuthPages.SignUp}&to=${To}`)}>{info.Signup}</button>
                         </div>
                     </div>
                 </div>
@@ -137,11 +139,11 @@ export default function Login({ SetOpenAlert, openAlert }) {
                                     //{credential,clientId,select_by}
                                     const error = data["error"]
                                     if (error === "account or password error") setAccountError(info.AccountPasswordError)
-                                    SetOpenAlert(10000)
+                                    setOpenAlert("账号或密码错误")
                                     Jwt.SaveOrClear(data)
                                 } else {
                                     Jwt.SaveOrClear(data)
-                                    SetAuthPage(AuthPages.None)
+                                    router.push(To)
                                 }
                             })
                         }}

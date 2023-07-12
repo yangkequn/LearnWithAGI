@@ -4,7 +4,7 @@ import { CustomEvents } from "../../pages/_app"
 import { Jwt } from "../jwt";
 var msgpack = require('@ygoe/msgpack');
 const JwtRequest = (headers: any = {}) => {
-    let jwt = typeof window !== 'undefined' &&localStorage.getItem("Authorization");
+    let jwt = typeof window !== 'undefined' && localStorage.getItem("Authorization");
     if (!!jwt) headers["Authorization"] = jwt;
     let req = axios.create({ headers });
     req.interceptors.request.use(
@@ -47,11 +47,8 @@ const SignOut = (e: any) => {
     if (!UnAuthorized) return;
     let jwt = "", sub = "", id = "", LastGetJwtTime = new Date().getTime()
     localStorage.setItem("jwt", JSON.stringify({ jwt, sub, id, LastGetJwtTime }));
-    //pop up login page
-    //    SetAuthPage(page);
-    //dispatch event, SetAuthPage will listen this event
     Jwt.SaveOrClear({});
-    CustomEvents.RedirectDispatch("/Auth?to=" + window.location.pathname);
+    CustomEvents.RedirectDispatch("/Auth?page=Login&to=" + window.location.pathname);
 }
 export enum Action { GET, PUT, DELETE, }
 //RspType.json is server default

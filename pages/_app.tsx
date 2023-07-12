@@ -21,22 +21,24 @@ interface GlobalContextType {
   setRedirectUrl: React.Dispatch<React.SetStateAction<string>>,
 
   openAlert: boolean,
-  SetOpenAlert: (timeOut: number) => void
+  setOpenAlert: React.Dispatch<React.SetStateAction<string>>,
   MenuL2: any,
   setMenuL2: React.Dispatch<React.SetStateAction<any>>,
   creditTM: number,
   setCreditTM: React.Dispatch<React.SetStateAction<number>>,
 }
+// export const GlobalContext = React.createContext<GlobalContextType>({
+//   LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: false, SetOpenAlert: e => null, MenuL2: null, setMenuL2: e => null, creditTM: 0, setCreditTM: e => null
+// });
 export const GlobalContext = React.createContext<GlobalContextType>({
-  LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: false, SetOpenAlert: e => null, MenuL2: null, setMenuL2: e => null, creditTM: 0, setCreditTM: e => null
+  LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: false, setOpenAlert: e => null, MenuL2: null, setMenuL2: e => null, creditTM: 0, setCreditTM: e => null
 });
-
 
 function MyApp({ Component, pageProps }: AppProps) {
   //const [LoggedIn, setLoggedIn] = useState(Jwt.Get().IsValid())
   const [LoggedIn, setLoggedIn] = useState(false)
   const [RedirectUrl, setRedirectUrl] = useState("")
-  const [openAlert, setOpenAlert] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState("");
   const [MenuL2, setMenuL2] = useState(null)
   const [creditTM, setCreditTM] = useState(0)
 
@@ -59,15 +61,16 @@ function MyApp({ Component, pageProps }: AppProps) {
       // window.removeEventListener(HeartBeat.EventName, LoadHeartRate)
     }
   }, [])
-  const SetOpenAlert = (timeOut: number = 10 * 1000) => {
-    setOpenAlert(true);
-    setTimeout(() => { setOpenAlert(false); }, timeOut);
-  };
+  useEffect(() => {
+    if (!openAlert) return
+    //Auto close alert after 3 seconds
+    setTimeout(() => { setOpenAlert(""); }, 3000);
+  }, [openAlert])
   const store = {
     LoggedIn,
     RedirectUrl,
     setRedirectUrl,
-    openAlert, SetOpenAlert,
+    openAlert, setOpenAlert,
     MenuL2, setMenuL2,
     creditTM, setCreditTM
   }

@@ -8,9 +8,8 @@ import QAComponent from "./QAComponent";
 import SkillTree from "./SkillTree";
 import Rewards from "./Rewards";
 import Socratics from "./Socratics";
-import AppFrame from "../../component/AppFrame"
+import AppFrame from "../../component/appFrame"
 import { useParams, useRouter } from "next/navigation";
-import { GetStaticProps, GetServerSideProps } from "next";
 import { API, HMGET } from "../../component/api";
 import { GlobalContext } from "../_app";
 import ContextComponent, { Context } from "./Context"

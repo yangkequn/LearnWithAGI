@@ -4,7 +4,7 @@ import { Box, Button, Container, Card, FormControl, IconButton, Input, InputAdor
 //https://github.com/grubersjoe/react-github-calendar
 import Tooltip from '@mui/material/Tooltip';
 import { ZRANGEBYSCORE } from "../../component/api";
-import AppFrame from "../../component/AppFrame";
+import AppFrame from "../../component/appFrame";
 
 //https://github.com/grubersjoe/react-activity-calendar
 //npm install react-activity-calendar
@@ -52,7 +52,6 @@ export const Retrospect = () => {
             let counts = dayCntData.map((dayItem) => dayItem.count).filter((count) => count > 0)
             counts.push(0)
             counts.sort((a, b) => a - b)
-            console.log("counts", counts)
             let countToIndexMap = counts.map((count, i) => [count, Math.floor(5 * i / (counts.length - 1))])
             countToIndexMap = Object.fromEntries(countToIndexMap)
 

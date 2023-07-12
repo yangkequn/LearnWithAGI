@@ -85,7 +85,7 @@ export default function QAComponent({ topic }) {
                         setSkillMyTrace(newMySkillTrace)
                     })
                 }}>
-                    <Tooltip title="reset all practice" ><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabindex="-1" title="RestartAlt"><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></Tooltip>
+                    <Tooltip title="reset all practice" ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></Tooltip>
                 </div>
 
                 <textarea className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none "
@@ -116,19 +116,19 @@ export default function QAComponent({ topic }) {
                         }} >
                         {
                             // options betwenn 1 to 100, default 10 
-                            [...Array(10).keys()].map((i) => <option value={(i + 1) * 5}>{(i + 1) * 5}题</option>)
+                            [...Array(10).keys()].map((i) => <option key={`option-${i}`} value={(i + 1) * 5}>{(i + 1) * 5}题</option>)
 
                         }
                     </select>
                 </div>
-                <button class="self-center absolute p-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2"
+                <button className="self-center absolute p-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2"
                     onClick={e => {
                         !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
                             .then((res) => setQAs(res ?? []))
                     }}>
                     {loading ? <LoadingElement /> :
                         <Tooltip title={"申请重建练习列表"} placement="left" className="h-full self-center items-center justify-center">
-                            <div className="w-6 h-6"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabindex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></div></Tooltip>}
+                            <div className="w-6 h-6"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabIndex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></div></Tooltip>}
                 </button>
             </div>
 
@@ -148,7 +148,7 @@ export default function QAComponent({ topic }) {
 
             {/* 已经回答的题目 */}
             <div className="flex flex-row justify-start items-start rounded-md w-full h-full text-gray-800 text-lg min-h-[300px]  max-h-[460px] flex-auto overflow-x-auto flex-wrap" >
-                <div activeStep={qaIndex} variant="dots" position="static"
+                <div key={`activeStep-${qaIndex}`} variant="dots" position="static"
                     className=" flex flex-col justify-start rounded-md h-full w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
                     {QAs?.map((qa, index) => {
