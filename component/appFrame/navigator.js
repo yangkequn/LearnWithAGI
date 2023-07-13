@@ -9,7 +9,6 @@ import SchoolIcon from '@mui/icons-material/School';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import "tailwindcss/tailwind.css"
-import { LoadingElement } from '../../pages/Asks/QuestionAandAnswer';
 
 const MenuHome = { name: `🏠`, path: "/", icon: <SearchIcon fontSize={'large'} /> }
 const MenuAsks = { name: `提问`, path: "/Asks", icon: <ChatIcon fontSize={'large'} /> }
@@ -23,7 +22,6 @@ export default function Navigator() {
   const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2 } = useContext(GlobalContext)
 
   const [question, setQuestion] = useState("")
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const pathName = usePathname()
   useEffect(() => {
@@ -56,7 +54,7 @@ export default function Navigator() {
           <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 relative border border-black/10 bg-white
            dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center w-full h-full  "  >
             <div className='flex flex-row w-full active:w-full h-full items-center'>
-              <textarea className={`m-0 w-full h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-4 pr-20  outline-none self-center overflow-hidden text-gray-700 ${loading && " bg-gray-400"}`}
+              <textarea className={`m-0 w-full h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-4 pr-20  outline-none self-center overflow-hidden text-base text-gray-700`}
                 //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
 
                 value={question}
@@ -72,7 +70,6 @@ export default function Navigator() {
                   // stop propagation
                   e.preventDefault()
                 }}
-                disabled={loading}
               />
             </div>
 
@@ -91,13 +88,10 @@ export default function Navigator() {
               //为避免以极高的误点击率错误提问，禁用直接提问：if (question.length == 0) return router.push("/Asks") else router.push("/Asks?q=" + question)
               router.push("/Asks")
             }} >💬</div> <div className=' text-lg'>对话</div>
-
-            {loading && <LoadingElement />}
           </div>
         </div>
 
         <div id="nagivator-l1-menuitems " className='flex flex-row self-center max-w-2xl gap-4 '>
-
           {!!MenuItems && MenuItems.map((item, index) => <Link key={`menu-item-${item.name}`} href={item.path}> <button key={`menu_${item.name}`} onClick={(e) => router.push(item.path)}
             className={` h-full text-lg text-gray-800 w-fit px-2  hover:bg-orange-200 font-sans rounded-lg ${pathName?.toLowerCase().indexOf(item.path.toLowerCase()) >= 0 ? "text-black font-bold bg-orange-200" : ""}`}
           >

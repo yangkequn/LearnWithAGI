@@ -20,7 +20,7 @@ interface GlobalContextType {
   RedirectUrl: string,
   setRedirectUrl: React.Dispatch<React.SetStateAction<string>>,
 
-  openAlert: boolean,
+  openAlert: string,
   setOpenAlert: React.Dispatch<React.SetStateAction<string>>,
   MenuL2: any,
   setMenuL2: React.Dispatch<React.SetStateAction<any>>,
@@ -31,7 +31,7 @@ interface GlobalContextType {
 //   LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: false, SetOpenAlert: e => null, MenuL2: null, setMenuL2: e => null, creditTM: 0, setCreditTM: e => null
 // });
 export const GlobalContext = React.createContext<GlobalContextType>({
-  LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: false, setOpenAlert: e => null, MenuL2: null, setMenuL2: e => null, creditTM: 0, setCreditTM: e => null
+  LoggedIn: false, RedirectUrl: "", setRedirectUrl: e => null, openAlert: "", setOpenAlert: e => null, MenuL2: null, setMenuL2: e => null, creditTM: 0, setCreditTM: e => null
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

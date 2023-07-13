@@ -19,7 +19,7 @@ export const AuthSubmitCss = "flex flex-row w-full mt-4 leading-6 h-9 bg-sky-500
 
 export const AuthPages = { SignUp: "SignUp", MyProfile: "MyProfile", ForgotPassword: "ForgotPassword", Login: "Login" }
 
-const AuthFrame = ({ AuthPage, To }) => {
+const AuthFrame = ({ AuthPage, To }: { AuthPage: string, To: string }) => {
     const { LoggedIn } = useContext(GlobalContext)
     const router = useRouter()
     useEffect(() => {
@@ -36,14 +36,14 @@ const AuthFrame = ({ AuthPage, To }) => {
         </div>
     </div>
 }
-export default function AuthPopper({ AuthPage, To }) {
+export default function AuthPopper({ AuthPage, To }: { AuthPage: string, To: string }) {
     return <AuthContextComponent>
         <AppFrame>
             <AuthFrame AuthPage={AuthPage} To={To} />
         </AppFrame>
     </AuthContextComponent>
 }
-export const getServerSideProps = async (context) => {
+export const getServerSideProps = async (context: any) => {
     return {
         props: {
             AuthPage: context.query.page ?? "",

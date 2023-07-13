@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Tooltip } from "@mui/material";
 import { RspType, GetUrl, Cmd, HGET } from "../../component/api";
+import "tailwindcss/tailwind.css"
 
 export default function UserAvatar({ userID }) {
     const [name, setName] = useState("")
@@ -19,6 +20,6 @@ export const UserName = ({ pub }) => {
         else setName("")
     }, [pub])
     return <div>
-        {name}
+        {name} 
     </div>
-}
+} 

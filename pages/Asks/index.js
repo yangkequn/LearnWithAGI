@@ -7,23 +7,22 @@ import "tailwindcss/tailwind.css"
 import QuestionAandAnswer from "./QuestionAandAnswer";
 import AppFrame from "../../component/appFrame";
 
-function Asks({ question }) {
+function Asks() {
     return <div className="bg-zinc-200 flex flex-row gap-x-2 w-full justify-start items-start h-full overflow-x-scroll overflow-scroll" >
         <LeftPanel></LeftPanel>
-        <QuestionAandAnswer question={question} />
+        <QuestionAandAnswer />
     </div>
 }
-export default function Home({ question }) {
+export default function Home() {
     return <AskContextComponent>
         <AppFrame >
-            <Asks question={question} />
+            <Asks />
         </AppFrame >
     </AskContextComponent>
 }
 export const getServerSideProps = async (context) => {
     return {
         props: {
-            question: context.query.q ?? ""
         }
     }
 }

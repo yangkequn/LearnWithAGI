@@ -94,14 +94,14 @@ export default function MyProfile() {
   useEffect(() => {
     if (!Jwt.Get().IsValid()) return
     HGET("UserInfo", "@id").then((data) => {
-      setCountryCode(data["CountryCode"])
-      setPhone(data["Phone"])
-      setLoginAccount(data["Account"])
+      setCountryCode(data?.CountryCode)
+      setPhone(data?.Phone)
+      setLoginAccount(data?.Account)
     })
     HGET("UserInfoPublic", Jwt.Pub()).then((data) => {
-      setNick(data["Nick"])
-      setIntroduction(data["Introduction"])
-      setRegion(data["Region"])
+      setNick(data?.Nick)
+      setIntroduction(data?.Introduction)
+      setRegion(data?.Region)
     })
   }, [LoggedIn])
 

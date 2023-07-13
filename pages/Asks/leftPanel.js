@@ -18,11 +18,22 @@ export default function LeftPanel() {
         <div key="list-of-topics" className="flex flex-col h-full w-full  gap-1 " >
             {
                 topics.map((topic, index) => {
-                    return <div key={index} className={"hover:bg-amber-200 hover:text-black flex-rowitems-center w-full self-start px-2 py-1 rounded  leading-5 text-base max-h-20 overflow-x-auto " + (QA?.Q === topic.Q ? "bg-gray-500 " : "bg-gray-700")}
+                    return <div key={index} className={" hover:bg-amber-200 hover:text-black flex-rowitems-center w-full self-start px-2 py-1 rounded  leading-5 text-base max-h-20 overflow-x-auto " + (QA?.Q === topic.Q ? "bg-gray-500 " : "bg-gray-700")}
                         onClick={() => {
                             setQA(topic)
                         }}>
-                        <div> {topic?.Q} </div>
+                        <div className="flex flex-row parent group justify-between w-full items-center gap-1">
+                            <div className="flex-row flex flex-nowrap gap-1">
+                                <div>❓</div>
+                                <div> {topic?.Q} </div>
+                            </div>
+                            {/*  emoji delete button */}
+                            <div className="flex-row self-center items-center gap-2 invisible group-hover:visible" onClick={(e) => {
+
+                            }}>
+                                ⌫
+                            </div>
+                        </div>
                     </div>
                 })
             }

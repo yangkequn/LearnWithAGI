@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState, } from "react";
-import { Alert, Autocomplete, Box, Button, Checkbox, Stack, TextField } from "@mui/material";
+import React, { createRef, useContext, useEffect, useState, } from "react";
+import { Alert, Autocomplete, Box, Button, Checkbox, Popover, Popper, Stack, TextField } from "@mui/material";
 import CountrySelect, { Countries, CountryCodes, CountryToFlag } from "./countrySelect";
 import { AuthContext } from "./AuthContext";
 import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from ".";
@@ -8,9 +8,13 @@ import { Jwt } from "../../component/jwt";
 import { API } from "../../component/api";
 import "tailwindcss/tailwind.css"
 import { useRouter } from "next/navigation";
+import ServiceTerm from "./serviceTerm";
+import { create } from "domain";
 
 export default function SignUp({ To }) {
     const [aggreeToTerm, setAgreeToTerm] = useState(false)
+    const [browseTerm, setBrowseTerm] = useState(false)
+    const [anchorEl, setAnchorEl] = React.useState(null);
     const [alert, setAlert] = useState("")
     const router = useRouter()
 
@@ -74,7 +78,7 @@ export default function SignUp({ To }) {
         var data = { Account: account.toLowerCase(), Password: password, CountryCode: countryCode, phone, SMSCode: parseInt(SMSCode) }
         API("userSignUp", data).then(signUpCallBack)
     }
-    return <div key={"signUpBox"} className={AuthContainerCSS} >
+    return <div id="signUpBox" key={"signUpBox"} className={AuthContainerCSS} >
         <div className={AuthContainerCSSL2}>
             <Box sx={{ m: "0 0 0 1em" }}><h2> {info["Title"]} </h2></Box>
             <Stack sx={{ width: '100%' }} spacing={2}>
@@ -129,29 +133,40 @@ export default function SignUp({ To }) {
                 </Button>
             </div>
 
+            {/* click and popup a term dialog */}
+            <Popover id={"ServiceTermPopper"} open={!!anchorEl} anchorEl={anchorEl} onClose={e => { setAnchorEl(null) }}>
+                <ServiceTerm />
+            </Popover>
+
             <div className="w-full flex flex-row justify-between mb-4 self-center">
-                <div className="items-center gap-2 flex flex-row ">
-                    <div key={"agree-to-term"} className={"flex  flex-row text-sm  w-90 mx-2  mt-2 bg-white"}>
+                <div className="gap-2 flex flex-row items-center">
+
+                    <div id="ServiceTerm" key={"agree-to-term"} className={"flex  flex-row text-sm  w-90 mx-2 bg-white gap-1"}>
                         <Checkbox onClick={e => setAgreeToTerm(!aggreeToTerm)} ></Checkbox>
-                        <div className="text-small items-center self-center">{info.TermAgreeTitle}</div>
-                        <b className="text-small items-center self-center"><a href={"."}>{info.TermLinkTitle}</a></b>
+                        <div key="agree" className="text-small items-center self-center">{info.TermAgreeTitle}</div>
+
+                        <div key="agree-term" className="self-center h-full flex"
+                            onClick={(event) => setAnchorEl(!!anchorEl ? null : document.getElementById("signUpBox"))}>
+                            <b className="text-small items-center self-center">{info.TermLinkTitle}</b>
+                        </div>
+
                     </div>
-                    <button key={"sign-up-button"} className="flex leading-6 text-sm w-40 h-9 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e => {
-                        if (!aggreeToTerm) {
-                            setAlert("您必须先同意注册条款")
-                            setTimeout(() => {
-                                setAlert("")
-                            }, 5000)
-                        }
-                        signUp(e)
-                    }}>
-                        {info.RegisterTitle}
-                    </button>
+                    <div key="signUpButton" className="h-full self-center flex">
+                        <button key={"sign-up-button"} className=" text-sm w-40 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e => {
+                            if (!aggreeToTerm) {
+                                setAlert("您必须先同意注册条款")
+                                setTimeout(() => setAlert(""), 5000)
+                            }
+                            signUp(e)
+                        }}>
+                            {info.RegisterTitle}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="flex flex-row items-center mx-4  w-fit">
                     <div className="text-sm">{info.HaveAccountAlready}</div>
-                    <button className="flex leading-6 text-sm w-28 h-9 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e =>
+                    <button className="flex leading-6 text-sm w-20 h-9 bg-sky-500 justify-center text-white rounded items-center mx-4" onClick={e =>
                         router.push(`/Auth?page=${AuthPages.Login}&to=${To}`)}>{info.Login}</button>
                 </div>
             </div>

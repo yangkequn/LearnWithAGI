@@ -19,8 +19,8 @@ module.exports = {
     'text-3xl',
     'lg:text-4xl'
     , {
-      pattern: /(bg-|min-|h-|right-|shadow-|rounded-)/,
-      variants: ['lg', 'hover', 'focus', 'lg:hover', "md", "dark"],
+      pattern: /^bg-|^min-|^h-|^right-|^shadow-|^rounded-/,
+      variants: ['lg', 'hover', 'focus', 'lg:hover', "md", "dark",],
     }
     , "hover:bg-orange-200"
     , "bg-[#E7EBF0]"
@@ -29,7 +29,8 @@ module.exports = {
     , "dark:border-gray-900/50"
     , "shadow-[0_0_10px_rgba(0,0,0,0.10)]"
     , "dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]"
-
+    , "group-hover:visible"
+    , "group"
   ],
-
+  plugins: [],
 }
