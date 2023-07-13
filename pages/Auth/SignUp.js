@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState, } from "react";
-import { Alert, Autocomplete, Box, Button, Checkbox, Popover, Popper, Stack, TextField } from "@mui/material";
+import Alert from "@mui/material/Alert";
+import Autocomplete from "@mui/material/Autocomplete";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import Popover from "@mui/material/Popover";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+
 import CountrySelect, { Countries, CountryCodes, CountryToFlag } from "./countrySelect";
 import { AuthContext } from "./AuthContext";
 import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from ".";
@@ -80,7 +87,7 @@ export default function SignUp({ To }) {
     }
     return <div id="signUpBox" key={"signUpBox"} className={AuthContainerCSS} >
         <div className={AuthContainerCSSL2}>
-            <Box sx={{ m: "0 0 0 1em" }}><h2> {info["Title"]} </h2></Box>
+            <div className="ml-4" ><h2> {info["Title"]} </h2></div>
             <Stack sx={{ width: '100%' }} spacing={2}>
                 {!!alert && <Alert severity="warning">{alert}</Alert>}
             </Stack>

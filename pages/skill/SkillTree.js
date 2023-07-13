@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState } from "react"
-import { Button, Step, StepContent, StepLabel, Stepper, Typography, } from "@mui/material";
+
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
+
 import { Box } from "@mui/system";
 import { API, HGET } from "../../component/api";
 import Checkbox from '@mui/material/Checkbox';

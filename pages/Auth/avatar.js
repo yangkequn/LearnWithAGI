@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Tooltip } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Tooltip from "@mui/material/Tooltip";
 import { RspType, GetUrl, Cmd, HGET } from "../../component/api";
 import "tailwindcss/tailwind.css"
 

@@ -1,10 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, } from "react";
-import { Alert, Button, Collapse, Container, TextField, } from "@mui/material";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from ".";
+import TextField from '@mui/material/TextField';
+import Alert from "@mui/material/Alert";
+import Collapse from "@mui/material/Collapse";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from "./consts";
 import CountrySelect from "./countrySelect";
 import { AuthContext } from "./AuthContext";
-import Box from '@mui/material/Box';
 import { API } from "../../component/api";
 import { Jwt } from "../../component/jwt";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
@@ -72,7 +75,7 @@ export default function Login({ To }) {
         <GoogleOAuthProvider clientId="129830787781-sd5edo6nis08ohho627s3v2vk405795r.apps.googleusercontent.com">
             <div className={AuthContainerCSSL2}>
 
-                <Box sx={{ m: "0 0 0 1em" }}><h2> {info["Title"]} </h2></Box>
+                <div className="ml-4" ><h2> {info["Title"]} </h2></div>
                 <Collapse in={openAlert}>
                     <Alert severity="info"  >{openAlert}</Alert>
                 </Collapse>
@@ -130,7 +133,7 @@ export default function Login({ To }) {
                     </div>
                 </div>
 
-                <Box sx={{ width: "100%" }}>
+                <div className="w-full">
                     <GoogleLogin
                         onSuccess={credentialResponse => {
                             API("userSignInGoogle", credentialResponse).then((data) => {
@@ -152,7 +155,7 @@ export default function Login({ To }) {
 
                         useOneTap
                     />
-                </Box>
+                </div>
 
                 {/* insert Google login button here */}
 

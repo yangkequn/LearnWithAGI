@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState } from "react"
-import { Container, Divider, IconButton, InputAdornment, List, ListItem, Paper, Popover, Stack, TextField, Typography, } from "@mui/material";
+import Divider from '@mui/material/Divider';
 import AddIcon from '@mui/icons-material/Add';
 import { Box } from "@mui/system";
 import SendIcon from '@mui/icons-material/Send';
@@ -13,6 +13,7 @@ import { useParams, useRouter } from "next/navigation";
 import { API, HMGET } from "../../component/api";
 import { GlobalContext } from "../_app";
 import ContextComponent, { Context } from "./Context"
+import { Jwt } from "../../component/jwt";
 //https://github.com/JedWatson/react-select
 
 function ExploreComponent({ topic }) {
@@ -26,10 +27,11 @@ function ExploreComponent({ topic }) {
     //fetch SKillMyTrace according to SkillTree
     useEffect(() => {
         if (skillTree?.length == 0) return
+        if (!Jwt.Get().IsValid()) return
         let names = skillTree.map((skill) => `${skill.Name}:${skill.Detail}`)
         !!names && names.length > 0 && HMGET("SkillMyTrace:@id", names).then((res) => {
             //zip names and res to dict
-            if (names.length != res.length) return console.log("error in fetch skillMyTrace ,in equal length returned")
+            if (names.length != res?.length) return
             var _res = {}
             for (var i = 0; i < names.length; i++) {
                 _res[names[i]] = res[i]

@@ -4,6 +4,7 @@ import { Container, Divider, Grow, Typography, } from "@mui/material";
 import { Box } from "@mui/system";
 import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
+import { Jwt } from "../../component/jwt";
 export default function Rewards({ creditTM }) {
     //使用localStorage缓存credit
     const [credit, setCredit] = useState(JSON.parse(typeof window !== 'undefined' && localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
@@ -13,6 +14,8 @@ export default function Rewards({ creditTM }) {
     const [rewardScore, setRewardScore] = useState(0)
     const [showReward, setShowReward] = useState(false)
     useEffect(() => {
+        //if not login, return
+        if(Jwt.Get().IsValid() == false) return
         let today = new Date()
         //to format 20230101
         let todayStr = `${today.getFullYear()}${today.getMonth() + 1 < 10 ? "0" + (today.getMonth() + 1) : today.getMonth() + 1}${today.getDate() < 10 ? "0" + today.getDate() : today.getDate()}`

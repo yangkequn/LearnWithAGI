@@ -3,7 +3,6 @@ import React, { useContext } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { AuthContext } from './AuthContext';
 // ISO 3166-1 alpha-2
 // ⚠️ No support for IE 11
 export function CountryToFlag(isoCode) {

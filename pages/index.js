@@ -1,15 +1,11 @@
 "use client";
 import AppFrame from '../component/appFrame';
-import Image from 'next/image'
-import Link from 'next/link';
 import "tailwindcss/tailwind.css"
-
+import {useRouter} from "next/navigation";
 import { use, useContext, useEffect, useState } from 'react';
 import { GlobalContext } from './_app';
-import { Step, StepLabel, Stepper } from '@mui/material';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { API, HGET, HGETALL, HKEYS } from '../component/api';
-import { useRouter } from 'next/navigation';
+
 const ListItem = ({ id }) => {
   const Router = useRouter()
   const [data, setData] = useState({
@@ -34,7 +30,7 @@ const ListItem = ({ id }) => {
 }
 export default function Home({ search }) {
   const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2, setMenuL2 } = useContext(GlobalContext)
-  const Router = useRouter()
+  const Router = useRouter();
   const [SkillNames, setSkillNames] = useState([]);
   const CreateSkill = (content) => {
     const loadSkill = () => {

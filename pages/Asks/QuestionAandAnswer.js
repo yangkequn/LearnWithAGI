@@ -8,7 +8,7 @@ import { API, HMGET, ZRANGEBYSCORE } from "@/component/api"
 
 export default function QuestionAandAnswer() {
     const { topicLoaded, topics, setTopics, QA, setQA } = useContext(AskContext)
-    const [loading, setLoading] = useState("⌛")
+    const [loading, setLoading] = useState("")
     const [question, setQuestion] = useState("")
     const OnSubmitQuestion = (question) => {
         setLoading("⌛")

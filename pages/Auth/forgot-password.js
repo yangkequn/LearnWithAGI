@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect } from "react";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss, AuthCss, AuthInputContainerCss, AuthPages, AuthSubmitCss } from ".";
+import { AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss, AuthCss, AuthInputContainerCss, AuthPages, AuthSubmitCss } from "./consts";
 import { AuthContext } from "./AuthContext";
 import CountrySelect from "./countrySelect";
-import { GlobalContext } from "../_app"
-import { Box, Button, TextField } from "@mui/material";
+import TextField from '@mui/material/TextField';
 import { API } from "../../component/api";
 import "tailwindcss/tailwind.css"
 import { useRouter } from "next/navigation";
@@ -68,10 +67,10 @@ export default function ForgotPassword({ To }) {
     }
     return <div className={AuthContainerCSS} >
         <div className={AuthContainerCSSL2}>
-            <Box sx={{ margin: "0 0 0 1em" }}>
+            <div className="ml-4">
                 <div className="flex flex-row self-start w-full" ><h2> {info.Title} </h2></div>
                 <div className="flex flex-row self-start w-full text-gray-600 mb-4 text-sm">{info.Annotation}</div>
-            </Box>
+            </div>
 
 
             {!foreignPhone ?
@@ -102,10 +101,10 @@ export default function ForgotPassword({ To }) {
                     size="small" helperText={SMSCodeError} variant="standard" className={AuthSingleLineInputCss}
                     onChange={e => setSMSCode(e.target.value)} error={!!SMSCodeError}
                     fullWidth={true}></TextField>
-                <Button onClick={e => SendSMSCode(() => {
+                <button onClick={e => SendSMSCode(() => {
                     if (!foreignPhone) return checkAccount()
                     if (foreignPhone) return checkCountryCode() && checkPhone()
-                })} style={{ width: 200 }} disabled={SMSButtonDisabled}>{SMSButtonText} </Button>
+                })} style={{ width: 200 }} disabled={SMSButtonDisabled}>{SMSButtonText} </button>
             </div>
 
             <div key="user_foreign_phone" className="flex flex-row self-start w-full mx-2">
