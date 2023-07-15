@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react"
 
-import { Box, Button, Container, Card, FormControl, IconButton, Input, InputAdornment, InputLabel, Rating, Typography, Popover } from "@mui/material";
 //https://github.com/grubersjoe/react-github-calendar
-import Tooltip from '@mui/material/Tooltip';
 import { ZRANGEBYSCORE } from "../../component/api";
 import AppFrame from "../../component/appFrame";
 
@@ -69,10 +67,10 @@ export const Retrospect = () => {
     }, [])
 
     return <AppFrame >
-        <Container style={{ height: "100%", width: "100%" }} maxWidth={"xl"} key={"history"} >
+        <div key={"history"} className="h-full w-full max-w-xl">
 
             {/* https://github.com/grubersjoe/react-activity-calendar */}
-            <div className="bg-gray-light py-4"             >
+            <div className="bg-gray-light py-4 w-full"             >
                 <ActivityCalendar data={dayCnt}
                     colorScheme={"light"}
                     labels={{
@@ -91,19 +89,19 @@ export const Retrospect = () => {
                         }
                         // onClick: (e: event, data: Day) => { setCurrentMeditationDay(data.date) }
                     }}
-                    style={{ marginTop: "0.5em" }}
-                    renderBlock={(block, activity) => <Tooltip title={`${activity.SkillAnswer} 作答 ${activity.SkillAsk} 提问 ${activity.count} activities on ${activity.date} `}
+                    style={{ marginTop: "0.5em", minWidth: "700px" ,minHeight:"512px"}}
+                    renderBlock={(block, activity) => <div title={`${activity.SkillAnswer} 作答 ${activity.SkillAsk} 提问 ${activity.count} activities on ${activity.date} `}
                         onClick={e => console.log("activity", activity)}
                         placement="top" arrow
                     >
                         {block}
-                    </Tooltip>}
+                    </div>}
                 />
             </div>
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", alignItems: "flex-start", alignSelf: "flex-start", width: "90%" }}>
                 {/* show meditationTrails here */}
             </div>
-        </Container>
+        </div>
     </AppFrame>
 }
 export default Retrospect

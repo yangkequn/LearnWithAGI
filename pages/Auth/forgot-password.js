@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect } from "react";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss, AuthCss, AuthInputContainerCss, AuthPages, AuthSubmitCss } from "./consts";
+import { AuthPages, AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss, AuthInputContainerCss } from "./consts";
 import { AuthContext } from "./AuthContext";
 import CountrySelect from "./countrySelect";
 import TextField from '@mui/material/TextField';
 import { API } from "../../component/api";
-import "tailwindcss/tailwind.css"
 import { useRouter } from "next/navigation";
 
 const ToOneLanguage = (language_ind) => {
@@ -108,14 +107,14 @@ export default function ForgotPassword({ To }) {
             </div>
 
             <div key="user_foreign_phone" className="flex flex-row self-start w-full mx-2">
-                <Button onClick={e => {
+                <button onClick={e => {
                     setForeignPhone(!foreignPhone);
                     setCountryCode(foreignPhone ? 1 : 86);
                     if (foreignPhone) setAccount("")
                     else setPhone("")
                 }}>
                     {!foreignPhone ? info.ForeignPhoneMode : info.MailAccountLogin}
-                </Button>
+                </button>
             </div>
 
             <div className="w-full flex flex-row justify-between self-center items-center mb-4">

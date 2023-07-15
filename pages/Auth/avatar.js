@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
 import { RspType, GetUrl, Cmd, HGET } from "../../component/api";
-import "tailwindcss/tailwind.css"
 
 export default function UserAvatar({ userID }) {
     const [name, setName] = useState("")
+    const [src, setSrc] = useState("")
 
     useEffect(() => {
-        !!userID && HGET("UserInfoPublic", userID).then((data) => { !!data && setName(data["Nick"]) })
+        if (!userID) {
+            setName("")
+            setSrc("")
+            return
+        }
+        HGET("UserInfoPublic", userID).then((data) => { !!data && setName(data["Nick"]) })
+        setSrc(GetUrl(Cmd.HGET, "UserAvatar", userID, RspType.jpeg, "*"))
     }, [])
-    return <Tooltip title={name} placement="left" className="h-full self-center items-center justify-center">
-        {!!userID ? <Avatar src={GetUrl(Cmd.HGET, "UserAvatar", userID, RspType.jpeg, "*")} alt={name} /> : <Avatar alt={name} />}
-    </Tooltip>
+    return <div title={name} placement="left" className="h-full self-center items-center justify-center">
+        <Avatar alt={name} src={src} />
+    </div>
 }
 export const UserName = ({ pub }) => {
     const [name, setName] = useState("")
@@ -21,6 +26,6 @@ export const UserName = ({ pub }) => {
         else setName("")
     }, [pub])
     return <div>
-        {name} 
+        {name}
     </div>
 } 

@@ -5,15 +5,18 @@ export const AskContext = React.createContext({
     topics: [], setTopics: e => null,
     QA: [], setQA: e => null,
     topicLoaded: false, setTopicLoaded: e => null,
+    reload: 0, setReload: e => null,
 })
 export default function AskContextComponent({ children }) {
     const [topics, setTopics] = useState([])
     const [QA, setQA] = useState([])
     const [topicLoaded, setTopicLoaded] = useState(false)
+    const [reload, setReload] = useState(0)
     const store = {
         topics, setTopics,
         QA, setQA,
         topicLoaded, setTopicLoaded, 
+        setReload
     }
     useEffect(() => {
         ZRANGEBYSCORE("MyQuestionsList:@id", 0, "+inf").then((item_times) => {
@@ -34,7 +37,7 @@ export default function AskContextComponent({ children }) {
                 setTopicLoaded(true)
             })
         })
-    }, [])
+    }, [reload])
 
     return <AskContext.Provider value={store}>{children}</AskContext.Provider>
 }

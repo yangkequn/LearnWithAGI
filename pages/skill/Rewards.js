@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, useMemo } from "react"
-import { Container, Divider, Grow, Typography, } from "@mui/material";
-import { Box } from "@mui/system";
+import React, { useEffect, useState, useMemo, useContext } from "react"
+import Grow from '@mui/material/Grow';
+import Typography from '@mui/material/Typography';
 import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
-import { Jwt } from "../../component/jwt";
+import { GlobalContext } from "../_app";
 export default function Rewards({ creditTM }) {
+    const { LoggedIn } = useContext(GlobalContext)
     //使用localStorage缓存credit
     const [credit, setCredit] = useState(JSON.parse(typeof window !== 'undefined' && localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
     //上一次的credit. 创建此变量主要为使用方便
@@ -15,7 +16,7 @@ export default function Rewards({ creditTM }) {
     const [showReward, setShowReward] = useState(false)
     useEffect(() => {
         //if not login, return
-        if(Jwt.Get().IsValid() == false) return
+        if (!LoggedIn) return
         let today = new Date()
         //to format 20230101
         let todayStr = `${today.getFullYear()}${today.getMonth() + 1 < 10 ? "0" + (today.getMonth() + 1) : today.getMonth() + 1}${today.getDate() < 10 ? "0" + today.getDate() : today.getDate()}`
@@ -59,8 +60,8 @@ export default function Rewards({ creditTM }) {
         })
     }, [creditTM])
 
-    return <Box sx={{ marginTop: "10px", minWidth: "250px" }} >
-        <Box key={`credit${lastCredit}`} sx={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between" }}>
+    return !LoggedIn ? <div> </div> : <div className=" mt-2 min-w-[250px]" >
+        <div key={`credit${lastCredit}`} className="flex flex-row w-full justify-between">
             <Grow in={showReward} timeout={1000} >
                 <div className="text-xl" > {`+${rewardScore}`}<StarIcon></StarIcon> </div>
             </Grow>
@@ -72,7 +73,7 @@ export default function Rewards({ creditTM }) {
                 今日积分：{lastCredit}. 回答正确：{credit?.SkillAnswer}. 提问：{credit?.SkillAsk} 日程：{credit?.HealthAgendaDo}
             </Typography>
 
-        </Box>
+        </div>
 
         {/* <Divider sx={{ width: "90%", m: 0.5, justifyContent: "space-between" }} orientation="horizontal" /> */}
         {/* <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
@@ -86,5 +87,5 @@ export default function Rewards({ creditTM }) {
             </Box>
         </Box> */}
 
-    </Box>
+    </div>
 }

@@ -1,13 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState } from "react"
-import Tooltip from "@mui/material/Tooltip";
-import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
-
 import SendIcon from '@mui/icons-material/Send';
 import { API } from "../../component/api";
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
-import "tailwindcss/tailwind.css"
+// import "tailwindcss/tailwind.css"
 import BuildIcon from '@mui/icons-material/Build';
 import { Context } from "./Context"
 import { GlobalContext } from "../_app";
@@ -38,30 +34,32 @@ export default function Socratics({ topic }) {
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
     }, [skillPoint, skillMyTrace])
 
-    if (!FullName(skillPoint)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-screen-sm" ></div>
-    return <div key={`socratic-container-${skillPoint}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-screen-sm"    >
+    if (!FullName(skillPoint)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
+    return <div key={`socratic-container-${skillPoint}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]"    >
         {/* //list Tags of QAs,using mui tag */}
-        <div className="flex flex-row flex-wrap justify-start items-start overflow-scroll w-full py-3 gap-1 max-h-max min-h-min "        >
+        <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full py-3 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
 
-            <div className="flex flow-row text-xl text-gray-800 font-sans leading-4 w-fit bg-slate-300 rounded-md px-4 py-2 gap-2 items-center">
+            <div className="flex flow-row text-xl text-gray-800 font-sans leading-4 w-[50%]  bg-white/70 rounded-md px-4 py-2 gap-2 items-center">
                 <div> 苏格拉底演练场</div>
 
-                <div onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: true })
-                    .then((res) => setQAs(res ?? []))
-                } className="pr-1">
-                    <Tooltip title={"自动修复错误的问答列表"} placement="left" className="h-full self-center items-center justify-center"><BuildIcon></BuildIcon></Tooltip>
+                <div title={"自动修复错误的问答列表"} className="pr-1 h-full self-center items-center justify-center"
+                    onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
+                    } >
+                    <BuildIcon />
                 </div>
 
             </div>
             {
                 QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
-                    return <Chip key={QA.Q} label={QA.Q} icon={<ContactSupportIcon />} className=" text-base"
+                    return <div key={QA.Q} className=" text-base  even:bg-lime-100 odd: bg-amber-100 max-w-[50%] rounded-md px-4 py-[4px]  items-center"
                         onClick={() => API("SkillMyTraceReport", { Name: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
                             let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                             setSkillMyTrace(newMySkillTrace)
                             //update creditTM to refresh rewards
                             setCreditTM(new Date().getTime())
-                        })} />
+                        })} >
+                        ❓{QA.Q}
+                    </div>
                 })
             }
         </div>
@@ -88,7 +86,7 @@ export default function Socratics({ topic }) {
                 })
             }
         </div>
-        <div key="question-box" className="flex flex-col justify-start items-start w-full h-28 overflow-scroll py-2"  >
+        {/* <div key="question-box" className="flex flex-col justify-start items-start w-full h-28 overflow-scroll py-2"  >
             <TextField label="提出一个新问题, Shift + Enter换行, 按Enter提交" multiline={true} rows={1} className="text-base text-gray-800 font-sans w-full h-full" style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)" }}
                 onKeyDown={
                     (e) => {
@@ -113,25 +111,8 @@ export default function Socratics({ topic }) {
                         }
                     }}
             />
-        </div>
+        </div> */}
 
-        {/* <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "100%", maxWidth: 900, height: 180, fontSize: 14 }}> */}
-        {/* <IconButton type="button" sx={{ p: '10px' }} aria-label="search"><SearchIcon /> </IconButton> */}
-        {/* <Autocomplete options={selectedOption}
-                disablePortal={true}
-                freeSolo={true}
-                sx={{ width: 400 }}
-                renderInput={(params) => <TextField {...params} placeholder="在Reinfy上搜索新的主题" multiline={true} rows={4} />}
-                onChange={(e, v) => {
-                    setSearchText(v)
-                    e.preventDefault();
-                    e.stopPropagation()
-                }}
-            /> */}
 
-        {/* <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" /> */}
-
-        {/* <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions"> <MicIcon /> </IconButton> */}
-        {/* </Paper> */}
     </div>
 }

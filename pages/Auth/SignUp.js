@@ -10,10 +10,9 @@ import TextField from "@mui/material/TextField";
 
 import CountrySelect, { Countries, CountryCodes, CountryToFlag } from "./countrySelect";
 import { AuthContext } from "./AuthContext";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from ".";
+import { AuthPages, AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss } from "./consts";
 import { Jwt } from "../../component/jwt";
 import { API } from "../../component/api";
-import "tailwindcss/tailwind.css"
 import { useRouter } from "next/navigation";
 import ServiceTerm from "./serviceTerm";
 import { create } from "domain";

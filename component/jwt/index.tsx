@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CustomEvents } from "../../pages/_app"
+import CustomEvents from "../customEvents";
 
 export const SaveStorage = (url: string, data: any) => typeof window !== 'undefined' && localStorage.setItem(url, JSON.stringify(data));
 export const DelStorage = (key: string) => typeof window !== 'undefined' && localStorage.removeItem(key);
@@ -24,7 +24,7 @@ export class Jwt {
     IsValid(): boolean { return !!this["jwt"] && !!this["pub"] && !!this["id"] }
 
     public static Get = (jwt = GetStorage("jwt")): Jwt => {
-        var _jwt = Object.assign(new Jwt("", "", "", "", ""), jwt) as Jwt;
+        var _jwt = Object.assign(new Jwt("", "", "", "", ""), jwt ?? {}) as Jwt;
         return _jwt
     }
     public static Pub(): string { return Jwt.Get().pub }

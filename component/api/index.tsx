@@ -1,6 +1,5 @@
 import axios from "axios";
-import { AuthPages } from "../../pages/Auth";
-import { CustomEvents } from "../../pages/_app"
+import CustomEvents from "../customEvents";
 import { Jwt } from "../jwt";
 var msgpack = require('@ygoe/msgpack');
 const JwtRequest = (headers: any = {}) => {

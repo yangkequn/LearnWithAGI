@@ -3,7 +3,9 @@ import React, { createRef, useContext, useEffect, useState } from "react"
 import AskContextComponent, { AskContext } from "./AskContext"
 import LeftPanel from "./leftPanel"
 //use tailwindcss
-import "tailwindcss/tailwind.css"
+// import "tailwindcss/tailwind.css"
+import "tailwindcss/components.css"
+import "tailwindcss/utilities.css"
 import QuestionAandAnswer from "./QuestionAandAnswer";
 import AppFrame from "../../component/appFrame";
 

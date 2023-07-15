@@ -1,19 +1,22 @@
 "use client";
 import AppFrame from '../component/appFrame';
-import "tailwindcss/tailwind.css"
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { use, useContext, useEffect, useState } from 'react';
 import { GlobalContext } from './_app';
-import { API, HGET, HGETALL, HKEYS } from '../component/api';
+import { API, HGET,  HKEYS } from '../component/api';
 
 const ListItem = ({ id }) => {
   const Router = useRouter()
   const [data, setData] = useState({
-    Name: "", Detail: "", "Rank": 4000.0, "NumActive": 0, "NumInactive": 0, "NumDone": 0, "Items": [],
+    Name: "", Detail: "", "Rank": 4000.0, "NumActive": 0, "NumInactive": 0, "NumDone": 0, "Items": [], 
     "Ranks": [.0, 4000.0, 5000.0], "Weights": [3.3333333333333335, 5.833333333333334, 7.833333333333334], "TotalWeights": 2.726950354609929
   });
   useEffect(() => {
-    HGET("SkillPoint", id).then((data) => !!data && setData(data))
+    HGET("SkillTree", id).then((res) => { 
+      if (!res || res.length == 0) return
+      setData(res[0]) 
+    }) 
+    // HGET("SkillPoint", id).then((data) => !!data && setData(data)) 
   }, [])
   let details = [data.Detail, ...(data.Items ?? [])]
   return data.Name != "" && <div key="skill-container" className='flex flex-col w-60 h-60 max-h-60 max-w-md flex-auto rounded-xl'
@@ -38,7 +41,7 @@ export default function Home({ search }) {
         if (!!rsb?.Name) {
           Router.push("/skill?t=" + content)
         } else if (rsb == "loading") {
-          setMenuL2(<div className='flex flex-row w-full gap-12 mx-4'><div>正在创建技能，请稍后</div><div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 继续让AI创建课程: {content}</div></div>)
+          setMenuL2(<div className='animate-pulse flex flex-row w-full gap-12 mx-4'><div>正在创建技能，请稍后</div><div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 继续让AI创建课程: {content}</div></div>)
           //setTimeout(loadSkill, 100 * 1000)
         } else if (rsb == "notAllowed") {
           setMenuL2(<div className='flex flex-row w-full gap-12 mx-4'><div>创建技能失败，您没有权限</div><div className='text-lg font-bold  text-yellow-700 hover:bg-orange-200 rounded-md px-2 ' onClick={loadSkill}> 让AI创建课程: {content}</div></div>)

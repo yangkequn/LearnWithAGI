@@ -5,13 +5,12 @@ import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import { AuthContainerCSS, AuthContainerCSSL2, AuthCss, AuthPages, AuthSingleLineInputCss } from "./consts";
+import { AuthPages, AuthContainerCSS, AuthContainerCSSL2, AuthSingleLineInputCss } from "./consts";
 import CountrySelect from "./countrySelect";
 import { AuthContext } from "./AuthContext";
 import { API } from "../../component/api";
 import { Jwt } from "../../component/jwt";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
-import "tailwindcss/tailwind.css"
 import { useRouter } from "next/navigation";
 
 export default function Login({ To }) {
@@ -79,7 +78,6 @@ export default function Login({ To }) {
                 <Collapse in={openAlert}>
                     <Alert severity="info"  >{openAlert}</Alert>
                 </Collapse>
-
 
                 <div className="w-full flex flex-col">
                     <div className="flex flex-row self-start w-full " style={{ display: foreignPhone ? "flex" : "none" }}>

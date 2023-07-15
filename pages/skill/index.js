@@ -61,11 +61,7 @@ function ExploreComponent({ topic }) {
         , boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)"
     }}>
 
-        <div className="flex flex-col justify-between items-start w-1/4 h-full overflow-scroll  max-w-screen-sm min-w-min" >
-            <Divider sx={{ width: 280, m: 0.5 }} orientation="horizontal" />
-            <SkillTree topic={topic} />
-        </div>
-
+        <SkillTree topic={topic} />
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
         <Socratics topic={topic}></Socratics>
@@ -74,9 +70,7 @@ function ExploreComponent({ topic }) {
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
         {/* 底部的搜索结果,immerse chatbox */}
-        <div className="flex flex-col justify-start items-start w-full h-full overflow-scroll  max-w-screen-sm min-w-min" >
-            {!!(skillPoint?.Name) && <QAComponent setCreditTM={setCreditTM} topic={topic}></QAComponent>}
-        </div>
+        <QAComponent setCreditTM={setCreditTM} topic={topic}></QAComponent>
 
     </div >
 

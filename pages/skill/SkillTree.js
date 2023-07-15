@@ -30,12 +30,6 @@ export default function SkillTree({ topic }) {
             let leafs = res.filter((item) => !item.Items || item.Items.length == 0)
             setSkillTree(leafs);
         })
-        // API("SkillTree", { Name: topic }).then((res) => {
-        //     if (!res || res.length == 0) return
-        //     //sort res by rank
-        //     //res = SortSkillTree(res)
-        //     setSkillTree(res);
-        // })
     }, [])
 
     //auto select the first uncompleted skill path as default
@@ -56,8 +50,8 @@ export default function SkillTree({ topic }) {
     }
 
     {/* 相关的主题 */ }
-    return <div className="flex flex-col justify-start items-start w-full h-full overflow-scroll gap-1 max-w-lg"    >
-        <div key="title" className="flex flex-row pt-1 whitespace-normal text-lg bg-yellow-50 w-full rounded pl-2 gap-2" >
+    return <div className="flex flex-col justify-start items-start w-full max-w-[20%] h-full overflow-scroll gap-1 mt-1"    >
+        <div key="title" className="flex flex-row pt-1 whitespace-normal text-lg bg-yellow-50 w-full rounded ml-2 gap-2" >
             <div className=" font-semibold ">课程</div>
             <div className=" font-semibold "> {topic}</div>
         </div>

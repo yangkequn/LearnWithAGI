@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { API, HEXISTS } from "../../component/api";
+//import "tailwindcss/tailwind.css"
 
 export const AuthContext = React.createContext({
     nickname: "", setNickname: e => null, nicknameError: "",

@@ -1,23 +1,16 @@
 
 import React, { ReactComponentElement, useEffect, useState } from 'react';
+import './globals.css'
 import { Jwt } from "../component/jwt"
 import type { AppProps /*, AppContext */ } from 'next/app'
 import App from 'next/app'
+import CustomEvents from '../component/customEvents';
 
-export const CustomEvents = {
-  UpdateJWT: "UpdateJWT",
-  LoginStatus: "Login",
-  Redirect: "Redirect",
-  LoginStatusDispatch: (data: boolean) => dispatchEvent(new CustomEvent(CustomEvents.LoginStatus, { detail: { status: data } })),
-  RedirectDispatch: (AuthPage: string) => dispatchEvent(new CustomEvent(CustomEvents.Redirect, { detail: { page: AuthPage } })),
-
-}
-
-interface GlobalContextType {
+interface GlobalContextType { 
   LoggedIn: boolean,
   // UpdateJWT: (removeJWT?: boolean) => void;
   // SignOut: (e: any) => void;
-  RedirectUrl: string,
+  RedirectUrl: string, 
   setRedirectUrl: React.Dispatch<React.SetStateAction<string>>,
 
   openAlert: string,
@@ -40,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [RedirectUrl, setRedirectUrl] = useState("")
   const [openAlert, setOpenAlert] = React.useState("");
   const [MenuL2, setMenuL2] = useState(null)
-  const [creditTM, setCreditTM] = useState(0)
+  const [creditTM, setCreditTM] = useState(0) 
 
 
   useEffect(() => {

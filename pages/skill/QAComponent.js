@@ -2,11 +2,8 @@
 import React, { createRef, useContext, useEffect, useState } from "react"
 
 import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import Tooltip from "@mui/material/Tooltip";
 
 
-import { Box } from "@mui/system";
 import { API, HGET } from "../../component/api";
 import BuildIcon from '@mui/icons-material/Build';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -78,25 +75,27 @@ export default function QAComponent({ topic }) {
         if (!correct && TraceQAsStr.indexOf(QA.Question + "|||" + QA.Answers.indexOf(aswItem)) >= 0) return "❌"
         return "⬜"
     }
-    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-between items-start w-full px-1">
+
+    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full   overflow-scroll  max-w-[40%] min-w-[20%] pr-1">
 
         <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-3 w-full">
-            <div key="question-box" className="flex flex-row w-full flex-grow items-center md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
-            rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-10 "  >
+
+            <div key="question-title-box" class={`flex flex-row w-full flex-grow items-center md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
+            rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-10  ${loading && "animate-pulse"}`}  >
                 <div key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
                     API("SkillMyTraceReport", { Name: FullName(), Action: "reset-qas" }).then((res) => {
                         let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                         setSkillMyTrace(newMySkillTrace)
                     })
                 }}>
-                    <Tooltip title="reset all practice" ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></Tooltip>
+                    <div title="reset all practice" ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
                 </div>
 
                 <textarea className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none "
                     //style="max-height: 200px; height: 24px; overflow-y: hidden;"
                     //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
                     style={{ maxHeight: 200, height: 24, overflowY: "hidden" }}
-                    value={`练习：${FullName()}`}
+                    value={`问答练习：${FullName()}`}
                     //placeholder={FullName()}
                     onChange={(e) => {
                         setQuestion(e.target.value)
@@ -125,56 +124,50 @@ export default function QAComponent({ topic }) {
                         }
                     </select>
                 </div>
-                <button className="self-center absolute p-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2"
-                    onClick={e => {
-                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
-                            .then((res) => setQAs(res ?? []))
-                    }}>
-                    {loading ? <LoadingElement /> :
-                        <Tooltip title={"申请重建练习列表"} placement="left" className="h-full self-center items-center justify-center">
-                            <div className="w-6 h-6"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabIndex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></div></Tooltip>}
+                <button class={`self-center absolute m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
+                    !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
+                        .then((res) => setQAs(res ?? []))
+                }}>
+                    <div title={"申请重建练习列表"} className="mx=1 self-center items-center justify-center w-6 h-6">
+                        <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabIndex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+                    </div>
+
                 </button>
             </div>
 
         </div>
 
-        <div key="knowledge-point-questions" className="flex flex-row h-full w-full justify-start text-gra-800 gap-5"        >
+        <div key="questions-all-completed-cheers" className=" flex flex-col bg-[#ddba3b]  justify-start items-start rounded-md w-full text-gray-700 text-lg" >
+            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Question) < 0).length == 0 && <div className="flex flex-row w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6" >
+                <div className="flex flex-row w-fit self-center text-[56px]">😄</div>
+                <div className="flex flex-row w-fit self-center text-xl">Completed! Nice Job!</div>
+            </div>}
+        </div>
 
-            {/* 当前问题 */}
-            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Question) < 0).length == 0 && <Box sx={{ backgroundColor: "#f9f0d1", boxShadow: "5px 5px 10px 0px gold" }}
-                className=" flex flex-col h-full justify-start items-start rounded-md min-h-36 w-96 text-gray-700 text-lg" >
-                <div className="flex flex-col w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6" >
-                    <div className="flex flex-row w-fit self-center text-7xl">😄</div>
-                    <div className="flex flex-row w-fit self-center text-xl">Completed! Nice Job!</div>
-                </div>
-            </Box>
-            }
-
-            {/* 已经回答的题目 */}
-            <div className="flex flex-row justify-start items-start rounded-md w-full h-full text-gray-800 text-lg min-h-[300px]  max-h-[460px] flex-auto overflow-x-auto flex-wrap" >
+        <div key="knowledge-point-questions" className="flex flex-row w-full justify-start text-gra-800 gap-5 mt-2"        >
+            <div key="current-questions-all" className="flex flex-row justify-start items-start rounded-md w-full  text-gray-800 text-lg min-h-[300px]  max-h-[460px] flex-auto overflow-x-auto flex-wrap" >
                 <div key={`activeStep-${qaIndex}`} variant="dots" position="static"
-                    className=" flex flex-col justify-start rounded-md h-full w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
+                    className=" flex flex-col justify-start rounded-md w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
-                    {QAs?.map((qa, index) => {
-                        return <div key={`OtherQA${qa.Question}`} className={`flex flex-row justify-start items-center h-fit  text-lg leading-7 text-gray-700 max-w-[100%] min-w-[200px] flex-grow 
-                         ${[" bg-red-100 ", "  bg-lime-100", " bg-amber-100 "][index % 3]} `}
-                            onClick={() => setQAIndex(index)} >
-                            <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between max-w-[300px] w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
-                                <div className="flex flex-row justify-between pr-2 gap-1">
-                                    <div className="rounded self-center ">{AnswerRight(qa)}</div>
-                                    <div>{qa.Question}</div>
-                                    <div className="flex flex-row w-min gap-1 items-center">
-                                        {qaIndex == index && <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon>}
-                                        {qaIndex == index && <Tooltip title="删除该条目" ><DeleteIcon onClick={() => {
-                                            API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Question}` })
-                                                .then((res) => setQAs(res ?? []))
-                                        }}></DeleteIcon></Tooltip>}
+                    {QAs?.map((qa, index) => <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Question}`}
+                        class={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 max-w-[48%] min-w-[200px] w-full flex-grow  even:bg-lime-100 odd: bg-amber-100`}
+                        onClick={() => setQAIndex(index)} >
+                        <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
+                            <div className=" flex flex-row justify-between items-center pr-2 gap-1  w-full">
+                                <div className="rounded ">{AnswerRight(qa)}</div>
+                                <div className="flex flex-row w-full">{qa.Question}</div>
+                                <div className="flex flex-row w-min gap-1 self-end invisible group-hover:visible">
+                                    <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon></div>
+                                    <div title="删除该条目" > <DeleteIcon onClick={() => {
+                                        API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Question}` })
+                                            .then((res) => setQAs(res ?? []))
+                                    }}></DeleteIcon></div>
 
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    })}
+                    </div>
+                    )}
                 </div>
 
                 {/* Dots stepper, current index is {QAIndex}, length is {QAS.length} */}
@@ -207,14 +200,13 @@ export default function QAComponent({ topic }) {
         <Divider sx={{ width: 280, m: 0.5 }} orientation="horizontal" />
 
         {
-            !!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start items-start w-full" >
+            !!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start w-full items-start]" >
                 <div variant="h4" className=" font-semibold text-lg text-gray-800  font-sans leading-8 my-2 " >
                     回答正确的是:
-                    {/* <Tooltip title="注意，为提高效果，每8小时才能再次修改答案" placement="left" className="h-full "> <div>? </div></Tooltip> */}
                 </div>
-                <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3" >
-                    {AnswersShuffled(QAs[qaIndex]).map((a, i) => <ListItem key={`answer-item${a}-${i}`}
-                        className={`flex flex-row items-center justify-center rounded text-gray-800 
+                <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3  " >
+                    {AnswersShuffled(QAs[qaIndex]).map((a, i) => <div key={`answer-item${a}-${i}`}
+                        class={`flex flex-row items-center justify-center rounded text-gray-800  w-[48%] p-2
                         ${AnswerItemRightWrong(QAs[qaIndex], a) == "✅" ? " text-lg w-5/12 bg-green-200 font-bold min-h-max  py-4" : " text-base w-4/12 bg-orange-200 min-h-min"}`}
                         //response of  answer action
                         onClick={() => {
@@ -231,7 +223,7 @@ export default function QAComponent({ topic }) {
                             })
                         }}>
                         {AnswerItemRightWrong(QAs[qaIndex], a)} {a}
-                    </ListItem>)
+                    </div>)
                     }
                 </div>
             </div>

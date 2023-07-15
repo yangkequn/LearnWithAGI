@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, } from "react";
-import "tailwindcss/tailwind.css"
+// import "tailwindcss/tailwind.css"
 export default function ServiceTerm() {
     return <div className=" max-w-lg flex flex-col mt-3 m-2 overflow-x-scroll">
         <h1 className=" text-xl mb-4">用户注册协议</h1>
