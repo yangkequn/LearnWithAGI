@@ -36,16 +36,16 @@ export default function Navigator() {
 
     {/* background-color: #2E4052; */}
     <div id="nagivator-l1" className="bg-slate-300 flex w-full flex-row h-12 items-center whitespace-nowrap justify-center text-white text-2xl" >
-      <div key="retrict-width" class='flex flex-row max-w-2xl  min-w-[500px] w-full items-center  gap-2 '>
-        <div title="Home" onClick={e => { if (pathName != "/") router.push("/") }} class={`text-2xl h-full px-2 w-9 justify-center self-center py-1 rounded-lg  hover:bg-orange-200`}>
+      <div key="retrict-width" className='flex flex-row max-w-2xl  min-w-[500px] w-full items-center  gap-2 '>
+        <div title="Home" onClick={e => { if (pathName != "/") router.push("/") }} className={`text-2xl h-full px-2 w-9 justify-center self-center py-1 rounded-lg  hover:bg-orange-200`}>
           {MenuHome.name}
         </div>
 
         <div key="searchbox-and-icon-buttons" className="flex flex-row h-full w-96 active:w-full hover:w-full items-center gap-2" >
           <div key="question-box" className="relative flex flex-row  flex-grow py-1 md:pl-4 border border-black/10 bg-white
            dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center w-full h-full  "  >
-            <div class='flex flex-row w-full active:w-full h-full items-center'>
-              <textarea class={`m-0 w-full h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-4 pr-20  outline-none self-center overflow-hidden text-base text-gray-700`}
+            <div className='flex flex-row w-full active:w-full h-full items-center'>
+              <textarea className={`m-0 w-full h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-4 pr-20  outline-none self-center overflow-hidden text-base text-gray-700`}
                 //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
 
                 value={question}
@@ -67,7 +67,7 @@ export default function Navigator() {
             <div key="create-skill" className="absolute right-1 block  text-2xl leading-8 px-1">
               <div className="flex flex-row gap-1 w-fit items-center  text-gray-700 bg-slate-300 h-fit bg-transparent   dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent rounded-lg  border-black hover:bg-orange-200 px-1"
                 onClick={e => router.push("/?search=" + question)}>
-                <div >📚</div> <div class=' text-lg'>课程</div>
+                <div >📚</div> <div className=' text-lg'>课程</div>
               </div>
             </div>
 
@@ -77,16 +77,16 @@ export default function Navigator() {
             //为避免以极高的误点击率错误提问，禁用直接提问：if (question.length == 0) return router.push("/Asks") else router.push("/Asks?q=" + question)
             router.push("/Asks")
           }} >
-            {/* <div class='w-fit h-full ' >📄</div> */}
-            <div class='w-fit h-full'>💬</div> <div class=' text-lg'>对话</div>
+            {/* <div className='w-fit h-full ' >📄</div> */}
+            <div className='w-fit h-full'>💬</div> <div className=' text-lg'>对话</div>
           </div>
         </div>
 
-        <div id="nagivator-l1-menuitems " class='flex flex-row self-center max-w-2xl gap-4 '>
+        <div id="nagivator-l1-menuitems " className='flex flex-row self-center max-w-2xl gap-4 '>
           {!!MenuItems && MenuItems.map((item, index) => <Link key={`menu-item-${item.name}`} href={item.path}> <button key={`menu_${item.name}`} onClick={(e) => router.push(item.path)}
             className={` text-lg text-gray-800 w-fit px-2  hover:bg-orange-200 font-sans rounded-lg ${pathName?.toLowerCase().indexOf(item.path.toLowerCase()) >= 0 ? "text-black font-bold bg-orange-200" : ""}`}
           >
-            <div class='leading-8'>{item.name}</div>
+            <div className='leading-8'>{item.name}</div>
           </button></Link>
           )}
 

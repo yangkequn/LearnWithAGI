@@ -80,7 +80,7 @@ export default function QAComponent({ topic }) {
 
         <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-3 w-full">
 
-            <div key="question-title-box" class={`flex flex-row w-full flex-grow items-center md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
+            <div key="question-title-box" className={`flex flex-row w-full flex-grow items-center md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
             rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-10  ${loading && "animate-pulse"}`}  >
                 <div key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
                     API("SkillMyTraceReport", { Name: FullName(), Action: "reset-qas" }).then((res) => {
@@ -124,7 +124,7 @@ export default function QAComponent({ topic }) {
                         }
                     </select>
                 </div>
-                <button class={`self-center absolute m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
+                <button className={`self-center absolute m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
                     !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
                         .then((res) => setQAs(res ?? []))
                 }}>
@@ -138,7 +138,7 @@ export default function QAComponent({ topic }) {
         </div>
 
         <div key="questions-all-completed-cheers" className=" flex flex-col bg-[#ddba3b]  justify-start items-start rounded-md w-full text-gray-700 text-lg" >
-            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Question) < 0).length == 0 && <div className="flex flex-row w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6" >
+            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Question) < 0).length == 0 && <div className="flex flex-row w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6  animate-bounce " >
                 <div className="flex flex-row w-fit self-center text-[56px]">😄</div>
                 <div className="flex flex-row w-fit self-center text-xl">Completed! Nice Job!</div>
             </div>}
@@ -150,7 +150,7 @@ export default function QAComponent({ topic }) {
                     className=" flex flex-col justify-start rounded-md w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
                     {QAs?.map((qa, index) => <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Question}`}
-                        class={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 max-w-[48%] min-w-[200px] w-full flex-grow  even:bg-lime-100 odd: bg-amber-100`}
+                        className={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 max-w-[48%] min-w-[200px] w-full flex-grow  even:bg-lime-100 odd: bg-amber-100`}
                         onClick={() => setQAIndex(index)} >
                         <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
                             <div className=" flex flex-row justify-between items-center pr-2 gap-1  w-full">
@@ -206,7 +206,7 @@ export default function QAComponent({ topic }) {
                 </div>
                 <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3  " >
                     {AnswersShuffled(QAs[qaIndex]).map((a, i) => <div key={`answer-item${a}-${i}`}
-                        class={`flex flex-row items-center justify-center rounded text-gray-800  w-[48%] p-2
+                        className={`flex flex-row items-center justify-center rounded text-gray-800  w-[48%] p-2
                         ${AnswerItemRightWrong(QAs[qaIndex], a) == "✅" ? " text-lg w-5/12 bg-green-200 font-bold min-h-max  py-4" : " text-base w-4/12 bg-orange-200 min-h-min"}`}
                         //response of  answer action
                         onClick={() => {
