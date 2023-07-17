@@ -1,9 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState } from "react"
 import Divider from '@mui/material/Divider';
-import AddIcon from '@mui/icons-material/Add';
-import { Box } from "@mui/system";
-import SendIcon from '@mui/icons-material/Send';
 import QAComponent from "./QAComponent";
 import SkillTree from "./SkillTree";
 import Rewards from "./Rewards";

@@ -2,14 +2,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createRef, useContext, useEffect, useState } from "react"
 import AskContextComponent, { AskContext } from "./AskContext"
-//use tailwindcss
-// import "tailwindcss/tailwind.css"
 import { API, HMGET, ZRANGEBYSCORE, ZREM, ZREMRANGEBYSCORE } from "../../component/api"
 import ListIcon from '@mui/icons-material/List';
 
 export default function LeftPanel() {
     const { topics, setTopics, QA, setQA, setReload } = useContext(AskContext)
-    return <div key="left-panel" className={"flex flex-col justify-start w-64 bg-gray-900 border-amber-200 text-base h-full  text-gray-100"}>
+    return <div key="left-panel" className={"flex flex-col justify-start w-64 bg-gray-900 border-amber-200 text-base h-full flex-grow flex-auto  text-gray-100"}>
         <div className="flex flex-row flex-nowrap w-full h-10 justify-start items-center gap-3 px-2">
             <div className="self-center"><ListIcon></ListIcon> </div>
             <div className=" self-center  w-full leading-7 " > 问题列表</div>
@@ -38,6 +36,9 @@ export default function LeftPanel() {
                 })
             }
         </div>
+
+        <div className="h-full flex flex-grow" />
+
         <div className="flex flex-col min-w-250 w-full h-10 justify-center items-center bg-gray-600 " onClick={() => {
             //remove all alement of ZSet
             [...topics].map((topic) => {

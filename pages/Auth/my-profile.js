@@ -5,7 +5,6 @@ import { TextareaAutosize } from "@mui/base";
 import { GetUrl, RspType, API, Cmd, HGET } from "../../component/api";
 import { Jwt } from "../../component/jwt";
 import { GlobalContext } from "../_app";
-// import "tailwindcss/tailwind.css"
 import { usePathname, useRouter } from "next/navigation";
 import AppFrame from "@/component/appFrame";
 
@@ -147,9 +146,9 @@ export default function MyProfile() {
 
       {/* display introduction ,left adjust */}
       <TextField key="input-channel-name" className="flex flex-row justify-start w-full self-start font-sans  mb-4"
-        label={"简介:"} placeholder={Introduction} style={{ width: "100%" }} aria-label="maximum height"
+        label={"简介:"} placeholder={Introduction} aria-label="maximum height"
         onChange={(e) => setIntroduction(e.target.value)} minRows={3} onResize={undefined} onResizeCapture={undefined} />
-
+        
       <button className="flex flex-row justify-center w-full items-center font-sans text-sm h-9 bg-sky-200 text-gray-700 rounded my-4" key={"sign-up-button"} onClick={e => SaveProfile(e)}
         disabled={!!buttonAlert}> {buttonAlert || info.save} </button>
     </div>

@@ -80,8 +80,8 @@ export default function QAComponent({ topic }) {
 
         <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-3 w-full">
 
-            <div key="question-title-box" className={`flex flex-row w-full flex-grow items-center md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
-            rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-10  ${loading && "animate-pulse"}`}  >
+            <div key="question-title-box" className={`flex flex-row  w-full flex-grow items-center md:pl-4 border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
+            rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-fit ${loading && "animate-pulse"}`}  >
                 <div key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
                     API("SkillMyTraceReport", { Name: FullName(), Action: "reset-qas" }).then((res) => {
                         let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
@@ -91,27 +91,10 @@ export default function QAComponent({ topic }) {
                     <div title="reset all practice" ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
                 </div>
 
-                <textarea className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none "
-                    //style="max-height: 200px; height: 24px; overflow-y: hidden;"
-                    //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
-                    style={{ maxHeight: 200, height: 24, overflowY: "hidden" }}
-                    value={`问答练习：${FullName()}`}
-                    //placeholder={FullName()}
-                    onChange={(e) => {
-                        setQuestion(e.target.value)
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.keyCode !== 13) return
-                        //if not empty
-                        let Question = e.target.value
-                        if (!Question) return
-                        OnSubmitQuestion(Question)
-                        // stop propagation
-                        e.preventDefault()
-                    }}
-                    disabled={true}
-                />
-                <div className="flex self-center absolute  right-10 md:right-9">
+                <div className="flex  w-full self-center resize-none border-0 bg-transparent  pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none ">
+                    {`问答练习：${FullName()}`}
+                </div>
+                <div className="flex self-center  right-10 md:right-9">
                     {/* select how many questions to ask */}
                     <select className="bg-transparent border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1" disabled={loading} value={QANum}
                         onChange={(e) => {
@@ -123,16 +106,16 @@ export default function QAComponent({ topic }) {
 
                         }
                     </select>
-                </div>
-                <button className={`self-center absolute m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
-                    !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
-                        .then((res) => setQAs(res ?? []))
-                }}>
-                    <div title={"申请重建练习列表"} className="mx=1 self-center items-center justify-center w-6 h-6">
-                        <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabIndex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
-                    </div>
+                    <button className={`self-center m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
+                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
+                            .then((res) => setQAs(res ?? []))
+                    }}>
+                        <div title={"申请重建练习列表"} className="mx=1 self-center items-center justify-center w-6 h-6">
+                            <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabIndex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+                        </div>
 
-                </button>
+                    </button>
+                </div>
             </div>
 
         </div>

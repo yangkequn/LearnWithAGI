@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
+//import "tailwindcss/tailwind.css";
 import { GlobalContext } from "../../pages/_app"
 import UserAvatar from '../../pages/Auth/avatar';
 import { Jwt } from '../jwt';
-import SearchIcon from '@mui/icons-material/Search';
-import ChatIcon from '@mui/icons-material/Chat';
-import SchoolIcon from '@mui/icons-material/School';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-const MenuHome = { name: `🏠`, path: "/", icon: <SearchIcon fontSize={'large'} /> }
-const MenuAsks = { name: `提问`, path: "/Asks", icon: <ChatIcon fontSize={'large'} /> }
-const MenuSkill = { name: `课程`, path: "/skill", icon: <SchoolIcon fontSize={'large'} /> }
+
 const MenuRetro = { name: `回顾`, path: "/Retrospect", icon: null }
 const MenuSignIn = { name: `登录`, path: "/Auth", icon: null }
 const MenuItems = [MenuRetro]
@@ -32,22 +28,21 @@ export default function Navigator() {
   //read jwt from cookie, if not exist, redirect to login page
 
 
-  return <div id="navigator" className="flex flex-col w-full font-sans font" >
+  return <div id="navigator" className="flex flex-col w-full h-fit font-sans font" >
 
     {/* background-color: #2E4052; */}
     <div id="nagivator-l1" className="bg-slate-300 flex w-full flex-row h-12 items-center whitespace-nowrap justify-center text-white text-2xl" >
-      <div key="retrict-width" className='flex flex-row max-w-2xl  min-w-[500px] w-full items-center  gap-2 '>
-        <div title="Home" onClick={e => { if (pathName != "/") router.push("/") }} className={`text-2xl h-full px-2 w-9 justify-center self-center py-1 rounded-lg  hover:bg-orange-200`}>
-          {MenuHome.name}
+      <div key="retrict-width" className='flex flex-row min-w-[600px] items-center  gap-2 '>
+        <div title="Home" onClick={e => { router.push("/") }} className={`text-2xl h-full px-2 w-9 justify-center self-center py-1 rounded-lg  hover:bg-orange-200`}>
+          🏠
         </div>
 
-        <div key="searchbox-and-icon-buttons" className="flex flex-row h-full w-96 active:w-full hover:w-full items-center gap-2" >
-          <div key="question-box" className="relative flex flex-row  flex-grow py-1 md:pl-4 border border-black/10 bg-white
+        <div key="searchbox-and-icon-buttons" className="flex flex-row h-full l hover:w-full items-center gap-2" >
+          <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 border border-black/10 bg-white
            dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center w-full h-full  "  >
-            <div className='flex flex-row w-full active:w-full h-full items-center'>
-              <textarea className={`m-0 w-full h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-4 pr-20  outline-none self-center overflow-hidden text-base text-gray-700`}
-                //    style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", maxHeight: 200, height: 24, overflowY: "hidden" }}
-
+            <div className="flex flex-row w-full  h-full items-center self-center">
+              <textarea className="flex flex-row flex-grow m-0 w-full min-w-[250px]  h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent 
+              outline-none self-center overflow-hidden text-base text-gray-700"
                 value={question}
                 placeholder="Ask me anything..."
                 onChange={(e) => setQuestion(e.target.value)}
@@ -64,10 +59,10 @@ export default function Navigator() {
               />
             </div>
 
-            <div key="create-skill" className="absolute right-1 block  text-2xl leading-8 px-1">
+            <div key="create-skill" className=" flex  text-2xl leading-8 px-1 pr-1">
               <div className="flex flex-row gap-1 w-fit items-center  text-gray-700 bg-slate-300 h-fit bg-transparent   dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent rounded-lg  border-black hover:bg-orange-200 px-1"
                 onClick={e => router.push("/?search=" + question)}>
-                <div >📚</div> <div className=' text-lg'>课程</div>
+                <div >📚</div> <div className=' text-lg  mx-1'>课程</div>
               </div>
             </div>
 
@@ -78,7 +73,7 @@ export default function Navigator() {
             router.push("/Asks")
           }} >
             {/* <div className='w-fit h-full ' >📄</div> */}
-            <div className='w-fit h-full'>💬</div> <div className=' text-lg'>对话</div>
+            <div className='w-fit h-full'>💬</div> <div className=' text-lg mx-1'>对话</div>
           </div>
         </div>
 
@@ -94,7 +89,7 @@ export default function Navigator() {
           <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={LoggedIn ? "/Auth/my-profile?to=" + pathName : "/Auth?page=Login&to=" + pathName} >
             <UserAvatar userID={Jwt.Pub()} />
           </Link>
-          
+
         </div>
       </div>
     </div >
