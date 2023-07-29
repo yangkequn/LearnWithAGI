@@ -2,7 +2,6 @@
 import React, { use, useContext, useEffect, useState } from "react";
 import Login from "./login";
 import SignUp from "./SignUp";
-import MyProfile from "./my-profile";
 import ForgotPassword from "./forgot-password";
 import AuthContextComponent, { AuthContext } from "./AuthContext";
 import AppFrame from "../../component/appFrame"
@@ -20,7 +19,6 @@ const AuthFrame = ({ AuthPage, To }: { AuthPage: string, To: string }) => {
     }, [LoggedIn])
     return <div className="flex flex-row items-start self-center justify-center w-full h-full mt-4 ">
         {AuthPage === AuthPages.SignUp && <SignUp To={To} />}
-        {AuthPage === AuthPages.MyProfile && <MyProfile />} 
         {AuthPage === AuthPages.ForgotPassword && <ForgotPassword To={To} />}  
         {AuthPage === AuthPages.Login && <Login To={To} />}
     </div>

@@ -75,7 +75,7 @@ export default function Login({ To }) {
             <div className={AuthContainerCSSL2}>
 
                 <div className="ml-4" ><h2> {info["Title"]} </h2></div>
-                <Collapse in={openAlert}>
+                <Collapse in={!!openAlert}>
                     <Alert severity="info"  >{openAlert}</Alert>
                 </Collapse>
 

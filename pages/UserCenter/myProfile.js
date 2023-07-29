@@ -108,10 +108,8 @@ export default function MyProfile() {
     you should loggin first
   </div>
 
-  return <AppFrame> <div key={`MyProfile${LoggedIn}`} className="flex flex-col justify-center h-full items-center font-sans w-full" >
-
-
-    <div className="flex flex-col justify-center w-4/12 min-w-max items-center font-sans max-w-xl bg-white text-black px-8 pt-12  ">
+  return <div key={`MyProfile${LoggedIn}`} className="flex flex-col justify-center h-full items-center font-sans w-full" >
+    <div className="flex flex-col justify-center w-full min-w-max items-center font-sans max-w-sm bg-white text-black px-8 pt-12  ">
       <div className="flex flex-row w-full justify-between mb-8 items-center">
         <div><h2> {info["Title"]} </h2></div>
 
@@ -145,15 +143,16 @@ export default function MyProfile() {
       <Avatar id={Jwt.Pub()} />
 
       {/* display introduction ,left adjust */}
-      <TextField key="input-channel-name" className="flex flex-row justify-start w-full self-start font-sans  mb-4"
-        label={"简介:"} placeholder={Introduction} aria-label="maximum height"
-        onChange={(e) => setIntroduction(e.target.value)} minRows={3} onResize={undefined} onResizeCapture={undefined} />
-        
+      <div className="flex flex-row h-full self-start w-full rounded-md">
+        <textarea key="input-channel-name" className="flex flex-row justify-start self-start font-sans h-full  mb-4 ring-1  resize-none " style={{ "width": "100%" }}
+          placeholder={"简介:"} aria-label="maximum height" value={Introduction} rows={1}
+          onChange={(e) => setIntroduction(e.target.value)} minRows={3} onResize={undefined} onResizeCapture={undefined} />
+      </div>
+
       <button className="flex flex-row justify-center w-full items-center font-sans text-sm h-9 bg-sky-200 text-gray-700 rounded my-4" key={"sign-up-button"} onClick={e => SaveProfile(e)}
         disabled={!!buttonAlert}> {buttonAlert || info.save} </button>
     </div>
 
     <div className="flex flex-row justify-center w-full items-center font-sans  mb-8 mu-8 text-sm rounded">{ }</div>
   </div>
-  </AppFrame >
 }

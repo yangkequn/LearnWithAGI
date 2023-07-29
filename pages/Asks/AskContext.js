@@ -1,22 +1,19 @@
-import { HMGET, ZRANGEBYSCORE } from "../../component/api";
+import { API, HMGET, ZRANGEBYSCORE } from "../../component/api";
 import React, { useEffect, useState } from "react";
 
-export const AskContext = React.createContext({
-    topics: [], setTopics: e => null,
-    QA: [], setQA: e => null,
-    topicLoaded: false, setTopicLoaded: e => null,
-    reload: 0, setReload: e => null,
-})
+export const AskContext = React.createContext(undefined)
 export default function AskContextComponent({ children }) {
     const [topics, setTopics] = useState([])
-    const [QA, setQA] = useState([])
+    const [QA, setQA] = useState({ Q: "", A: "" })
     const [topicLoaded, setTopicLoaded] = useState(false)
     const [reload, setReload] = useState(0)
+    const [modelGPT, setModelGPT] = useState("gpt-3.5")
     const store = {
         topics, setTopics,
         QA, setQA,
-        topicLoaded, setTopicLoaded, 
-        setReload
+        topicLoaded, setTopicLoaded,
+        setReload,
+        modelGPT, setModelGPT,
     }
     useEffect(() => {
         ZRANGEBYSCORE("MyQuestionsList:@id", 0, "+inf").then((item_times) => {

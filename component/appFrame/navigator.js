@@ -41,8 +41,7 @@ export default function Navigator() {
           <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 border border-black/10 bg-white
            dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center w-full h-full  "  >
             <div className="flex flex-row w-full  h-full items-center self-center">
-              <textarea className="flex flex-row flex-grow m-0 w-full min-w-[250px]  h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent 
-              outline-none self-center overflow-hidden text-base text-gray-700"
+              <textarea className="flex flex-row flex-grow m-0 w-full min-w-[250px] h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent outline-none self-center overflow-hidden text-base text-gray-700"
                 value={question}
                 placeholder="Ask me anything..."
                 onChange={(e) => setQuestion(e.target.value)}
@@ -86,7 +85,7 @@ export default function Navigator() {
           )}
 
           {/* display avatar if logged in */}
-          <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={LoggedIn ? "/Auth/my-profile?to=" + pathName : "/Auth?page=Login&to=" + pathName} >
+          <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={LoggedIn ? "/UserCenter?page=Order&to=" + pathName : "/Auth?page=Login&to=" + pathName} >
             <UserAvatar userID={Jwt.Pub()} />
           </Link>
 

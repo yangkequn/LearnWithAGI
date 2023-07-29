@@ -35,26 +35,26 @@ export const ThisWeekEnds = () => {
 }
 
 export const KeyYMD = (KeyPrefix: string, tm = new Date()) => {
-    return KeyPrefix + "YMD:" + (tm.getFullYear() * 10000 + (tm.getMonth() + 1) * 100 + tm.getDate());
+    return KeyPrefix + ":YMD_" + (tm.getFullYear() * 10000 + (tm.getMonth() + 1) * 100 + tm.getDate());
 };
 export const KeyYW = (KeyPrefix: string, tm = new Date()) => {
     // year is 4 digits, week is 2 digits, with 0 padding
     let year = tm.getFullYear().toString();
     let week = tm.iso8601Week().toString();
     if (week.length === 1) week = "0" + week;
-    return KeyPrefix + "YW:" + year + week;
+    return KeyPrefix + ":YW_" + year + week;
 }
 export const KeyYM = (KeyPrefix: string, tm = new Date()) => {
     // year is 4 digits, week is 2 digits, with 0 padding
     let year = tm.getFullYear().toString();
     let month = (tm.getMonth() + 1).toString();
     if (month.length === 1) month = "0" + month;
-    return KeyPrefix + "YM:" + year + month;
+    return KeyPrefix + ":YM_" + year + month;
 }
 export const KeyY = (KeyPrefix: string, tm = new Date()) => {
     // year is 4 digits, week is 2 digits, with 0 padding
     let year = tm.getFullYear().toString();
-    return KeyPrefix + "Y:" + year;
+    return KeyPrefix + ":Y_" + year;
 }
 export const Concats = (Fields1: string, Fields2: any) => Fields1 + ":" + Fields2
 

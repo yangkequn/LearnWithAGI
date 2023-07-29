@@ -5,5 +5,5 @@ export const AuthContainerCSSL2 = "flex flex-col w-full bg-white text-black px-8
 export const AuthInputContainerCss = "flex flex-row w-full justify-between md-4"
 export const AuthSingleLineInputCss = " mx-4 w-90"
 
-export const AuthPages = { SignUp: "SignUp", MyProfile: "MyProfile", ForgotPassword: "ForgotPassword", Login: "Login" }
+export const AuthPages = { SignUp: "SignUp",  ForgotPassword: "ForgotPassword", Login: "Login" }
 export default function Empty() { return <div></div> }

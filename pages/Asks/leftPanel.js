@@ -14,6 +14,11 @@ export default function LeftPanel() {
         </div>
 
         <div key="list-of-topics" className="flex flex-col h-full w-full gap-1 " >
+            <div className={`flex flex-row justify-start w-full flex-nowrap px-4 text-base ring-2 hover:bg-amber-200 hover:text-gray-800 hover:cursor-pointer ${!QA?.Q && "bg-amber-100 text-gray-800"}`} onClick={() => {
+                setQA({ Q: "", A: "" })
+            }}>
+                <div className="self-center">+ 新建对话</div>
+            </div>
             {
                 topics.map((topic, index) => {
                     return <div key={index} className={" hover:bg-amber-200 hover:text-black flex-rowitems-center w-full self-start px-2 py-1 rounded  leading-5 text-base max-h-20 overflow-x-auto " + (QA?.Q === topic?.Q ? "bg-gray-500 " : "bg-gray-700")}
