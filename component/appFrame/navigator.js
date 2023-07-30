@@ -41,9 +41,9 @@ export default function Navigator() {
           <div key="question-box" className="flex flex-row  flex-grow py-1 md:pl-4 border border-black/10 bg-white
            dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] self-center items-center w-full h-full  "  >
             <div className="flex flex-row w-full  h-full items-center self-center">
-              <textarea className="flex flex-row flex-grow m-0 w-full min-w-[250px] h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent outline-none self-center overflow-hidden text-base text-gray-700"
+              <textarea className="flex flex-row flex-grow m-0 w-full min-w-[285px]  h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent outline-none self-center  text-base text-gray-700 resize-none flex-nowrap overflow-clip"
                 value={question}
-                placeholder="Ask me anything..."
+                placeholder="Ask life, the universe, and everything.."
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.keyCode !== 13) return
@@ -72,7 +72,7 @@ export default function Navigator() {
             router.push("/Asks")
           }} >
             {/* <div className='w-fit h-full ' >📄</div> */}
-            <div className='w-fit h-full'>💬</div> <div className=' text-lg mx-1'>对话</div>
+            <div className='w-fit h-full'>💬</div> <div className=' text-lg mx-1'>ChatGPT</div>
           </div>
         </div>
 

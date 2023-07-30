@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 export const AskContext = React.createContext(undefined)
 export default function AskContextComponent({ children }) {
     const [topics, setTopics] = useState([])
-    const [QA, setQA] = useState({ Q: "", A: "" })
+    const [QA, setQA] = useState({ Q: "", A: "", Time: 0 })
     const [topicLoaded, setTopicLoaded] = useState(false)
     const [reload, setReload] = useState(0)
     const [modelGPT, setModelGPT] = useState("gpt-3.5")
@@ -23,9 +23,9 @@ export default function AskContextComponent({ children }) {
             }
             //kept no more than 200 topics
             item_times = item_times.slice(0, 200)
-            //sort by time, from net to old
-            item_times.sort((a, b) => parseInt(b) - parseInt(a))
             HMGET("MyQuestions:@id", item_times).then((data) => {
+                //sort by time, from new to old
+                data.sort((a, b) => parseInt(b.Time) - parseInt(a.Time))
                 setTopics(data)
                 //if no QA, set the first one
                 if (!QA || !QA.Q) {

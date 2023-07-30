@@ -7,15 +7,10 @@ import { GlobalContext } from "../_app"
 import { Alert, Collapse } from "@mui/material"
 
 export default function QuestionAandAnswer() {
-    const { topicLoaded, topics, setTopics, QA, setQA, quota, modelGPT } = useContext(AskContext)
-    const { openAlert, setOpenAlert } = useContext(GlobalContext)
+    const { topicLoaded, topics, setTopics, QA, setQA, modelGPT } = useContext(AskContext)
+    const { openAlert, setOpenAlert, quota } = useContext(GlobalContext)
     const [loading, setLoading] = useState("")
     const [question, setQuestion] = useState("")
-    useEffect(() => {
-        if (!loading) return
-        let loadingText = ["⌛", "⏳"].filter((v, i) => v != loading)[0]
-        setTimeout(() => { setLoading(loadingText) }, 3000)
-    }, [loading])
     useEffect(() => {
         if (!question || !topicLoaded) return
         //if topics already has the question, SetQA, and return
@@ -27,15 +22,18 @@ export default function QuestionAandAnswer() {
         var noEnoughQuota = modelGPT === "gpt-4" ? quota.AllowedDayGPT4 <= 0 : quota.AllowedDayGPT35 <= 0
         if (noEnoughQuota) return setOpenAlert("今日" + modelGPT + "次数已用完")
 
-        setLoading("⌛")
+        var shifter = setInterval(() => { setLoading(["⌛", "⏳"].filter((v, i) => v != loading)[0]) }, 3000)
+        setOpenAlert("答案大约在一分钟内返回，请稍候...")
         API("MyQuestions", { Question, Model: modelGPT }).then((answer) => {
+            clearInterval(shifter)
             setLoading("")
-            setQA([question, answer])
-            if (!!answer.Q || !!answer.A) return
-            //add to topics if not exist
-            var newTopics = [{ Q: question, A: answer }, ...topics]
-            if (topics.filter((topic) => topic.Q === question).length > 0) return
-            setTopics(newTopics)
+            //clear question
+            setQuestion("")
+            if (!answer.Q || !answer.A || !answer.Time) return
+            setQA(answer)
+            //add to topics if not existed
+            if (topics.filter((topic) => topic.Q === answer.Q).length > 0) return
+            setTopics([answer, ...topics])
         })
     }
 

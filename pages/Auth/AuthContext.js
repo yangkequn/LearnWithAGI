@@ -2,18 +2,7 @@ import React, { useState } from "react";
 import { API, HEXISTS } from "../../component/api";
 //import "tailwindcss/tailwind.css"
 
-export const AuthContext = React.createContext({
-    nickname: "", setNickname: e => null, nicknameError: "",
-    countryCode: "86", setCountryCode: e => null, countryCodeError: "",
-    phone: "", setPhone: e => null, phoneError: "", setPhoneError: e => null,
-    account: null, setAccount: e => null, accountError: null, setAccountError: e => null,
-    password: null, setPassword: e => null, passwordError: null, setPasswordError: e => null,
-    foreignPhone: null, setForeignPhone: e => null,
-    SMSCode: null, setSMSCode: e => null, SMSCodeError: null, setSMSCodeError: e => null, SMSButtonText: null, SMSButtonDisabled: null,
-    SendSMSCode: null, checkSMSCode: null, CheckPassword: null, checkAccount: e => null, checkPhone: null, checkCountryCode: null,
-    CheckNickName: null
-
-})
+export const AuthContext = React.createContext(undefined)
 export default function AuthContextComponent({ children }) {
 
     const [nickname, setNickname] = useState("")

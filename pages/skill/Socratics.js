@@ -37,7 +37,7 @@ export default function Socratics({ topic }) {
         <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full py-3 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
 
             <div className="flex flow-row text-xl text-gray-800 font-sans leading-4 w-[50%]  bg-white/70 rounded-md px-4 py-2 gap-2 items-center">
-                <div className="" > 苏格拉底演练场</div>
+                <div className="" > 苏格拉底问答场</div>
 
                 <div title={"自动修复错误的问答列表"} className="pr-1 h-full self-center items-center justify-center"
                     onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
