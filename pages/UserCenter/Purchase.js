@@ -88,10 +88,10 @@ function Purchase() {
       })}
 
       {/* //for selected service, show the detail */}
-      {myOrderService && <div className="flex flex-col justify-center items-center w-full   min-w-[600px] text-base max-w-xl mt-4">
+      {<div className="flex flex-col justify-center items-center w-full   min-w-[600px] text-base max-w-xl mt-4">
         {/* 订单详情说明 */}
         <div key="订单详情说明" className="flex flex-row justify-center items-center w-full h-full  min-w-[600px] text-base max-w-xl  bg-blue-50 rounded-xl px-2 py-1">
-          {myOrderService?.Name} 每日可用限额说明
+          {myOrderService?.Name??""} 每日可用限额说明
         </div>
         <div key="每日剩余可用次数" className="grid grid-cols-[25%_25%_25%_25%] leading-10 w-full">
           <div className="">   </div>
@@ -101,9 +101,9 @@ function Purchase() {
         </div>
         <div className="grid grid-cols-[25%_25%_25%_25%] leading-10  w-full">
           <div className="">  </div>
-          <div className=""> {myOrderService.AllowedDayGPT35} </div>
-          <div className=""> {myOrderService.AllowedDayGPT4} </div>
-          <div className=""> {myOrderService.AllowedDaySkill} </div>
+          <div className=""> {myOrderService?.AllowedDayGPT35 ?? 0} </div>
+          <div className=""> {myOrderService?.AllowedDayGPT4 ?? 0} </div>
+          <div className=""> {myOrderService?.AllowedDaySkill ?? 0} </div>
         </div>
       </div>
       }
