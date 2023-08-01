@@ -56,7 +56,8 @@ export enum RspType { json = "&RspType=application/json", jpeg = "&RspType=image
 //response fields.i.g. if response data in server is {a,b}, while ResponseFields is &RF=a, then response data will be {a}
 // the default response fields is empty string, which means all fields will be returned
 export enum ResponseFields { Null = "&RF=null", default = "" }
-const Url = "https://api.iam26.com:3080/rSvc"
+//const Url = "https://api.iam26.com:3080/rSvc"
+const Url = "http://localhost:8080"
 export enum Cmd { HEXISTS = "HEXISTS", HGET = "HGET", HGETALL = "HGETALL", HMGET = "HMGET" }
 export const GetUrl = (cmd = Cmd.HGET, Key: string, Field: string = "", rspType: RspType = RspType.json, RspFields: string = ResponseFields.default) =>
     `${Url}/${cmd}/${Key}?F=${Field}${rspType}${RspFields}`

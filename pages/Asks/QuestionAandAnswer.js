@@ -5,6 +5,8 @@ import AskContextComponent, { AskContext } from "./AskContext"
 import { API, HMGET, ZRANGEBYSCORE } from "@/component/api"
 import { GlobalContext } from "../_app"
 import { Alert, Collapse } from "@mui/material"
+import { AvatarWithName } from "../Auth/avatar";
+import { Jwt } from "@/component/jwt";
 
 export default function QuestionAandAnswer() {
     const { topicLoaded, topics, setTopics, QA, setQA, modelGPT } = useContext(AskContext)
@@ -43,7 +45,7 @@ export default function QuestionAandAnswer() {
                 <Alert severity="info" className=" self-center" >{openAlert}</Alert>
             </Collapse>
             {!!QA?.Q && <div className="flex flex-row justify-center w-full bg-gray-50 flex-nowrap">{ }
-                <div className="self-center">❓</div>
+                <div className="self-center"><AvatarWithName pubID={Jwt.Pub()} /></div>
                 <div key={`qa-q${QA?.Q}`} className="hover:bg-amber-200 flex-row gap-10 items-center p-10 rounded-10 self-start   max-w-2xl w-full selection:bg-fuchsia-300 selection:text-fuchsia-900" >
                     {QA?.Q}
                 </div>

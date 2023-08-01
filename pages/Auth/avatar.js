@@ -4,16 +4,28 @@ import { RspType, GetUrl, Cmd, HGET, API } from "../../component/api";
 import { Badge, Tooltip } from "@mui/material";
 import PaidIcon from '@mui/icons-material/Paid';
 import { GlobalContext } from "../_app";
+export function AvatarWithName({ pubID }) {
+    const [name, setName] = useState("")
+    const [src, setSrc] = useState("")
+    useEffect(() => {
+        if (!pubID) { setName(""); setSrc(""); return }
+        HGET("UserInfoPublic", pubID).then((data) => { !!data && setName(data["Nick"]) })
+        setSrc(GetUrl(Cmd.HGET, "UserAvatar", pubID, RspType.jpeg, "*"))
+    }, [])
+    return <Tooltip key={`${name}`} title={`${name}`} placement="right">
+        <Avatar alt={name} src={src} />
+    </Tooltip>
 
-export default function UserAvatar({ userID }) {
+}
+export default function UserAvatar({  pubID }) {
     const [name, setName] = useState("")
     const [src, setSrc] = useState("")
     const { quota } = useContext(GlobalContext)
 
     useEffect(() => {
-        if (!userID) { setName(""); setSrc(""); return }
-        HGET("UserInfoPublic", userID).then((data) => { !!data && setName(data["Nick"]) })
-        setSrc(GetUrl(Cmd.HGET, "UserAvatar", userID, RspType.jpeg, "*"))
+        if (!pubID) { setName(""); setSrc(""); return }
+        HGET("UserInfoPublic", pubID).then((data) => { !!data && setName(data["Nick"]) })
+        setSrc(GetUrl(Cmd.HGET, "UserAvatar", pubID, RspType.jpeg, "*"))
     }, [])
     const EnoughQuota = () => quota?.AllowedDayGPT4 > 2 || quota?.AllowedDayGPT35 > 2 || quota?.AllowedDaySkill > 2
     return <Badge key={`${quota?.AllowedDayGPT4}-${quota?.AllowedDayGPT35}-${quota?.AllowedDaySkill}`}

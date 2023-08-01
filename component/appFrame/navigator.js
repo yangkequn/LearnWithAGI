@@ -86,7 +86,7 @@ export default function Navigator() {
 
           {/* display avatar if logged in */}
           <Link className={" text-zinc-700 h-full text-lg w-fit px-3 items-center"} href={LoggedIn ? "/UserCenter?page=Order&to=" + pathName : "/Auth?page=Login&to=" + pathName} >
-            <UserAvatar userID={Jwt.Pub()} />
+            <UserAvatar pubID={Jwt.Pub()} />
           </Link>
 
         </div>
