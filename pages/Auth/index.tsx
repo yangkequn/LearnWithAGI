@@ -10,9 +10,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { AuthPages } from "./consts";
 
 const AuthFrame = ({ AuthPage, To }: { AuthPage: string, To: string }) => {
-    const { LoggedIn } = useContext(GlobalContext)
+    const { LoggedIn,setMenuL2 } = useContext(GlobalContext)
     const router = useRouter()
     useEffect(() => {
+        setMenuL2(<div></div>)
         //if LoggedIn and current page is AuthPages.Login, redirect to home page
         if (!LoggedIn || !(AuthPage === AuthPages.Login || AuthPage === AuthPages.SignUp)) return
         router.push(To)

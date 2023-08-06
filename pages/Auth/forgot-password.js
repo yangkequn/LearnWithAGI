@@ -109,7 +109,7 @@ export default function ForgotPassword({ To }) {
             <div key="user_foreign_phone" className="flex flex-row self-start w-full mx-2">
                 <button onClick={e => {
                     setForeignPhone(!foreignPhone);
-                    setCountryCode(foreignPhone ? 1 : 86);
+                    setCountryCode(foreignPhone ? "1" : "86");
                     if (foreignPhone) setAccount("")
                     else setPhone("")
                 }}>

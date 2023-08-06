@@ -57,7 +57,8 @@ export default function Login({ To }) {
         let ok = foreignPhone && checkCountryCode() && checkPhone() && CheckPassword()
         if (!ok) ok = !foreignPhone && checkAccount(false) && CheckPassword()
         if (!ok) return
-        API("userSignIn", { Account: account || phone, Password: password, CountryCode: countryCode, Time: new Date().getTime() }).then((data) => {
+        let SignInParam = { Account: account || phone, Password: password, CountryCode: countryCode, Time: new Date().getTime() }
+        API("userSignIn", SignInParam).then((data) => {
             if (data === null || data === undefined) return
             if ("error" in data) {
                 const error = data["error"]
@@ -80,7 +81,7 @@ export default function Login({ To }) {
                 </Collapse>
 
                 <div className="w-full flex flex-col">
-                    <div className="flex flex-row self-start w-full " style={{ display: foreignPhone ? "flex" : "none" }}>
+                    {foreignPhone && <div className="flex flex-row self-start w-full " style={{ display: foreignPhone ? "flex" : "none" }}>
                         {/*选择国家*/}
                         <CountrySelect width={"150px"} disableCloseOnSelect defaultValue={"CN"} setCountryCode={setCountryCode} countryCodeError={countryCodeError}> </CountrySelect>
                         {/*填写手机号码*/}
@@ -89,7 +90,7 @@ export default function Login({ To }) {
                             error={!!phoneError} onChange={e => setPhone(e.target.value)}
                             style={{ width: "70%" }} />
 
-                    </div>
+                    </div>}
 
 
                     {!foreignPhone && <TextField id="login-phone" label={accountError || info["AccountTitle"]} size="small"
@@ -105,7 +106,7 @@ export default function Login({ To }) {
                         key={"user_foreign_phone"}>
                         <Button onClick={e => {
                             let ToBeForeignMode = !foreignPhone
-                            setCountryCode(ToBeForeignMode ? 1 : 86);
+                            setCountryCode(ToBeForeignMode ?  "1" : "86");
                             if (ToBeForeignMode) setAccount("")
                             else setPhone("")
                             setForeignPhone(!foreignPhone);

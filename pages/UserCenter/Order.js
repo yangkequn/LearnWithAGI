@@ -4,7 +4,7 @@ import { API } from "@/component/api";
 import { GlobalContext } from "../_app";
 function Order({ }) {
   const [myOrders, setMyOrders] = useState([])
-  const {quota} = useContext(GlobalContext)
+  const { quota } = useContext(GlobalContext)
   useEffect(() => {
     API("OrderMine").then((data) => {
       if (!data || data.length == 0) return
@@ -27,7 +27,7 @@ function Order({ }) {
           <div className=""> 订单号 </div>      <div className=""> 服务等级 </div>      <div className=""> 价格 / 元 </div>        <div className=""> 到期时间  </div><div className=""> 已激活 </div><div className=""> 支付 </div>
         </div>
         {myOrders.map((order) => {
-          return <div key={order.OrderNumber} className="grid grid-cols-[24%_22%_13%_18%_9%_12%] leading-10">
+          return <div key={`${order.TradeNumber}-${order.name}`} className="grid grid-cols-[24%_22%_13%_18%_9%_12%] leading-10">
             <div className=""> {order.TradeNumber} </div>
             <div className=""> {order.name} </div>
             <div className=""> {order.money} </div>

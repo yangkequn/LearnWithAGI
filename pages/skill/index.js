@@ -16,6 +16,7 @@ import { Jwt } from "../../component/jwt";
 function ExploreComponent({ topic }) {
     const router = useRouter()
     const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)
+    const [volume, setVolume] = useState(0.5)
     const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
     useEffect(() => {
         if (!topic) return router.push("/")
@@ -48,10 +49,21 @@ function ExploreComponent({ topic }) {
         setMenuL2(<div className="flex justify-between w-full items-center">
 
             <div key="reward" className="flex flex-row overflow-hidden w-full items-center justify-between">
-                <Rewards creditTM={creditTM}></Rewards>
+                <Rewards creditTM={creditTM} volume={volume}></Rewards>
+            </div>
+            <div>
+                {/* set volume here , and allow mute. a broad cast emoj followed by a slider */}
+                <div className="flex flex-row justify-center items-center gap-2 mr-1">
+                    <div>音量</div>
+                    <div className="flex flex-row justify-center items-center gap-2">
+                        {volume !== 0.0 && <div onClick={() => { window.lastVolume = volume; setVolume(0) }} >🔊</div>}
+                        {volume === 0.0 && <div onClick={() => setVolume(window.lastVolume)} >🔇</div>}
+                    </div>
+                    <input type="range" min="0" max="1" step="0.1" value={volume} onChange={(e) => setVolume(e.target.value)} />
+                </div>
             </div>
         </div>)
-    }, [creditTM])
+    }, [creditTM, volume])
     return <div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center " style={{
         backgroundImage: "url(/MAUL0r_Reme_kawaii_anime_cumulonimbus_happily_floating_through__01999efc-f065-4823-bf48-40be9c285ec5.png)"
         //use boxShadow to create a shadow of 50% opacity

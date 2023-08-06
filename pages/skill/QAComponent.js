@@ -132,7 +132,7 @@ export default function QAComponent({ topic }) {
                 <div key={`activeStep-${qaIndex}`} variant="dots" position="static"
                     className=" flex flex-col justify-start rounded-md w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
-                    {QAs?.map((qa, index) => <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Question}`}
+                    {QAs?.map((qa, index) => <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Question}-${index}`}
                         className={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 max-w-[48%] min-w-[200px] w-full flex-grow  even:bg-lime-100 odd: bg-amber-100`}
                         onClick={() => setQAIndex(index)} >
                         <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>

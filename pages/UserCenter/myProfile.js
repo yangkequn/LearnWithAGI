@@ -113,10 +113,7 @@ export default function MyProfile() {
       <div className="flex flex-row w-full justify-between mb-8 items-center">
         <div><h2> {info["Title"]} </h2></div>
 
-        <button className="bg-sky-500 w-28 rounded " onClick={e => {
-          Jwt.Clear();
-          router.push(path.split("to=")[1] ?? "/");
-        }}>退出</button>
+        
       </div>
 
       <div className={"flex flex-row justify-between w-8/12 min-w-fit items-center font-sans  mb-4 self-start"}>
@@ -146,7 +143,7 @@ export default function MyProfile() {
       <div className="flex flex-row h-full self-start w-full rounded-md">
         <textarea key="input-channel-name" className="flex flex-row justify-start self-start font-sans h-full  mb-4 ring-1  resize-none " style={{ "width": "100%" }}
           placeholder={"简介:"} aria-label="maximum height" value={Introduction} rows={1}
-          onChange={(e) => setIntroduction(e.target.value)} minRows={3} onResize={undefined} onResizeCapture={undefined} />
+          onChange={(e) => setIntroduction(e.target.value)} minrows={3} onResize={undefined} onResizeCapture={undefined} />
       </div>
 
       <button className="flex flex-row justify-center w-full items-center font-sans text-sm h-9 bg-sky-200 text-gray-700 rounded my-4" key={"sign-up-button"} onClick={e => SaveProfile(e)}

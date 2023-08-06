@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Order from "./Order";
 import Purchase from "./Purchase";
+import { Jwt } from "@/component/jwt";
 
 const UserCenterPages = { MyProfile: "MyProfile", Order: "Order", Purchase: "Purchase", None: "" }
 const UserCenter = ({ Page, To }) => {
@@ -34,6 +35,10 @@ const UserCenter = ({ Page, To }) => {
                 }}>
                 服务与开通
             </Link>
+            <button className="hover:bg-yellow-500 w-24 rounded " onClick={e => {
+                Jwt.Clear();
+                router.push(To ?? "/");
+            }}>退出 / 登出</button>
         </div>
     </div>
     useEffect(() => {

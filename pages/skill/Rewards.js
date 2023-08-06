@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
 import { GlobalContext } from "../_app";
-export default function Rewards({ creditTM }) {
+export default function Rewards({ creditTM,volume }) {
     const { LoggedIn } = useContext(GlobalContext)
     //使用localStorage缓存credit
     const [credit, setCredit] = useState(JSON.parse(typeof window !== 'undefined' && localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
@@ -34,6 +34,8 @@ export default function Rewards({ creditTM }) {
             if (creditGain && creditTM > 0) {
                 //play mario ding sound, when reward is given and > 0
                 let audio = new Audio("/mario-money-sound.mp3")
+                //set volume
+                audio.volume = volume
                 audio.play()
                 //show reward amimation for 1 second
                 setRewardScore(credit - lastCredit)
