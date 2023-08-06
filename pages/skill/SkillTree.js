@@ -29,6 +29,13 @@ export default function SkillTree({ topic }) {
             //keeps only leafs, which means items.length == 0
             let leafs = res.filter((item) => !item.Items || item.Items.length == 0)
             setSkillTree(leafs);
+
+            res.map((item) => item.Path.reverse())
+            //convert path to chapter session
+            var corsor = {}
+
+            var allPaths = convertPathToChapterSession(res.map((item) => item.Path))
+            debugger
         })
     }, [])
 
@@ -60,9 +67,9 @@ export default function SkillTree({ topic }) {
         </div>
 
 
-        {skillTreeSelected >= 0 && skillTree?.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTreeSelected}>
+        {skillTreeSelected >= 0 && skillTree?.Sessions.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTreeSelected}>
             {
-                !!skillTree && skillTree.map((Point, seq) => {
+                !!skillTree && skillTree?.Sessions.map((Point, seq) => {
                     return <Step key={`skillTree${seq}`} className="flex flex-col justify-start items-start w-full h-fit overflow-scroll whitespace-nowrap min-h-max"
                         sx={{
                             margin: "-5px 0 -15px 0",
@@ -71,7 +78,7 @@ export default function SkillTree({ topic }) {
                             //if index equals nextSkill, change box shadow
                             , boxShadow: seq == skillTreeSelected ? "inset 0px 0px 0px 200px gold" : "none"
                         }} onClick={(e) => {
-                            if (skillTreeSelected > 0 && (skillTree[skillTreeSelected]?.Path[0] === Point.Path[0])) return
+                            if (skillTreeSelected > 0 && (skillTree.Sessions[skillTreeSelected]?.Path[0] === Point.Path[0])) return
                             setSkillTreeSelected(seq)
                         }}
                     // StepContent={true}
