@@ -7,26 +7,35 @@ import { API, HGET, HKEYS } from '../component/api';
 
 const ListItem = ({ id }) => {
   const Router = useRouter()
-  const [data, setData] = useState({
+  const [skillTree, setSkillTree] = useState({
     Name: "", Detail: "", "Rank": 4000.0, "NumActive": 0, "NumInactive": 0, "NumDone": 0, "Items": [],
     "Ranks": [.0, 4000.0, 5000.0], "Weights": [3.3333333333333335, 5.833333333333334, 7.833333333333334], "TotalWeights": 2.726950354609929
   });
-  useEffect(() => HGET("SkillTree", id).then((res) => {
-    if (!res || res.length == 0) return
-    //console.log("SkillTree", allPaths)
-  }), [])
-  let details = [data.Detail, ...(data.Items ?? [])]
-  return data.Name != "" && <div key="skill-container" className='flex flex-col w-60 h-60 max-h-60 max-w-md flex-auto rounded-xl'
+  useEffect(() => {
+    HGET("SkillTree", id).then((res) => {
+      if (!res || res.length == 0) return
+      // if name and title is same , then only show name
+      if (res.Name == res.Detail) res.Title = res.Name
+      else res.Title = [res.Name, res.Detail].join(": ")
+
+      setSkillTree(res)
+    })
+  }, [])
+  return !skillTree?.Title ? <div /> : <div key="skill-container" className='flex flex-col w-60 h-60 max-h-60 max-w-md flex-auto rounded-xl'
     style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)", minWidth: 330 }} >
 
-    < div key="title" className={"w-full h-12  bg-yellow-50  rounded-t-xl p-1"}>      {data.Name}    </div>
+    < div key="title" title={skillTree?.Title} className={"w-full min-h-12 max-h-40  bg-yellow-50  rounded-t-xl text-base px-1 py-3 overflow-hidden"}>      {skillTree?.Title}    </div>
     {/* when hover on this, show the detail,swich between details  */}
-    <div key="detail" className={"flex flex-col w-full h-full  overflow-scroll text-sky-700 gap-4 hover:bg-stone-100 p-1"} onClick={() => Router.push("/skill?t=" + id)}  >
+    <div key="detail" className={"flex flex-col w-full h-full  overflow-scroll text-sky-700 gap-2 hover:bg-stone-100 p-1"} onClick={() => Router.push("/skill?t=" + id)}  >
+      <div key={`skill-topic-${skillTree.Detail}`} className=''>{ }</div>
       {
-        details.map((item, _) => <div key={`skill-topic-${item}`} className=''>{item} <br /> </div>)
+        skillTree?.Sessions?.map((session, _) => <div key={`skill-topic-${session.Name}-${session.Detail}`} className='flex flex-col gap-1'>
+          <div>{session?.Name}</div>  <div className='pl-4'>{session?.Detail}</div>
+        </div>)
       }
     </div>
   </div >
+
 }
 export default function Home({ search }) {
   const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2, setMenuL2 } = useContext(GlobalContext)

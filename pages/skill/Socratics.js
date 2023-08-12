@@ -34,7 +34,7 @@ export default function Socratics({ topic }) {
     if (!FullName(skillPoint)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
     return <div key={`socratic-container-${skillPoint}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]"    >
         {/* //list Tags of QAs,using mui tag */}
-        <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full py-3 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
+        <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full  mt-2 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
 
             <div className="flex flow-row text-xl text-gray-800 font-sans leading-4 w-[50%]  bg-white/70 rounded-md px-4 py-2 gap-2 items-center">
                 <div className="" > 苏格拉底问答场</div>
@@ -48,7 +48,7 @@ export default function Socratics({ topic }) {
             </div>
             {
                 QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
-                    return <div key={QA.Q} className=" text-base  even:bg-lime-100 odd: bg-amber-100 max-w-[50%] rounded-md px-4 py-[4px]  items-center"
+                    return <div key={QA.Q} className=" text-base  even:bg-lime-100 odd: bg-amber-100 max-w-[49%] rounded-md px-4 py-[4px]  items-center"
                         onClick={() => API("SkillMyTraceReport", { Name: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
                             let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                             setSkillMyTrace(newMySkillTrace)

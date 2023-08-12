@@ -6,7 +6,6 @@ export const Context = React.createContext(undefined)
 export default function ContextComponent({ children }) {
     //[{Name,Rank,Path,QAs,Ask,Answer,Correct,Wrong,EmotionValence,EmotionArousal,EmotionDominance},...]
     const [skillTree, setSkillTree] = useState([]);
-    const [skillTreeSelected, setSkillTreeSelected] = useState(-1);
 
     //key skillPoint name, value is the skillMyTrace{QAs,Asks}
     //for each line of QA, the first is question, the second is answer,seperated by |||. the answer is 0 or 1 or 2 or 3
@@ -15,7 +14,6 @@ export default function ContextComponent({ children }) {
     const [skillPoint, setSkillPoint] = useState(null)
     const store = {
         skillTree, setSkillTree,
-        skillTreeSelected, setSkillTreeSelected,
         skillMyTrace, setSkillMyTrace,
         skillPoint, setSkillPoint,
     }

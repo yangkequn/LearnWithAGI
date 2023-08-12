@@ -17,16 +17,17 @@ function ExploreComponent({ topic }) {
     const router = useRouter()
     const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)
     const [volume, setVolume] = useState(0.5)
-    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
+    const { skillTree, setSkillTree,  skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
     useEffect(() => {
         if (!topic) return router.push("/")
     }, [])
 
     //fetch SKillMyTrace according to SkillTree
     useEffect(() => {
-        if (skillTree?.length == 0) return
+        if (!skillTree?.Sessions) return
         if (!Jwt.Get().IsValid()) return
-        let names = skillTree.map((skill) => `${skill.Name}:${skill.Detail}`)
+        let names = skillTree.Sessions.map((session) => `${session.Name}:${session.Detail}`)
+        console.log("names", names)
         !!names && names.length > 0 && HMGET("SkillMyTrace:@id", names).then((res) => {
             //zip names and res to dict
             if (names.length != res?.length) return
@@ -38,12 +39,6 @@ function ExploreComponent({ topic }) {
             setSkillMyTrace(_myTrace)
         })
     }, [skillTree])
-
-    //set SkillPoint according to skillTreeSelected
-    useEffect(() => {
-        if (skillTreeSelected < 0 || !skillTree || skillTreeSelected >= skillTree.length) return setSkillPoint(null)
-        setSkillPoint(skillTree[skillTreeSelected])
-    }, [skillTree, skillTreeSelected])
 
     useEffect(() => {
         setMenuL2(<div className="flex justify-between w-full items-center">

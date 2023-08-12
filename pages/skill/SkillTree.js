@@ -9,43 +9,26 @@ import { Box } from "@mui/system";
 import { API, HGET } from "../../component/api";
 import Checkbox from '@mui/material/Checkbox';
 import { Context } from "./Context";
+import { Tooltip } from "@mui/material";
 export default function SkillTree({ topic }) {
-    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
+    const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
 
-    //auto sort the skill paths 
-    const SortSkillTree = (skillTree) => {
-        if (!skillTree || skillTree?.length == 0) return skillTree
-        skillTree.sort((a, b) => {
-            let p1 = [...a.Path], p2 = [...b.Path]
-            p1.reverse(); p2.reverse()
-            return (a.Rank - b.Rank) + (p1.join("") <= p2.join("") * 100)
-        })
-        return [...skillTree]
-    }
     //auto load skillTree
     useEffect(() => {
-        HGET("SkillTree", topic).then((res) => {
-            if (!res || res.length == 0) return
-            //keeps only leafs, which means items.length == 0
-            let leafs = res.filter((item) => !item.Items || item.Items.length == 0)
-            setSkillTree(leafs);
-
-            res.map((item) => item.Path.reverse())
-            //convert path to chapter session
-            var corsor = {}
-
-            var allPaths = convertPathToChapterSession(res.map((item) => item.Path))
-            debugger
+        HGET("SkillTree", topic).then((tree) => {
+            !!tree && setSkillTree(tree)
         })
     }, [])
 
     //auto select the first uncompleted skill path as default
     useEffect(() => {
         //allow set only once. in order to avoid disturbing user
-        if (skillTreeSelected >= 0) return
-        for (var i = 0; i < skillTree.length; i++) {
-            if (Complete(skillMyTrace[skillTree[i].Name + ":" + skillTree[i].Detail]) >= 2) continue
-            return setSkillTreeSelected(i)
+        if (!skillTree?.Sessions?.length || !!skillPoint?.Name) return
+        for (var i = 0; i < skillTree.Sessions.length; i++) {
+            var session = skillTree.Sessions[i]
+            if (Complete(skillMyTrace[session.Name + ":" + session.Detail]) >= 2) continue
+            setSkillPoint(session)
+            break
         }
     }, [skillTree, skillMyTrace])
 
@@ -67,41 +50,37 @@ export default function SkillTree({ topic }) {
         </div>
 
 
-        {skillTreeSelected >= 0 && skillTree?.Sessions.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTreeSelected}>
+        {skillTree?.Sessions?.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTree?.Sessions.indexOf(skillPoint)}>
             {
                 !!skillTree && skillTree?.Sessions.map((Point, seq) => {
-                    return <Step key={`skillTree${seq}`} className="flex flex-col justify-start items-start w-full h-fit overflow-scroll whitespace-nowrap min-h-max"
+                    return <Step key={`skillTree${seq}`} className={`flex flex-col justify-start items-start w-full h-fit whitespace-nowrap min-h-max`}
                         sx={{
-                            margin: "-5px 0 -15px 0",
+                            margin: "-5px 0 -12px 0",
                             //when mouse is over, change background color
                             ":hover": { backgroundColor: "#e8e8e8" }
                             //if index equals nextSkill, change box shadow
-                            , boxShadow: seq == skillTreeSelected ? "inset 0px 0px 0px 200px gold" : "none"
-                        }} onClick={(e) => {
-                            if (skillTreeSelected > 0 && (skillTree.Sessions[skillTreeSelected]?.Path[0] === Point.Path[0])) return
-                            setSkillTreeSelected(seq)
-                        }}
+                            , boxShadow: seq == skillTree?.Sessions.indexOf(skillPoint) ? "inset 0px 0px 0px 200px gold" : "none"
+                        }} onClick={(e) => setSkillPoint(Point)}
                     // StepContent={true}
                     >
                         <StepLabel sx={{ margin: "-5px 0 -5px 0" }} className="flex flex-row justify-start items-start w-full  whitespace-nowrap">
-                            <div className="flex flex-col  items-start gap-2  w-full  overflow-hidden whitespace-nowrap justify-between leading-6 " >
+                            <div className="flex flex-col  items-start gap-2  w-full whitespace-nowrap justify-between leading-6 " >
 
                                 <div key="first-row" className="flex  first-row justify-between items-start w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 " >
-                                    <div className="flex flex-row justify-start w-full  whitespace-nowrap overflow-visible text-ellipsis text-base text-gray-700 font-sans font-semibold leading-6 gap-3" >
-                                        {Point.Path[0].split(":")[0]}
+                                    <div className="flex flex-row justify-start w-full  whitespace-nowrap  text-ellipsis text-base text-gray-700 font-sans font-semibold leading-6 gap-3" >
+                                        {Point.Session + " " + Point.Name}
                                     </div>
 
                                     <div className=" flex flex-row justify-end items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 mr-2" >
-                                        <div>难度:{Point.Rank}</div>
+                                        <div>难度:{Point.FKGL}</div>
                                         <div className="mr-2">{Complete(skillMyTrace[Point.Name + ":" + Point.Detail]) >= 2 ? "✅" : "⬜"}</div>
                                     </div>
                                 </div>
-
-                                <div key="second-row" className="flex flex-row justify-start items-start w-full overflow-hidden whitespace-nowrap text-base text-gray-700" >
-                                    {
-                                        "/ " + [...Point.Path].reverse().slice(1).map((path) => path.split(":")[0]).join(" / ")
-                                    }
-                                </div>
+                                <Tooltip title={Point.Detail} placement="right" >
+                                    <div key="second-row" className="flex flex-row flex-wrap justify-start -ml-7 items-start w-full  text-sm text-gray-700" >
+                                        {Point.Detail}
+                                    </div>
+                                </Tooltip>
                             </div>
                         </StepLabel>
                     </Step>

@@ -139,7 +139,7 @@ export default function QAComponent({ topic }) {
                             <div className=" flex flex-row justify-between items-center pr-2 gap-1  w-full">
                                 <div className="rounded ">{AnswerRight(qa)}</div>
                                 <div className="flex flex-row w-full">{qa.Question}</div>
-                                <div className="flex flex-row w-min gap-1 self-end invisible group-hover:visible">
+                                <div className=" flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
                                     <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon></div>
                                     <div title="删除该条目" > <DeleteIcon onClick={() => {
                                         API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Question}` })
