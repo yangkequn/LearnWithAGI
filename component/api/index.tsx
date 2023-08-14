@@ -51,68 +51,68 @@ const SignOut = (e: any) => {
     CustomEvents.RedirectDispatch("/Auth?page=Login&to=" + window.location.pathname);
 }
 export enum Action { GET, PUT, DELETE, }
+
 //RspType.json is server default
-export enum RspType { json = "&RspType=application/json", jpeg = "&RspType=image/jpeg", ogg = "&RspType=audio/ogg", mpeg = "&RspType=video/mpeg", mp4 = "&RspType=video/mp4", none = "", text = "&RspType=text/plain", stream = "&RspType=application/octet-stream" }
-//response fields.i.g. if response data in server is {a,b}, while ResponseFields is &RF=a, then response data will be {a}
-// the default response fields is empty string, which means all fields will be returned
-export enum ResponseFields { Null = "&RF=null", default = "" }
+//export enum RspType { json = "&RspType=application/json", jpeg = "&RspType=image/jpeg", ogg = "&RspType=audio/ogg", mpeg = "&RspType=video/mpeg", mp4 = "&RspType=video/mp4", none = "", text = "&RspType=text/plain", stream = "&RspType=application/octet-stream" }
+export enum RspType { json = "--!JSON", jpeg = "--!JPG", ogg = "--!OGG", mpeg = "--!MPEG", mp4 = "--!MP4", none = "", text = "--!TEXT", stream = "--!STREAM" }
+
 //const Url = "https://api.iam26.com:3080/rSvc"
 const Url = "http://localhost:8080"
 export enum Cmd { HEXISTS = "HEXISTS", HGET = "HGET", HGETALL = "HGETALL", HMGET = "HMGET" }
-export const GetUrl = (cmd = Cmd.HGET, Key: string, Field: string = "", rspType: RspType = RspType.json, RspFields: string = ResponseFields.default) =>
-    `${Url}/${cmd}/${Key}?F=${Field}${rspType}${RspFields}`
-export const Time = () => JwtRequest().get(`${Url}/TIME/${new Date().getTime()}`)
+export const GetUrl = (cmd = Cmd.HGET, Key: string, Field: string = "", rspType: RspType = RspType.json) =>
+    `${Url}/${cmd}--${Key}${rspType}?F=${Field}`
+export const Time = () => JwtRequest().get(`${Url}/TIME--${new Date().getTime()}`)
 export const HEXISTS = (Key: string, Field: string = "") =>
-    JwtRequest().get(`${Url}/HEXISTS/${Key}?F=${Field}`)
+    JwtRequest().get(`${Url}/HEXISTS--${Key}?F=${Field}`)
 
-export const HSET = (Key: string, Field: string = "", data: any, RspFields: string = ResponseFields.Null) =>
-    JwtRequest().put(`${Url}/HSET/${Key}?F=${Field}${RspFields}`, data)
+export const HSET = (Key: string, Field: string = "", data: any) =>
+    JwtRequest().put(`${Url}/HSET--${Key}--${RspFields}?F=${Field}`, data)
 
-export const HGET = (Key: string, Field: string = "", RspFields: string = ResponseFields.default) => {
+export const HGET = (Key: string, Field: string = "", rspType: RspType = RspType.json) => {
     if (!Key || Key == undefined) {
         debugger
     }
-    return JwtRequest().get(`${Url}/HGET/${Key}?F=${Field}${RspFields}`)
+    return JwtRequest().get(`${Url}/HGET--${Key}${rspType}?F=${Field}`)
 }
-export const HGETALL = (Key: string, RspFields: string = ResponseFields.default) =>
-    JwtRequest().get(`${Url}/HGETALL/${Key}?${RspFields}`)
-export const HVALS = (Key: string, RspFields: string = ResponseFields.default) =>
-    JwtRequest().get(`${Url}/HVALS/${Key}?${RspFields}`)
+export const HGETALL = (Key: string) =>
+    JwtRequest().get(`${Url}/HGETALL--${Key}`)
+export const HVALS = (Key: string) =>
+    JwtRequest().get(`${Url}/HVALS--${Key}`)
 export const HKEYS = (Key: string) =>
-    JwtRequest().get(`${Url}/HKEYS/${Key}`)
-export const HMGET = (Key: string, Fields: any[] = [], RspFields: string = ResponseFields.default) =>
-    JwtRequest().get(`${Url}/HMGET/${Key}?F=${Fields.join(",")}${RspFields}`)
+    JwtRequest().get(`${Url}/HKEYS--${Key}`)
+export const HMGET = (Key: string, Fields: any[] = []) =>
+    JwtRequest().get(`${Url}/HMGET--${Key}?F=${Fields.join(",")}`)
 
 export const ZRange = (Key: string, Start: number, Stop: number, WITHSCORES: boolean = false) =>
-    JwtRequest().get(`${Url}/ZRANGE/${Key}?Start=${Start}&Stop=${Stop}&WITHSCORES=${WITHSCORES}`)
+    JwtRequest().get(`${Url}/ZRANGE--${Key}?Start=${Start}&Stop=${Stop}&WITHSCORES=${WITHSCORES}`)
 export const ZREVRANGE = (Key: string, Start: number, Stop: number, WITHSCORES: boolean) =>
-    JwtRequest().get(`${Url}/ZREVRANGE/${Key}?Start=${Start}&Stop=${Stop}&WITHSCORES=${WITHSCORES}`)
+    JwtRequest().get(`${Url}/ZREVRANGE--${Key}?Start=${Start}&Stop=${Stop}&WITHSCORES=${WITHSCORES}`)
 export const ZRank = (Key: string, Member: string) =>
-    JwtRequest().get(`${Url}/ZRANK/${Key}?Member=${Member}`)
+    JwtRequest().get(`${Url}/ZRANK--${Key}?Member=${Member}`)
 export const ZSCORE = (Key: string, Member: string) =>
-    JwtRequest().get(`${Url}/ZSCORE/${Key}?Member=${Member}`)
+    JwtRequest().get(`${Url}/ZSCORE--${Key}?Member=${Member}`)
 export const ZRANGEBYSCORE = (Key: string, Min: number | string, Max: number | string, WITHSCORES: boolean) =>
-    JwtRequest().get(`${Url}/ZRANGEBYSCORE/${Key}?Min=${Min}&Max=${Max}&WITHSCORES=${WITHSCORES}`)
+    JwtRequest().get(`${Url}/ZRANGEBYSCORE--${Key}?Min=${Min}&Max=${Max}&WITHSCORES=${WITHSCORES}`)
 export const ZREVRANGEBYSCORE = (Key: string, Max: number | string, Min: number | string, WITHSCORES: boolean) =>
-    JwtRequest().get(`${Url}/ZREVRANGEBYSCORE/${Key}?Min=${Min}&Max=${Max}&WITHSCORES=${WITHSCORES}`)
+    JwtRequest().get(`${Url}/ZREVRANGEBYSCORE--${Key}?Min=${Min}&Max=${Max}&WITHSCORES=${WITHSCORES}`)
 export const ZADD = (Key: string, Score: number, Member: any) =>
-    JwtRequest().post(`${Url}/ZADD/${Key}?Score=${Score}`, Member)
+    JwtRequest().post(`${Url}/ZADD--${Key}?Score=${Score}`, Member)
 
 export const ZREM = (Key: string, Member: any) => {
-    return JwtRequest().delete(`${Url}/ZREM/${Key}?Member=${Member}`)
+    return JwtRequest().delete(`${Url}/ZREM--${Key}?Member=${Member}`)
 }
 export const ZREMRANGEBYSCORE = (Key: string, Min: number, Max: number) =>
-    JwtRequest().delete(`${Url}/ZREMRANGEBYSCORE/${Key}?Min=${Min}&Max=${Max}`)
+    JwtRequest().delete(`${Url}/ZREMRANGEBYSCORE--${Key}?Min=${Min}&Max=${Max}`)
 
 export const ZCOUNT = (Key: string, Min: number, Max: number) =>
-    JwtRequest().get(`${Url}/ZCOUNT/${Key}?Min=${Min}&Max=${Max}`)
+    JwtRequest().get(`${Url}/ZCOUNT--${Key}?Min=${Min}&Max=${Max}`)
 export const ZCARD = (Key: string) =>
-    JwtRequest().get(`${Url}/ZCARD/${Key}`)
-export const SISMEMBER = (Key: string, Member: string) => JwtRequest().get(`${Url}/SISMEMBER?K=${Key}?Member=${Member}`)
-export const HDEL = async (Key: string, Field: string = "", RspFields: string = "") =>
-    JwtRequest().delete(`${Url}/HDEL/${Key}?F=${Field}${RspFields}`)
-export const API = async (serviceName: string, data: any = {}, RspFields: string = ResponseFields.default) => {
+    JwtRequest().get(`${Url}/ZCARD--${Key}`)
+export const SISMEMBER = (Key: string, Member: string) => JwtRequest().get(`${Url}/SISMEMBER--${Key}?Member=${Member}`)
+export const HDEL = async (Key: string, Field: string = "") =>
+    JwtRequest().delete(`${Url}/HDEL--${Key}?F=${Field}`)
+export const API = async (serviceName: string, data: any = {}, rspType: RspType = RspType.json) => {
     //first character of Service should be lower case
     serviceName = serviceName[0].toLowerCase() + serviceName.slice(1)
-    return JwtRequest().post(`${Url}/API/${serviceName}?${RspFields}`, data)
+    return JwtRequest().post(`${Url}/API--${serviceName}${rspType}`, data)
 }
