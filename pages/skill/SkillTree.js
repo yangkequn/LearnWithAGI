@@ -6,16 +6,19 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 
 import { Box } from "@mui/system";
-import { API, HGET } from "../../component/api";
+import { API, HGET, HMGET } from "../../component/api";
 import Checkbox from '@mui/material/Checkbox';
 import { Context } from "./Context";
 import { Tooltip } from "@mui/material";
+import { Jwt } from "../../component/jwt";
 export default function SkillTree({ topic }) {
     const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
 
-    //auto load skillTree
+    //load skillTree according to topic.
+    //load skillMyTrace according to skillTree
     useEffect(() => {
         if (!topic) return
+        //step1: auto load skillTree
         var Name = topic.split(":")[0], Detail = topic.split(":")[1]
         API("SkillLoad", { Name, Detail }).then((tree) => {
 
@@ -23,27 +26,44 @@ export default function SkillTree({ topic }) {
             tree?.Sessions?.sort((a, b) => a.ChapterSession - b.ChapterSession)
 
             !!tree && setSkillTree(tree)
+
+            //step2: fetch SKillMyTrace according to SkillTree
+            if (!Jwt.Get().IsValid()) return
+            let names = tree.Sessions.map((session) => `${session.Name}:${session.Detail}`)
+            names?.length > 0 && HMGET("SkillMyTrace:@id", names).then((res) => {
+                //zip names and res to dict
+                if (names.length != res?.length) return
+                var _mytrace = res.reduce((acc, item, index) => { acc[names[index]] = item; return acc }, {})
+                console.log("_mytrace", _mytrace, _mytrace)
+                setSkillMyTrace(_mytrace)
+            })
         })
     }, [topic])
 
     //auto select the first uncompleted skill path as default.
     //only set once, in order to avoid disturbing user
-    const [topicSessionSelected, setTopicSessionSelected] = useState("")
+    const [topicSessionSelectedOnce, setTopicSessionSelectedOnce] = useState("")
     useEffect(() => {
         //allow set only once. in order to avoid disturbing user
-        if (skillTree?.Sessions?.length < 1 || topicSessionSelected == topic) return
-        for (var i = 0; i < skillTree?.Sessions?.length; i++) {
+        if (!skillTree?.Sessions?.length) return
+        if (topicSessionSelectedOnce == topic) return
+        if (Object.keys(skillMyTrace).length == 0) {
+            return setSkillSession(skillTree.Sessions[0])
+        }
+        var i = 0;
+        for (i = 0; i < skillTree?.Sessions?.length; i++) {
             var session = skillTree.Sessions[i]
-            if (Complete(skillMyTrace[session.Name + ":" + session.Detail]) < 3) {
-                if (skillMyTrace.length > 0) setTopicSessionSelected(topic)
+            var myTraceOnSession = skillMyTrace[session.Name + ":" + session.Detail]
+            if (!myTraceOnSession) continue
+            if (Complete(myTraceOnSession) < 2) {
+                setTopicSessionSelectedOnce(topic)
                 return setSkillSession(session)
             }
-
         }
         //if all sessions are completed, then select the first one
         if (i == skillTree?.Sessions?.length) setSkillSession(skillTree.Sessions[0])
         //if skillMyTrace is not fecthed to local, allow reset later
-        if (skillMyTrace.length > 0) setTopicSessionSelected(topic)
+        setTopicSessionSelectedOnce(topic)
     }, [skillTree, skillMyTrace])
 
 

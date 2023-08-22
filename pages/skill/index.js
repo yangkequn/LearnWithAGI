@@ -23,22 +23,6 @@ function ExploreComponent({ topic }) {
     useEffect(() => {
         if (!topic) return router.push("/")
     }, [])
-
-    //fetch SKillMyTrace according to SkillTree
-    useEffect(() => {
-        if (!skillTree?.Sessions) return
-        if (!Jwt.Get().IsValid()) return
-        let names = skillTree.Sessions.map((session) => `${session.Name}:${session.Detail}`)
-        !!names && names.length > 0 && HMGET("SkillMyTrace:@id", names).then((res) => {
-            //zip names and res to dict
-            if (names.length != res?.length) return
-            var _myTrace = res.reduce((acc, item, index) => {
-                acc[names[index]] = item
-                return acc
-            }, {})
-            setSkillMyTrace(_myTrace)
-        })
-    }, [skillTree])
     const [RelatedSkills, setRelatedSkills] = useState([])
     useEffect(() => {
         API("SkillSearch", { Name: topic }).then((data) => {
