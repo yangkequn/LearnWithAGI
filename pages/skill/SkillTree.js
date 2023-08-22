@@ -46,12 +46,13 @@ export default function SkillTree({ topic }) {
     useEffect(() => {
         //allow set only once. in order to avoid disturbing user
         if (!skillTree?.Sessions?.length) return
-        if (topicSessionSelectedOnce == topic) return
+        //if no skillMyTrace, then select the first one as default
         if (Object.keys(skillMyTrace).length == 0) {
             return setSkillSession(skillTree.Sessions[0])
         }
-        var i = 0;
-        for (i = 0; i < skillTree?.Sessions?.length; i++) {
+        //allow set only once. in order to avoid disturbing user
+        if (topicSessionSelectedOnce == topic) return
+        for (var i = 0; i < skillTree?.Sessions?.length; i++) {
             var session = skillTree.Sessions[i]
             var myTraceOnSession = skillMyTrace[session.Name + ":" + session.Detail]
             if (!myTraceOnSession) continue
@@ -61,7 +62,7 @@ export default function SkillTree({ topic }) {
             }
         }
         //if all sessions are completed, then select the first one
-        if (i == skillTree?.Sessions?.length) setSkillSession(skillTree.Sessions[0])
+        setSkillSession(skillTree.Sessions[0])
         //if skillMyTrace is not fecthed to local, allow reset later
         setTopicSessionSelectedOnce(topic)
     }, [skillTree, skillMyTrace])
