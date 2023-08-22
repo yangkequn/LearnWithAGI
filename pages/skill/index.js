@@ -7,17 +7,19 @@ import Rewards from "./Rewards";
 import Socratics from "./Socratics";
 import AppFrame from "../../component/appFrame"
 import { useParams, useRouter } from "next/navigation";
-import { API, HMGET } from "../../component/api";
+import { API, HGET, HGETALL, HKEYS, HMGET, ZCARD, ZREVRANGE } from "../../component/api";
 import { GlobalContext } from "../_app";
 import ContextComponent, { Context } from "./Context"
 import { Jwt } from "../../component/jwt";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import HistoryTopics from "./historyTopics";
 //https://github.com/JedWatson/react-select
 
 function ExploreComponent({ topic }) {
     const router = useRouter()
     const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)
     const [volume, setVolume] = useState(0.5)
-    const { skillTree, setSkillTree,  skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
+    const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     useEffect(() => {
         if (!topic) return router.push("/")
     }, [])
@@ -27,21 +29,41 @@ function ExploreComponent({ topic }) {
         if (!skillTree?.Sessions) return
         if (!Jwt.Get().IsValid()) return
         let names = skillTree.Sessions.map((session) => `${session.Name}:${session.Detail}`)
-        console.log("names", names)
         !!names && names.length > 0 && HMGET("SkillMyTrace:@id", names).then((res) => {
             //zip names and res to dict
             if (names.length != res?.length) return
-            var _res = {}
-            for (var i = 0; i < names.length; i++) {
-                _res[names[i]] = res[i]
-            }
-            let _myTrace = { ...skillMyTrace, ..._res }
+            var _myTrace = res.reduce((acc, item, index) => {
+                acc[names[index]] = item
+                return acc
+            }, {})
             setSkillMyTrace(_myTrace)
         })
     }, [skillTree])
+    const [RelatedSkills, setRelatedSkills] = useState([])
+    useEffect(() => {
+        API("SkillSearch", { Name: topic }).then((data) => {
+            //if data of null or not array, then return
+            if (!data || !Array.isArray(data)) return
 
+            //skillNames setted after SkillTrees, to avoid early render
+            var names = data.map((item) => item.Name + ":" + item.Detail)
+            names = [...new Set(names)]
+            setRelatedSkills(names)
+        })
+    }, [topic])
     useEffect(() => {
         setMenuL2(<div className="flex justify-between w-full items-center">
+            <HistoryTopics></HistoryTopics>
+            <FormControl variant="standard" sx={{ ml: 10, minWidth: 155 }}>
+                <Select labelId="select-related-topic" id="select-related-topic" value={''} displayEmpty
+                    inputProps={{ 'aria-label': 'Without label' }} onChange={(e) => !!e.target.value && router.push(`/skill?t=${e.target.value}`)}>
+                    <MenuItem value=""> <em>相关的主题:</em> </MenuItem>
+                    {
+                        RelatedSkills.map((item, index) => <MenuItem key={`menu-item-${item}`} value={item}>{item}</MenuItem>)
+                    }
+                </Select>
+            </FormControl>
+
 
             <div key="reward" className="flex flex-row overflow-hidden w-full items-center justify-between">
                 <Rewards creditTM={creditTM} volume={volume}></Rewards>
@@ -58,7 +80,7 @@ function ExploreComponent({ topic }) {
                 </div>
             </div>
         </div>)
-    }, [creditTM, volume])
+    }, [creditTM, volume, RelatedSkills])
     return <div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center " style={{
         backgroundImage: "url(/MAUL0r_Reme_kawaii_anime_cumulonimbus_happily_floating_through__01999efc-f065-4823-bf48-40be9c285ec5.png)"
         //use boxShadow to create a shadow of 50% opacity

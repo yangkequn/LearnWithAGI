@@ -43,7 +43,7 @@ S216.89 154.81 216.89 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_23"></path><
         <div className="flex flex-row items-center " onClick={e => { router.push("/") }} >
           {/* <Tooltip title={"learning using 2-io"} placement="right" >  <button> <TwoIO /></button></Tooltip> */}
           
-          <Tooltip title={"learn using 2-io"}><span><div className='mt-1' title="learn using 2-io"> <TwoIO />  </div> </span></Tooltip>
+          <Tooltip title={"dive in topics using 2-io"}><span><div className='mt-1' title="learn using 2-io"> <TwoIO />  </div> </span></Tooltip>
         </div>
 
         <div key="searchbox-and-icon-buttons" className="flex flex-row h-full l hover:w-full items-center gap-2" >
@@ -60,6 +60,7 @@ S216.89 154.81 216.89 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_23"></path><
                   let value = event?.target.value
                   if (!!value) {
                     router.push("/?search=" + value)
+                    setQuestion("")
                   }
                   // stop propagation
                   e.preventDefault()
@@ -70,7 +71,7 @@ S216.89 154.81 216.89 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_23"></path><
             <div key="create-skill" className=" flex  text-2xl leading-8 px-1 pr-1">
               <div className="flex flex-row gap-1 w-fit items-center  text-gray-700 bg-slate-300 h-fit bg-transparent   dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent rounded-lg  border-black hover:bg-orange-200 px-1"
                 onClick={e => router.push("/?search=" + question)}>
-                <div >📚</div> <div className=' text-lg  mx-1'>课程</div>
+                <div >📚</div> <div className=' text-lg  mx-1'>深入</div>
               </div>
             </div>
 
@@ -81,7 +82,7 @@ S216.89 154.81 216.89 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_23"></path><
             router.push("/Asks")
           }} >
             {/* <div className='w-fit h-full ' >📄</div> */}
-            <div className='w-fit h-full'>💬</div> <div className=' text-lg mx-1'>ChatGPT</div>
+            <div className='w-fit h-full'>💬</div> <div className=' text-lg mx-1'>对话</div>
           </div>
         </div>
 

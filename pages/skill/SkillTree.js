@@ -11,25 +11,39 @@ import Checkbox from '@mui/material/Checkbox';
 import { Context } from "./Context";
 import { Tooltip } from "@mui/material";
 export default function SkillTree({ topic }) {
-    const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
+    const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
 
     //auto load skillTree
     useEffect(() => {
-        HGET("SkillTree", topic).then((tree) => {
+        if (!topic) return
+        var Name = topic.split(":")[0], Detail = topic.split(":")[1]
+        API("SkillLoad", { Name, Detail }).then((tree) => {
+
+            //sort sessions by session.ChapterSession
+            tree?.Sessions?.sort((a, b) => a.ChapterSession - b.ChapterSession)
+
             !!tree && setSkillTree(tree)
         })
-    }, [])
+    }, [topic])
 
-    //auto select the first uncompleted skill path as default
+    //auto select the first uncompleted skill path as default.
+    //only set once, in order to avoid disturbing user
+    const [topicSessionSelected, setTopicSessionSelected] = useState("")
     useEffect(() => {
         //allow set only once. in order to avoid disturbing user
-        if (!skillTree?.Sessions?.length || !!skillPoint?.Name) return
-        for (var i = 0; i < skillTree.Sessions.length; i++) {
+        if (skillTree?.Sessions?.length < 1 || topicSessionSelected == topic) return
+        for (var i = 0; i < skillTree?.Sessions?.length; i++) {
             var session = skillTree.Sessions[i]
-            if (Complete(skillMyTrace[session.Name + ":" + session.Detail]) >= 2) continue
-            setSkillPoint(session)
-            break
+            if (Complete(skillMyTrace[session.Name + ":" + session.Detail]) < 3) {
+                if (skillMyTrace.length > 0) setTopicSessionSelected(topic)
+                return setSkillSession(session)
+            }
+
         }
+        //if all sessions are completed, then select the first one
+        if (i == skillTree?.Sessions?.length) setSkillSession(skillTree.Sessions[0])
+        //if skillMyTrace is not fecthed to local, allow reset later
+        if (skillMyTrace.length > 0) setTopicSessionSelected(topic)
     }, [skillTree, skillMyTrace])
 
 
@@ -50,7 +64,7 @@ export default function SkillTree({ topic }) {
         </div>
 
 
-        {skillTree?.Sessions?.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTree?.Sessions.indexOf(skillPoint)}>
+        {skillTree?.Sessions?.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTree?.Sessions.indexOf(skillSession)}>
             {
                 !!skillTree && skillTree?.Sessions.map((Point, seq) => {
                     return <Step key={`skillTree${seq}`} className={`flex flex-col justify-start items-start w-full h-fit whitespace-nowrap min-h-max`}
@@ -59,8 +73,8 @@ export default function SkillTree({ topic }) {
                             //when mouse is over, change background color
                             ":hover": { backgroundColor: "#e8e8e8" }
                             //if index equals nextSkill, change box shadow
-                            , boxShadow: seq == skillTree?.Sessions.indexOf(skillPoint) ? "inset 0px 0px 0px 200px gold" : "none"
-                        }} onClick={(e) => setSkillPoint(Point)}
+                            , boxShadow: seq == skillTree?.Sessions.indexOf(skillSession) ? "inset 0px 0px 0px 200px gold" : "none"
+                        }} onClick={(e) => setSkillSession(Point)}
                     // StepContent={true}
                     >
                         <StepLabel sx={{ margin: "-5px 0 -5px 0" }} className="flex flex-row justify-start items-start w-full  whitespace-nowrap">
@@ -68,11 +82,11 @@ export default function SkillTree({ topic }) {
 
                                 <div key="first-row" className="flex  first-row justify-between items-start w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 " >
                                     <div className="flex flex-row justify-start w-full  whitespace-nowrap  text-ellipsis text-base text-gray-700 font-sans font-semibold leading-6 gap-3" >
-                                        {Point.Session + " " + Point.Name}
+                                        {Point.ChapterSession + " " + Point.Name}
                                     </div>
 
                                     <div className=" flex flex-row justify-end items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 mr-2" >
-                                        <div>难度:{Point.FKGL}</div>
+                                        <div>难度:{Point.Difficulty}</div>
                                         <div className="mr-2">{Complete(skillMyTrace[Point.Name + ":" + Point.Detail]) >= 2 ? "✅" : "⬜"}</div>
                                     </div>
                                 </div>

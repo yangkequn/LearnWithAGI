@@ -11,11 +11,11 @@ export default function ContextComponent({ children }) {
     //for each line of QA, the first is question, the second is answer,seperated by |||. the answer is 0 or 1 or 2 or 3
     //for each line of Asks, the first is question, the second is answer,seperated by |||
     const [skillMyTrace, setSkillMyTrace] = useState({});
-    const [skillPoint, setSkillPoint] = useState(null)
+    const [skillSession, setSkillSession] = useState(null)
     const store = {
         skillTree, setSkillTree,
         skillMyTrace, setSkillMyTrace,
-        skillPoint, setSkillPoint,
+         skillSession, setSkillSession,
     }
 
     return <Context.Provider value={store}>{children}</Context.Provider>

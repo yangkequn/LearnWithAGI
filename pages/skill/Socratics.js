@@ -7,32 +7,31 @@ import { GlobalContext } from "../_app";
 
 export default function Socratics({ topic }) {
     const { setCreditTM } = useContext(GlobalContext)
-    const { skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
+    const { skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
     //CurrentQAs QA that use has selected. format [question,answer,question,answer,...]
     const [QATraces, setQAsTraces] = useState([])
-    const FullName = () => `${skillPoint?.Name}:${skillPoint?.Detail}`
-    const loadSkillPoint = (Name, topic) => API("SkillSocratic", { Name, Topic: topic, Rebuild: false })
-        .then((res) => (Name === FullName()) && setQAs(res ?? []))
+    const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
         setQAsTraces([])
         let Name = FullName()
         if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
-        loadSkillPoint(Name, topic)
+        //loadSkillSessionQAs
+        API("SkillSocratic", { Name, Topic: topic, Rebuild: false })        .then((res) => (Name === FullName()) && setQAs(res ?? []))
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
 
-    }, [skillPoint])
+    }, [topic,skillSession])
 
     useEffect(() => {
         if (!FullName()) return
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
-    }, [skillPoint, skillMyTrace])
+    }, [topic,skillSession, skillMyTrace])
 
-    if (!FullName(skillPoint)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
-    return <div key={`socratic-container-${skillPoint}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]"    >
+    if (!FullName(skillSession)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
+    return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]"    >
         {/* //list Tags of QAs,using mui tag */}
         <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full  mt-2 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
 
@@ -49,7 +48,7 @@ export default function Socratics({ topic }) {
             {
                 QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
                     return <div key={QA.Q} className=" text-base  even:bg-lime-100 odd: bg-amber-100 max-w-[49%] rounded-md px-4 py-[4px]  items-center"
-                        onClick={() => API("SkillMyTraceReport", { Name: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
+                        onClick={() => API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
                             let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                             setSkillMyTrace(newMySkillTrace)
                             //update creditTM to refresh rewards
@@ -98,7 +97,7 @@ export default function Socratics({ topic }) {
                                 e.target.value = ""
                                 API("SkillSocratic", { Name: FullName(), Quetion: question })
                                     .then((res) => setQAs(res ?? []))
-                                API("SkillMyTraceReport", { Name: FullName(), Ask: `${question}|||${answer}` }).then((res) => {
+                                API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Ask: `${question}|||${answer}` }).then((res) => {
                                     let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                                     setSkillMyTrace(newMySkillTrace)
                                     //update creditTM to refresh rewards

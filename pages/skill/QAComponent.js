@@ -15,7 +15,7 @@ export default function QAComponent({ topic }) {
     const { setCreditTM } = useContext(GlobalContext)
     const [QANum, setQANum] = useState(5)
     const [loading, setLoading] = useState(false)
-    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillPoint, setSkillPoint } = useContext(Context)
+    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     //QAs: []struct {	Type     string	Question string	Answers  []string	Shown    int64	Answer   int64	Correct  int64}
     const [QAs, setQAs] = useState([]);
     const [qaIndex, setQAIndex] = useState(-1);
@@ -31,7 +31,7 @@ export default function QAComponent({ topic }) {
         let answers = [...p1, ...p2]
         return answers
     }
-    const FullName = () => `${skillPoint?.Name}:${skillPoint?.Detail}`
+    const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
 
     //loadSkillPoint according to skillTreeSelected
     const LoadSkillQAs = (Name, topic, useCallback) => API("SkillQAs", { Name: Name, Topic: topic }).then((qas) => useCallback && !!qas?.length > 0 && (Name === FullName()) && setQAs(qas))
@@ -42,7 +42,7 @@ export default function QAComponent({ topic }) {
         let Name = FullName()
         if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
         LoadSkillQAs(Name, topic, true)
-    }, [skillPoint])
+    }, [skillSession])
 
     //join skillMyTrace to string,for faster processing
     const [TraceQAsStr, setTraceQAsStr] = useState("")
@@ -83,7 +83,7 @@ export default function QAComponent({ topic }) {
             <div key="question-title-box" className={`flex flex-row  w-full flex-grow items-center md:pl-4 border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
             rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-fit ${loading && "animate-pulse"}`}  >
                 <div key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
-                    API("SkillMyTraceReport", { Name: FullName(), Action: "reset-qas" }).then((res) => {
+                    API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Action: "reset-qas" }).then((res) => {
                         let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                         setSkillMyTrace(newMySkillTrace)
                     })
@@ -197,7 +197,7 @@ export default function QAComponent({ topic }) {
                             if (answerIndex === undefined) return
 
                             //	Name    string	Answer  int32	Ask     int32
-                            API("SkillMyTraceReport", { Name: FullName(), QA: QAs[qaIndex].Question + "|||" + answerIndex }).then((res) => {
+                            API("SkillMyTraceReport", {  SkillName: topic, SessionName: FullName(), QA: QAs[qaIndex].Question + "|||" + answerIndex }).then((res) => {
                                 //update creditTM to refresh rewards
                                 setCreditTM(new Date().getTime())
                                 let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
