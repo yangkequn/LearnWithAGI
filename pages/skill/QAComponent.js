@@ -22,8 +22,8 @@ export default function QAComponent({ topic }) {
     const AnswersShuffled = (qa) => {
         //calculate hash of qa.question
         let hash = 0;
-        for (let i = 0; i < qa.Question.length; i++) {
-            hash = ((hash << 5) - hash) + qa.Question.charCodeAt(i);
+        for (let i = 0; i < qa.Q.length; i++) {
+            hash = ((hash << 5) - hash) + qa.Q.charCodeAt(i);
             hash &= hash; // Convert to 32bit integer
         }
         let beginindex = hash % qa.Answers.length
@@ -55,24 +55,24 @@ export default function QAComponent({ topic }) {
         let myTraceQAs = skillMyTrace[FullName()]?.QAs
         let myTraceQAsStr = myTraceQAs?.join("") ?? ""
         for (var i = 0; i < QAs.length; i++) {
-            let question = QAs[i].Question, answer = QAs[i].Answer
+            let question = QAs[i].Q, answer = QAs[i].Answer
             if (myTraceQAsStr.indexOf(question + "|||0") >= 0) continue
             return setQAIndex(i)
         }
     }, [QAs, skillMyTrace])
 
     const AnswerRight = (QA) => {
-        if (TraceQAsStr?.indexOf(QA.Question + "|||0") >= 0) return "✅"
-        if (TraceQAsStr?.indexOf(QA.Question) >= 0) return "❌"
+        if (TraceQAsStr?.indexOf(QA.Q + "|||0") >= 0) return "✅"
+        if (TraceQAsStr?.indexOf(QA.Q) >= 0) return "❌"
         return "⬜"
     }
     const AnswerItemRightWrong = (QA, aswItem) => {
-        let answered = TraceQAsStr.indexOf(QA.Question) >= 0, correct = TraceQAsStr.indexOf(QA.Question + "|||0") >= 0
+        let answered = TraceQAsStr.indexOf(QA.Q) >= 0, correct = TraceQAsStr.indexOf(QA.Q + "|||0") >= 0
         //no answered
         if (!answered) return "⬜"
         //case ansered
         if (correct && QA.Answers[0] == aswItem) return "✅"
-        if (!correct && TraceQAsStr.indexOf(QA.Question + "|||" + QA.Answers.indexOf(aswItem)) >= 0) return "❌"
+        if (!correct && TraceQAsStr.indexOf(QA.Q + "|||" + QA.Answers.indexOf(aswItem)) >= 0) return "❌"
         return "⬜"
     }
 
@@ -121,7 +121,7 @@ export default function QAComponent({ topic }) {
         </div>
 
         <div key="questions-all-completed-cheers" className=" flex flex-col bg-[#ddba3b]  justify-start items-start rounded-md w-full text-gray-700 text-lg" >
-            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Question) < 0).length == 0 && <div className="flex flex-row w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6  animate-bounce " >
+            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Q) < 0).length == 0 && <div className="flex flex-row w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6  animate-bounce " >
                 <div className="flex flex-row w-fit self-center text-[56px]">😄</div>
                 <div className="flex flex-row w-fit self-center text-xl">Completed! Nice Job!</div>
             </div>}
@@ -132,17 +132,17 @@ export default function QAComponent({ topic }) {
                 <div key={`activeStep-${qaIndex}`} variant="dots" position="static"
                     className=" flex flex-col justify-start rounded-md w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
-                    {QAs?.map((qa, index) => <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Question}-${index}`}
+                    {QAs?.map((qa, index) => <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Q}-${index}`}
                         className={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 max-w-[48%] min-w-[200px] w-full flex-grow  even:bg-lime-100 odd: bg-amber-100`}
                         onClick={() => setQAIndex(index)} >
-                        <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
+                        <div key={`OtherQA${qa.Q}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
                             <div className=" flex flex-row justify-between items-center pr-2 gap-1  w-full">
                                 <div className="rounded ">{AnswerRight(qa)}</div>
-                                <div className="flex flex-row w-full">{qa.Question}</div>
+                                <div className="flex flex-row w-full">{qa.Q}</div>
                                 <div className=" flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
-                                    <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon></div>
+                                    <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon></div>
                                     <div title="删除该条目" > <DeleteIcon onClick={() => {
-                                        API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Question}` })
+                                        API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Q}` })
                                             .then((res) => setQAs(res ?? []))
                                     }}></DeleteIcon></div>
 
@@ -158,14 +158,14 @@ export default function QAComponent({ topic }) {
                     className=" w-full flex flex-col justify-between rounded-md h-full  text-gray-800 text-lg leading-5 overflow-y-hidden bg-slate-300"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
                     {QAs?.map((qa, index) => {
-                        return <Step key={`OtherQA${qa.Question}`} className="flex flex-row justify-start items-center w-full h-10 text-lg text-gray-700 "
+                        return <Step key={`OtherQA${qa.Q}`} className="flex flex-row justify-start items-center w-full h-10 text-lg text-gray-700 "
                             sx={{ boxShadow: index == qaIndex ? "inset 0px 0px 0px 200px gold" : "none", marginTop: index == 0 ? 0 : "-22px" }}
                             onClick={() => setQAIndex(index)} >
-                            <StepLabel key={`OtherQA${qa.Question}`} className="flex flex-row w-full justify-between">
+                            <StepLabel key={`OtherQA${qa.Q}`} className="flex flex-row w-full justify-between">
                                 <div className="flex flex-row w-full justify-between pr-2">
-                                    <div>{qa.Question}</div>
+                                    <div>{qa.Q}</div>
                                     <div className="flex flex-row w-min gap-1 items-center">
-                                        {qaIndex == index && <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon>}
+                                        {qaIndex == index && <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon>}
                                         <div>{AnserRight(qa)}</div>
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@ export default function QAComponent({ topic }) {
                             if (answerIndex === undefined) return
 
                             //	Name    string	Answer  int32	Ask     int32
-                            API("SkillMyTraceReport", {  SkillName: topic, SessionName: FullName(), QA: QAs[qaIndex].Question + "|||" + answerIndex }).then((res) => {
+                            API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), QA: QAs[qaIndex].Q + "|||" + answerIndex }).then((res) => {
                                 //update creditTM to refresh rewards
                                 setCreditTM(new Date().getTime())
                                 let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
@@ -208,6 +208,9 @@ export default function QAComponent({ topic }) {
                         {AnswerItemRightWrong(QAs[qaIndex], a)} {a}
                     </div>)
                     }
+                </div>
+                <div>
+                    {TraceQAsStr?.indexOf(QAs[qaIndex].Q) >= 0 && QAs[qaIndex]?.Why}
                 </div>
             </div>
         }

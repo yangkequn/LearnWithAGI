@@ -24,7 +24,7 @@ export default function HistoryTopics() {
             onChange={(e) => !!e.target.value && router.push(`/skill?t=${e.target.value}`)}>
             <MenuItem value=""> <em>切换到 最近学习:</em> </MenuItem>
             {
-                MyHistoryList.map((item, index) => <MenuItem key={`menu-item-${item}`} value={item}>{item}</MenuItem>)
+                MyHistoryList?.map((item, index) => <MenuItem key={`menu-item-${item}`} value={item}>{item}</MenuItem>)
             }
         </Select>
     </FormControl>

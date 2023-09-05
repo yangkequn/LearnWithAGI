@@ -12,6 +12,7 @@ import { API } from "../../component/api";
 import { Jwt } from "../../component/jwt";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import { useRouter } from "next/navigation";
+import { GlobalContext } from "../_app";
 
 export default function Login({ To }) {
     const router = useRouter()
@@ -39,7 +40,6 @@ export default function Login({ To }) {
     const info = ToOneLanguage(1)
 
     const {
-        openAlert, setOpenAlert,
         countryCode, setCountryCode, countryCodeError,
         phone, setPhone, phoneError,
         account, setAccount, accountError, setAccountError,
@@ -47,6 +47,7 @@ export default function Login({ To }) {
         foreignPhone, setForeignPhone,
         checkCountryCode, checkPhone, checkAccount, CheckPassword
     } = useContext(AuthContext)
+    const { openAlert, setOpenAlert, } = useContext(GlobalContext)
 
     useEffect(() => { !!countryCode && checkCountryCode() }, [countryCode])
     useEffect(() => { !!phone && checkPhone() }, [phone])

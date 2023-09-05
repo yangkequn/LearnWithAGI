@@ -54,7 +54,7 @@ export enum Action { GET, PUT, DELETE, }
 
 //RspType.json is server default
 //export enum RspType { json = "&RspType=application/json", jpeg = "&RspType=image/jpeg", ogg = "&RspType=audio/ogg", mpeg = "&RspType=video/mpeg", mp4 = "&RspType=video/mp4", none = "", text = "&RspType=text/plain", stream = "&RspType=application/octet-stream" }
-export enum RspType { json = "", jpeg = "--!JPG", ogg = "--!OGG", mpeg = "--!MPEG", mp4 = "--!MP4", none = "", text = "--!TEXT", stream = "--!STREAM" }
+export enum RspType { json = "--!JSON", jpeg = "--!JPG", ogg = "--!OGG", mpeg = "--!MPEG", mp4 = "--!MP4", none = "", text = "--!TEXT", stream = "--!STREAM" }
 
 //const Url = "https://api.iam26.com:3080/rSvc"
 const Url = "http://localhost:8080"
