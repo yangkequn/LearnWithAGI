@@ -34,7 +34,6 @@ export default function SkillTree({ topic }) {
                 //zip names and res to dict
                 if (names.length != res?.length) return
                 var _mytrace = res.reduce((acc, item, index) => { acc[names[index]] = item; return acc }, {})
-                console.log("_mytrace", _mytrace, _mytrace)
                 setSkillMyTrace(_mytrace)
             })
         })
