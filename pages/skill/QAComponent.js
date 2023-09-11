@@ -4,14 +4,15 @@ import React, { createRef, useContext, useEffect, useState } from "react"
 import Divider from "@mui/material/Divider";
 
 
-import { API, HGET } from "../../component/api";
+import { API, Cmd, GetUrl, HGET, RspType } from "../../component/api";
 import BuildIcon from '@mui/icons-material/Build';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Context } from "./Context"
 import { GlobalContext } from "../_app";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Jwt } from "../../component/jwt";
 
-export default function QAComponent({ topic }) {
+export default function QAComponent({ topic, volume }) {
     const { setCreditTM } = useContext(GlobalContext)
     const [QANum, setQANum] = useState(5)
     const [loading, setLoading] = useState(false)
@@ -75,6 +76,17 @@ export default function QAComponent({ topic }) {
         if (!correct && TraceQAsStr.indexOf(QA.Q + "|||" + QA.Answers.indexOf(aswItem)) >= 0) return "❌"
         return "⬜"
     }
+    const PlayTTSOgg = (...urls) => {
+        //play each audio one by one
+        let url = urls[0]
+        let audio = new Audio(url)
+        //set volume
+        audio.volume = isNaN(volume) ? 0.5 : volume
+        audio.onended = () => {
+            if (urls.length > 1) PlayTTSOgg(...urls.slice(1))
+        }
+        audio.play()
+    }
 
     return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full   overflow-scroll  max-w-[40%] min-w-[20%] pr-1">
 
@@ -82,13 +94,13 @@ export default function QAComponent({ topic }) {
 
             <div key="question-title-box" className={`flex flex-row  w-full flex-grow items-center md:pl-4 border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
             rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-fit ${loading && "animate-pulse"}`}  >
-                <div key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
+                <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
                     API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Action: "reset-qas" }).then((res) => {
                         let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                         setSkillMyTrace(newMySkillTrace)
                     })
                 }}>
-                    <div title="reset all practice" ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
+                    <div ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
                 </div>
 
                 <div className="flex  w-full self-center resize-none border-0 bg-transparent  pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none ">
@@ -101,13 +113,17 @@ export default function QAComponent({ topic }) {
                             setQANum(e.target.value)
                         }} >
                         {
+
+                            <option key={`option-negtive-1`} value={-1}>-1题</option>
+                        }
+                        {
                             // options betwenn 1 to 100, default 10 
                             [...Array(10).keys()].map((i) => <option key={`option-${i}`} value={(i + 1) * 5}>{(i + 1) * 5}题</option>)
 
                         }
                     </select>
                     <button className={`self-center m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
-                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: "append", "QANum": parseInt(QANum) })
+                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: QANum < 0 ? "rebuild" : "append", "QANum": parseInt(QANum) })
                             .then((res) => setQAs(res ?? []))
                     }}>
                         <div title={"申请重建练习列表"} className="mx=1 self-center items-center justify-center w-6 h-6">
@@ -138,7 +154,10 @@ export default function QAComponent({ topic }) {
                         <div key={`OtherQA${qa.Q}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
                             <div className=" flex flex-row justify-between items-center pr-2 gap-1  w-full">
                                 <div className="rounded ">{AnswerRight(qa)}</div>
-                                <div className="flex flex-row w-full">{qa.Q}</div>
+                                <div className="flex flex-row w-full" onClick={() => {
+                                    PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggQA", qa.Q, RspType.ogg))
+                                }}
+                                >{qa.Q}</div>
                                 <div className=" flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
                                     <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon></div>
                                     <div title="删除该条目" > <DeleteIcon onClick={() => {
@@ -184,8 +203,21 @@ export default function QAComponent({ topic }) {
 
         {
             !!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start w-full items-start]" >
-                <div variant="h4" className=" font-semibold text-lg text-gray-800  font-sans leading-8 my-2 " >
-                    回答正确的是:
+                <div variant="h4" className="flex flex-row justify-between font-semibold text-lg text-gray-800  font-sans leading-8 my-2 " >
+                    <div>回答正确的是: </div>
+                    <div className="flex flex-row justify-start items-center gap-2">
+                        {/* button with text 上一题, with color light-blue like alipay */}
+                        <button className="flex flex-row justify-start items-center gap-2 bg-blue-500 text-white rounded-md px-2 py-1 " onClick={() => {
+                            if (qaIndex - 1 >= 0) setQAIndex(qaIndex - 1)
+                        }}>
+                            上一题
+                        </button>
+                        <div className="flex flex-row justify-start items-center gap-2 bg-blue-500 text-white rounded-md px-2 py-1 " onClick={() => {
+                            if (qaIndex + 1 < QAs.length) setQAIndex(qaIndex + 1)
+                        }}>
+                            下一题
+                        </div>
+                    </div>
                 </div>
                 <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3  " >
                     {AnswersShuffled(QAs[qaIndex]).map((a, i) => <div key={`answer-item${a}-${i}`}
@@ -195,6 +227,9 @@ export default function QAComponent({ topic }) {
                         onClick={() => {
                             let answerIndex = QAs[qaIndex]?.Answers?.indexOf(a)
                             if (answerIndex === undefined) return
+                            var wrongSound = [GetUrl(Cmd.HGET, "TTSOggQA", a, RspType.ogg), "/negative_beeps-6008.mp3", GetUrl(Cmd.HGET, "TTSOggQA", QAs[qaIndex]?.Why, RspType.ogg)]
+                            var rightSound = [GetUrl(Cmd.HGET, "TTSOggQA", a, RspType.ogg), "/DingSoundEffect.ogg"]
+                            QAs[qaIndex]?.Answers[0] === a ? PlayTTSOgg(...rightSound) : PlayTTSOgg(...wrongSound)
 
                             //	Name    string	Answer  int32	Ask     int32
                             API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), QA: QAs[qaIndex].Q + "|||" + answerIndex }).then((res) => {
@@ -202,7 +237,6 @@ export default function QAComponent({ topic }) {
                                 setCreditTM(new Date().getTime())
                                 let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                                 setSkillMyTrace(newMySkillTrace)
-                                if (qaIndex + 1 < QAs.length) setQAIndex(qaIndex + 1)
                             })
                         }}>
                         {AnswerItemRightWrong(QAs[qaIndex], a)} {a}

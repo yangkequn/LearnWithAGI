@@ -74,13 +74,13 @@ function ExploreComponent({ topic }) {
         <SkillTree topic={topic} />
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
-        <Socratics topic={topic}></Socratics>
+        <Socratics topic={topic} volume={volume}></Socratics>
         {/* right side panel */}
 
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
         {/* 底部的搜索结果,immerse chatbox */}
-        <QAComponent setCreditTM={setCreditTM} topic={topic}></QAComponent>
+        <QAComponent setCreditTM={setCreditTM} topic={topic} volume={volume}></QAComponent>
 
     </div >
 
