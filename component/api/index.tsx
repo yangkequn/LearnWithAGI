@@ -2,6 +2,7 @@ import axios from "axios";
 import CustomEvents from "../customEvents";
 import { Jwt } from "../jwt";
 import { json } from "stream/consumers";
+import { debug } from "console";
 var msgpack = require('@ygoe/msgpack');
 const JwtRequest = (headers: any = {}) => {
     let jwt = typeof window !== 'undefined' && localStorage.getItem("Authorization");
@@ -23,7 +24,9 @@ const JwtRequest = (headers: any = {}) => {
                     config.data = buf;
                 }
                 config.headers["Content-Type"] = "application/octet-stream";
+
             }
+
             return config;
         },
         (error: any) => {
@@ -59,20 +62,22 @@ export enum RspType { json = "--!JSON", jpeg = "--!JPG", ogg = "--!OGG", mpeg = 
 //const Url = "https://api.iam26.com:3080/rSvc"
 const Url = "http://localhost:8080"
 export enum Cmd { HEXISTS = "HEXISTS", HGET = "HGET", HGETALL = "HGETALL", HMGET = "HMGET" }
-export const GetUrl = (cmd = Cmd.HGET, Key: string, Field: string = "", rspType: RspType = RspType.json) =>
-    `${Url}/${cmd}--${Key}${rspType}?F=${Field}`
+export const GetUrl = (cmd = Cmd.HGET, Key: string, Field: string = "", rspType: RspType = RspType.json) => {
+    var url = `${Url}/${cmd}--${Key}${rspType}?F=${encodeURIComponent(Field)}`;
+    return url
+}
 export const Time = () => JwtRequest().get(`${Url}/TIME--${new Date().getTime()}`)
 export const HEXISTS = (Key: string, Field: string = "") =>
-    JwtRequest().get(`${Url}/HEXISTS--${Key}?F=${Field}`)
+    JwtRequest().get(`${Url}/HEXISTS--${Key}?F=${encodeURIComponent(Field)}`)
 
 export const HSET = (Key: string, Field: string = "", data: any) =>
-    JwtRequest().put(`${Url}/HSET--${Key}--${RspFields}?F=${Field}`, data)
+    JwtRequest().put(`${Url}/HSET--${Key}--${RspFields}?F=${encodeURIComponent(Field)}`, data)
 
 export const HGET = (Key: string, Field: string = "", rspType: RspType = RspType.json) => {
     if (!Key || Key == undefined) {
         debugger
     }
-    return JwtRequest().get(`${Url}/HGET--${Key}${rspType}?F=${Field}`)
+    return JwtRequest().get(`${Url}/HGET--${Key}${rspType}?F=${encodeURIComponent(Field)}`)
 }
 export const HGETALL = (Key: string) =>
     JwtRequest().get(`${Url}/HGETALL--${Key}`)
@@ -84,7 +89,7 @@ export const HRANDFIELD = (Key: string, Count: number) =>
     JwtRequest().get(`${Url}/HRANDFIELD--${Key}?Count=${Count}`)
 
 export const HMGET = (Key: string, Fields: any[] = []) =>
-    JwtRequest().get(`${Url}/HMGET--${Key}?F=${Fields.join(",")}`)
+    JwtRequest().get(`${Url}/HMGET--${Key}?F=${encodeURIComponent(Fields.join(","))}`)
 
 export const ZRange = (Key: string, Start: number, Stop: number, WITHSCORES: boolean = false) =>
     JwtRequest().get(`${Url}/ZRANGE--${Key}?Start=${Start}&Stop=${Stop}&WITHSCORES=${WITHSCORES}`)
