@@ -32,11 +32,11 @@ export default function Rewards({ creditTM,volume }) {
             //day change, creditGain should be creditToday
             if (creditGain < 0 && creditToday == 1) creditGain = creditToday
             if (creditGain && creditTM > 0) {
-                //play mario ding sound, when reward is given and > 0
-                let audio = new Audio("/mario-money-sound.mp3")
-                //set volume
-                audio.volume = volume
-                audio.play()
+                // //play mario ding sound, when reward is given and > 0
+                // let audio = new Audio("/mario-money-sound.mp3")
+                // //set volume
+                // audio.volume = volume
+                // audio.play()
                 //show reward amimation for 1 second
                 setRewardScore(credit - lastCredit)
                 setShowReward(true)

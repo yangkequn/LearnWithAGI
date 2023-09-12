@@ -13,6 +13,14 @@ const MenuSignIn = { name: `登录`, path: "/Auth", icon: null }
 const MenuItems = [MenuRetro]
 
 
+export const TwoIO = () => <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 360 360" enableBackground="new 0 0 360 360" width="56" height="56" data-uid="o_f8g157ak0_6"><g data-uid="o_f8g157ak0_7"><g data-uid="o_f8g157ak0_8"><g data-uid="o_f8g157ak0_9"><g data-uid="o_f8g157ak0_10"><g data-uid="o_f8g157ak0_11"><path className="st0" d="M241.67 202.99c-13.18 49.17-63.71 78.35-112.88 65.17c-49.17-13.17-78.35-63.71-65.17-112.88
+c13.17-49.17 63.71-78.35 112.88-65.17C225.66 103.28 254.84 153.82 241.67 202.99z" fill="#FFD300" data-uid="o_f8g157ak0_12"></path><path className="st0" fill="#FFD300" data-type="polygon" d="M90.81 242.85L42.81 242.55L66.55 200.83Z" data-uid="o_f8g157ak0_13"></path></g></g><g data-uid="o_f8g157ak0_14"><g data-uid="o_f8g157ak0_15"><path className="st1" d="M118.97 164.23c13.18 49.17 63.71 78.35 112.88 65.17c49.17-13.17 78.35-63.71 65.17-112.88
+c-13.17-49.17-63.71-78.35-112.88-65.17C134.98 64.52 105.8 115.06 118.97 164.23z" fill="#2D3CE9" data-uid="o_f8g157ak0_16"></path><path className="st1" fill="#2D3CE9" data-type="polygon" d="M269.83 204.09L317.83 203.78L294.09 162.06Z" data-uid="o_f8g157ak0_17"></path></g></g></g><path className="st2" d="M229.52 229.96c5.33-8.07 9.5-17.11 12.14-26.97c13.17-49.17-16-99.71-65.17-112.88
+c-15.37-4.12-30.87-4.1-45.32-0.62c-14.07 21.25-19.32 48.19-12.21 74.74C131.93 212.62 181.1 241.62 229.52 229.96z" fill="#FA0EB8" data-uid="o_f8g157ak0_18"></path></g><g data-uid="o_f8g157ak0_19"><g data-uid="o_f8g157ak0_20"><path className="st3" d="M161.58 159.74c0 4.92-3.99 8.92-8.92 8.92s-8.92-3.99-8.92-8.92c0-4.92 3.99-8.92 8.92-8.92
+S161.58 154.81 161.58 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_21"></path><path className="st3" d="M189.24 159.74c0 4.92-3.99 8.92-8.92 8.92s-8.92-3.99-8.92-8.92c0-4.92 3.99-8.92 8.92-8.92
+S189.24 154.81 189.24 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_22"></path><path className="st3" d="M216.89 159.74c0 4.92-3.99 8.92-8.92 8.92s-8.92-3.99-8.92-8.92c0-4.92 3.99-8.92 8.92-8.92
+S216.89 154.81 216.89 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_23"></path></g></g></g></svg>
+
 export default function Navigator() {
   const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2 } = useContext(GlobalContext)
 
@@ -26,14 +34,6 @@ export default function Navigator() {
   }, [RedirectUrl, router, setRedirectUrl])
 
 
-  const TwoIO = () => <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 360 360" enableBackground="new 0 0 360 360" width="56" height="56" data-uid="o_f8g157ak0_6"><g data-uid="o_f8g157ak0_7"><g data-uid="o_f8g157ak0_8"><g data-uid="o_f8g157ak0_9"><g data-uid="o_f8g157ak0_10"><g data-uid="o_f8g157ak0_11"><path className="st0" d="M241.67 202.99c-13.18 49.17-63.71 78.35-112.88 65.17c-49.17-13.17-78.35-63.71-65.17-112.88
-  c13.17-49.17 63.71-78.35 112.88-65.17C225.66 103.28 254.84 153.82 241.67 202.99z" fill="#FFD300" data-uid="o_f8g157ak0_12"></path><path className="st0" fill="#FFD300" data-type="polygon" d="M90.81 242.85L42.81 242.55L66.55 200.83Z" data-uid="o_f8g157ak0_13"></path></g></g><g data-uid="o_f8g157ak0_14"><g data-uid="o_f8g157ak0_15"><path className="st1" d="M118.97 164.23c13.18 49.17 63.71 78.35 112.88 65.17c49.17-13.17 78.35-63.71 65.17-112.88
-  c-13.17-49.17-63.71-78.35-112.88-65.17C134.98 64.52 105.8 115.06 118.97 164.23z" fill="#2D3CE9" data-uid="o_f8g157ak0_16"></path><path className="st1" fill="#2D3CE9" data-type="polygon" d="M269.83 204.09L317.83 203.78L294.09 162.06Z" data-uid="o_f8g157ak0_17"></path></g></g></g><path className="st2" d="M229.52 229.96c5.33-8.07 9.5-17.11 12.14-26.97c13.17-49.17-16-99.71-65.17-112.88
-c-15.37-4.12-30.87-4.1-45.32-0.62c-14.07 21.25-19.32 48.19-12.21 74.74C131.93 212.62 181.1 241.62 229.52 229.96z" fill="#FA0EB8" data-uid="o_f8g157ak0_18"></path></g><g data-uid="o_f8g157ak0_19"><g data-uid="o_f8g157ak0_20"><path className="st3" d="M161.58 159.74c0 4.92-3.99 8.92-8.92 8.92s-8.92-3.99-8.92-8.92c0-4.92 3.99-8.92 8.92-8.92
-S161.58 154.81 161.58 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_21"></path><path className="st3" d="M189.24 159.74c0 4.92-3.99 8.92-8.92 8.92s-8.92-3.99-8.92-8.92c0-4.92 3.99-8.92 8.92-8.92
-S189.24 154.81 189.24 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_22"></path><path className="st3" d="M216.89 159.74c0 4.92-3.99 8.92-8.92 8.92s-8.92-3.99-8.92-8.92c0-4.92 3.99-8.92 8.92-8.92
-S216.89 154.81 216.89 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_23"></path></g></g></g></svg>
-
 
   return <div id="navigator" className="flex flex-col w-full h-fit font-sans font" >
 
@@ -42,7 +42,7 @@ S216.89 154.81 216.89 159.74z" fill="#FFFFFF" data-uid="o_f8g157ak0_23"></path><
       <div key="retrict-width" className='flex flex-row min-w-[600px] items-center  gap-2 '>
         <div className="flex flex-row items-center " onClick={e => { router.push("/") }} >
           {/* <Tooltip title={"learning using 2-io"} placement="right" >  <button> <TwoIO /></button></Tooltip> */}
-          
+
           <Tooltip title={"dive in topics using 2-io"}><span><div className='mt-1' title="learn using 2-io"> <TwoIO />  </div> </span></Tooltip>
         </div>
 

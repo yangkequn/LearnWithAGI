@@ -4,9 +4,12 @@ import { API, Cmd, GetUrl, HGET, RspType } from "../../component/api";
 import BuildIcon from '@mui/icons-material/Build';
 import { Context } from "./Context"
 import { GlobalContext } from "../_app";
-import { Avatar, Tooltip } from "@mui/material";
+import { Avatar, Box, Button, LinearProgress, MobileStepper, Tooltip, Typography } from "@mui/material";
 import { AvatarWithName } from "../Auth/avatar";
+import { TwoIO } from "../../component/appFrame/navigator";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
+let audio = null
 export default function Socratics({ topic, volume }) {
     const { setCreditTM } = useContext(GlobalContext)
     const { skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
@@ -20,6 +23,7 @@ export default function Socratics({ topic, volume }) {
     const [CurrentScene, setCurrentScene] = useState(-1)
     const [CiteQuestion, setCiteQuestion] = useState("")
     const [QASocratics, setQASocratics] = useState([])
+    const [Playing, setPlaying] = useState(false)
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
@@ -39,18 +43,19 @@ export default function Socratics({ topic, volume }) {
         if (!FullName()) return
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
     }, [topic, skillSession, skillMyTrace])
-    const LoadNextDialogue = () => setCurrentScene(CurrentScene + 1)
-    //when CiteQuestion move to another question, play mario ding sound
-    useEffect(() => {
-        if (!!CiteQuestion && QASocratics?.length > 0) {
-            var audioDing = new Audio("/DingSoundEffect.ogg")
-            //set volume
-            audioDing.volume = isNaN(volume) ? 0.5 : volume
-            audioDing.play()
-        }
-    }, [CiteQuestion])
 
-    let audio = null
+    const PlayTTSOgg = (...urls) => {
+        //play each audio one by one
+        let url = urls[0]
+        audio = new Audio(url)
+        //set volume
+        audio.volume = isNaN(volume) ? 0.5 : volume
+        audio.onended = () => {
+            if (urls.length > 1) PlayTTSOgg(...urls.slice(1))
+            if (url.indexOf("TTSOgg") >= 0) setCurrentScene(CurrentScene + 1)
+        }
+        audio.play()
+    }
 
     //按时间线逐渐显示对话
     const [SpeechDuration, setSpeechDuration] = useState(0)
@@ -63,11 +68,14 @@ export default function Socratics({ topic, volume }) {
             setTimeout(() => clearTimeout(interval), 120)
         }
     }, [SpeechDuration, TalkPassed])
-    const StartPlay = (Text) => {
-        audio = new Audio(GetUrl(Cmd.HGET, "TTSOgg", Text, RspType.ogg))
-        audio.volume = 0.5
-        audio.onended = LoadNextDialogue
-        audio.play()
+    const StartPlay = (CurrentScene) => {
+        audio?.pause()
+        //when CiteQuestion move to another question, play mario ding sound
+        if (!!ScenerInfos[CurrentScene]?.CiteQuestion && QASocratics?.length > 0) PlayTTSOgg("/DingSoundEffect.ogg")
+
+        let Text = ScenerInfos[CurrentScene]?.Text
+        !!Text && PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOgg", Text, RspType.ogg))
+
     }
     const ToDialogueTextOnly = (Text) => {
         //remove the prefix of "女孩:" or "男孩:" or "苏格拉底:"        
@@ -80,8 +88,7 @@ export default function Socratics({ topic, volume }) {
 
 
         //handle of autoplay
-        let Text = ScenerInfos[CurrentScene].Text
-        StartPlay(Text)
+        StartPlay(CurrentScene)
         setTalkPassed(0.5)
         setSpeechDuration((ScenerInfos[CurrentScene]?.DurationSec ?? 0) + Math.random() * 0.0001)
         var citeQ = ScenerInfos[CurrentScene]?.CiteQuestion
@@ -100,12 +107,23 @@ export default function Socratics({ topic, volume }) {
         }
 
         //append to header of Talks
+        let Text = ScenerInfos[CurrentScene].Text
         if (!latestQASocratics.Talks.includes(Text)) latestQASocratics.Talks = [Text, ...latestQASocratics.Talks]
         //remove latestQASocratics from _QASocratics
         var _QASocratics = [latestQASocratics, ...QASocratics.filter((qa) => qa.Q !== (citeQ || CiteQuestion))]
         setQASocratics(_QASocratics)
 
     }, [CurrentScene])
+    const LinearProgressWithLabel = (value, label) => <div className="flex items-center w-full self-center">
+        <div className="w-full mr-1">
+            <LinearProgress variant="determinate" value={value} />
+        </div>
+        <Box sx={{ minWidth: 35 }}>
+            <Typography variant="body2" color="text.secondary">{`${Math.round(value)}%`}</Typography>
+        </Box>
+    </div>
+
+
 
     if (!FullName(skillSession)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
     return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]"    >
@@ -114,37 +132,65 @@ export default function Socratics({ topic, volume }) {
 
             <div className="flex flex-col text-xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 items-center">
 
-                <div className="flex flex-row w-full">
-                    <div className="w-24 h-24" ><img className=" " src="/image-girl.jpg"></img> </div>
-                    <div className="flex flex-col w-full items-center">
-                        <div className="w-20 h-14 -mt-4" title={"苏格拉底之问"}> <img src="/socratics.jpeg"></img></div>
-                        <div className="flex flex-row">
-                            <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
-                                onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
-                                } >
-                                <BuildIcon />
-                            </div>
-                            {/* play or pause senery accoridng to PlayingSenery */}
-                            <div title={"播放场景"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
+                <div className="flex flex-row w-full h-26 justify-between">
+                    <div className="w-24 h-24" >
+                        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("女孩") === 0 && " ring-4 animate-pulse"} src="/image-girl.jpg"></img> </div>
 
-                                onClick={() => {
-                                    if (CurrentScene >= 0) {
-                                        audio?.pause()
-                                        setCiteQuestion("")
-                                        return setCurrentScene(-1)
-                                    }
-                                    setCurrentScene(0)
-                                }} >
-                                {CurrentScene >= 0 && <div className="animate-pulse">🔊:暂停苏格拉底之问 </div>}
-                                {CurrentScene === -1 && <div>🔇:开始苏格拉底之问</div>}
-                            </div>
-                        </div>
-                    </div>
+                    <div className="w-32 h-21 mt-0 self-stretch" title={"苏格拉底之问"}>
+                        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("苏格拉底") === 0 && " ring-4 animate-pulse"} src="/socratics.jpeg"></img></div>
 
-                    <div className="w-24 h-24" ><img src="/image-man.jpeg"></img> </div>
+                    <div className="w-24 h-24" >
+                        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("男孩") === 0 && " ring-4 animate-pulse"} src="/image-man.jpeg"></img> </div>
                 </div>
 
-                <div className="flex flex-col w-full text-base justify-start items-start" >
+                <div className="flex flex-row w-full text-base justify-start items-start h-fit" >
+                    <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
+                        onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
+                        } >
+                        <BuildIcon />
+                    </div>
+                    <div className="flex flex-row  w-fit self-center gap-1" >
+                        <Button size="small" onClick={() => {
+                            audio?.pause(); setCurrentScene(CurrentScene - 1)
+                        }} disabled={CurrentScene <= 0}>
+                            <KeyboardArrowLeft />
+                            Back
+                        </Button>
+                        <select className="bg-transparent border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1 w-full ring-1" value={CiteQuestion}
+                            onChange={(e) => {
+                                //set CurrentScene according to  CurrentScene
+                                var NewCurrentSceneToPlay = -1
+                                ScenerInfos.map((v, i) => {
+                                    if (v?.CiteQuestion === e.target.value) {
+                                        NewCurrentSceneToPlay = i;
+                                    }
+                                })
+                                setCurrentScene(NewCurrentSceneToPlay)
+
+                            }} >
+                            {
+                                // options betwenn 1 to 100, default 10 
+                                // ScenerInfos.map((v, i) => <option key={`option-${i}`} value={i} className={"flex-wrap "} title={v.CiteQuestion} > {!!v.CiteQuestion ? v.CiteQuestion + "\n" + v.Text : "\xA0\xA0\xA0\xA0 " + v.Text} </option>)
+                                ScenerInfos.filter((v, i) => { return !!v.CiteQuestion }).map((v, i) => <option key={`option-${i}`} value={v.CiteQuestion} > {(i + 1) + ": " + v.CiteQuestion} </option>)
+
+                            }
+                        </select>
+                        <Button size="small" onClick={() => { audio?.pause(); setCurrentScene(CurrentScene + 1) }} disabled={CurrentScene >= ScenerInfos.length}>
+                            Next <KeyboardArrowRight />
+                        </Button>
+                    </div>
+
+                    {/* play or pause senery accoridng to PlayingSenery */}
+                    <div title={"播放演示"} className="flex flex-row pr-1 h-full self-center items-center justify-center" onClick={() => {
+                        if (CurrentScene >= 0) {
+                            audio?.pause()
+                            setCiteQuestion("")
+                            return setCurrentScene(-1)
+                        }
+                        setCurrentScene(0)
+                    }} >
+                        <div className={"flex flex-row gap-3 " + (CurrentScene >= 0 ? " animate-pulse hover:grayscale" : " grayscale-[60%] hover:grayscale-0")} ><TwoIO />   </div>
+                    </div>
                 </div>
 
             </div>
@@ -202,7 +248,7 @@ export default function Socratics({ topic, volume }) {
                         }
                         {
                             qa.Talks?.map((talk, ind) => <div key={`question-answer-talks${qa[1]}-${ind}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
-                                className={"flex flex-row justify-start items-start self-end font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line  selection:bg-fuchsia-300" + (talk === ScenerInfos[CurrentScene]?.Text ? " ring-2 text-lg text-gray-900 text-bold animate-pulse" : " text-sm  text-gray-800 ")} >
+                                className={"flex flex-row justify-start items-start self-end font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line  selection:bg-fuchsia-300 gap-1" + (talk === ScenerInfos[CurrentScene]?.Text ? " ring-2 text-lg text-gray-900 text-bold " : " text-sm  text-gray-800 ")} >
                                 {talk.substr(0, 3) === "女孩:" && <Avatar alt="女孩" src="/image-girl.jpg"></Avatar>}
                                 {talk.substr(0, 3) === "男孩:" && <Avatar alt="男孩" src="/image-man.jpeg"></Avatar>}
                                 {talk.substr(0, 5) === "苏格拉底:" && <Avatar alt="苏格拉底" src="/socratics.jpeg"></Avatar>}
