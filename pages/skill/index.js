@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import QAComponent from "./QAComponent";
 import SkillTree from "./SkillTree";
 import Rewards from "./Rewards";
-import Socratics from "./Socratics";
+import Socrates from "./Socrates";
 import AppFrame from "../../component/appFrame"
 import { useParams, useRouter } from "next/navigation";
 import { API, HGET, HGETALL, HKEYS, HMGET, ZCARD, ZREVRANGE } from "../../component/api";
@@ -74,7 +74,7 @@ function ExploreComponent({ topic }) {
         <SkillTree topic={topic} />
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
-        <Socratics topic={topic} volume={volume}></Socratics>
+        <Socrates topic={topic} volume={volume}></Socrates>
         {/* right side panel */}
 
         {/* 大板块分割线 */}

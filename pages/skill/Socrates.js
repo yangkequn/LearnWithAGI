@@ -10,7 +10,7 @@ import { TwoIO } from "../../component/appFrame/navigator";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
 let audio = null
-export default function Socratics({ topic, volume }) {
+export default function Socrates({ topic, volume }) {
     const { setCreditTM } = useContext(GlobalContext)
     const { skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     //all QAs about this skill topic
@@ -22,20 +22,23 @@ export default function Socratics({ topic, volume }) {
     const [ScenerInfos, setScenerInfos] = useState([])
     const [CurrentScene, setCurrentScene] = useState(-1)
     const [CiteQuestion, setCiteQuestion] = useState("")
-    const [QASocratics, setQASocratics] = useState([])
-    const [Playing, setPlaying] = useState(false)
+    const [QASocrates, setQASocrates] = useState([])
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
         setQAsTraces([])
-        setQASocratics([])
+        setQASocrates([])
         let Name = FullName()
         if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
         //loadSkillSessionQAs
-        API("SkillSocratic", { Name, Topic: topic, Rebuild: false }).then((res) => (Name === FullName()) && setQAs(res ?? []))
+        API("SkillSocrates", { Name, Topic: topic, Rebuild: false }).then((res) => (Name === FullName()) && setQAs(res ?? []))
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
         //Senery TTSInfo
-        HGET("TTSInfo", FullName()).then((res) => (Name === FullName()) && setScenerInfos(res ?? []))
+        API("SkillSocratesTTS", { Session: FullName(), Topic: topic }).then((res) => {
+            if (Name !== FullName()) return
+            if (!res || res.length == 0) return setScenerInfos([])
+            setScenerInfos(res)
+        })
 
     }, [topic, skillSession])
 
@@ -61,26 +64,21 @@ export default function Socratics({ topic, volume }) {
     const [SpeechDuration, setSpeechDuration] = useState(0)
     const [TalkPassed, setTalkPassed] = useState(0)
     useEffect(() => {
-        if (TalkPassed < SpeechDuration) {
-            //increase duration passed every 100ms
-            let interval = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
-            //clear interval when duration passed
-            setTimeout(() => clearTimeout(interval), 120)
-        }
+        if (TalkPassed >= SpeechDuration) return
+        console.log("TalkPassed", TalkPassed, SpeechDuration)
+        //increase duration passed every 100ms
+        let interval = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
+        //clear interval when duration passed
+        setTimeout(() => clearTimeout(interval), 120)
     }, [SpeechDuration, TalkPassed])
     const StartPlay = (CurrentScene) => {
         audio?.pause()
         //when CiteQuestion move to another question, play mario ding sound
-        if (!!ScenerInfos[CurrentScene]?.CiteQuestion && QASocratics?.length > 0) PlayTTSOgg("/DingSoundEffect.ogg")
+        if (!!ScenerInfos[CurrentScene]?.CiteQuestion && QASocrates?.length > 0) PlayTTSOgg("/DingSoundEffect.ogg")
 
         let Text = ScenerInfos[CurrentScene]?.Text
-        !!Text && PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOgg", Text, RspType.ogg))
+        !!Text && PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggSocrates", Text, RspType.ogg))
 
-    }
-    const ToDialogueTextOnly = (Text) => {
-        //remove the prefix of "女孩:" or "男孩:" or "苏格拉底:"        
-        Text = Text.replace("女孩:", "").replace("男孩:", "").replace("苏格拉底:", "")
-        return Text.trim()
     }
     useEffect(() => {
         if (!FullName()) return
@@ -90,30 +88,33 @@ export default function Socratics({ topic, volume }) {
         //handle of autoplay
         StartPlay(CurrentScene)
         setTalkPassed(0.5)
-        setSpeechDuration((ScenerInfos[CurrentScene]?.DurationSec ?? 0) + Math.random() * 0.0001)
+        setSpeechDuration((ScenerInfos[CurrentScene]?.Duration ?? 0) + Math.random() * 0.0001)
         var citeQ = ScenerInfos[CurrentScene]?.CiteQuestion
         citeQ && setCiteQuestion(citeQ)
 
         //handle of text demo
-        //if QASocratics has element that has same question, then add talk to it
-        var latestQASocratics = QASocratics.filter((qa) => qa.Q === (citeQ || CiteQuestion))
-        //for non exist question, add it to QASocratics
-        if (latestQASocratics.length == 0) latestQASocratics = [{ Q: (citeQ || CiteQuestion), A: "", Talks: [] }]
-        latestQASocratics = latestQASocratics[0]
-        //if citeQ in QAs, then add it to QASocratics
+        //if QASocrates has element that has same question, then add talk to it
+        var latestQASocrates = QASocrates.filter((qa) => qa.Q === (citeQ || CiteQuestion))
+        //for non exist question, add it to QASocrates
+        if (latestQASocrates.length == 0) latestQASocrates = [{ Q: (citeQ || CiteQuestion), A: "", Talks: [] }]
+        latestQASocrates = latestQASocrates[0]
+        //if citeQ in QAs, then add it to QASocrates
         if (!!citeQ) {
             let matchedQA = QAs.filter((qa) => qa.Q === citeQ)
-            if (matchedQA.length > 0) latestQASocratics.A = matchedQA[0].A
+            if (matchedQA.length > 0) latestQASocrates.A = matchedQA[0].A
         }
 
         //append to header of Talks
-        let Text = ScenerInfos[CurrentScene].Text
-        if (!latestQASocratics.Talks.includes(Text)) latestQASocratics.Talks = [Text, ...latestQASocratics.Talks]
-        //remove latestQASocratics from _QASocratics
-        var _QASocratics = [latestQASocratics, ...QASocratics.filter((qa) => qa.Q !== (citeQ || CiteQuestion))]
-        setQASocratics(_QASocratics)
+        let Raw = ScenerInfos[CurrentScene].Text
+        let ind = Raw.indexOf(":")
+        let User = ind > 0 ? Raw.substr(0, ind + 1) : "苏格拉底", Talk = ind > 0 ? Raw.substr(ind + 1).trim() : Raw
+        if (!latestQASocrates.Talks.includes(Raw)) latestQASocrates.Talks = [{ User, Talk, Raw }, ...latestQASocrates.Talks]
+        //remove latestQASocrates from _QASocrates
+        var _QASocrates = [latestQASocrates, ...QASocrates.filter((qa) => qa.Q !== (citeQ || CiteQuestion))]
+        setQASocrates(_QASocrates)
 
     }, [CurrentScene])
+    const Playing = (CurrentScene) => !isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < ScenerInfos.length
     const LinearProgressWithLabel = (value, label) => <div className="flex items-center w-full self-center">
         <div className="w-full mr-1">
             <LinearProgress variant="determinate" value={value} />
@@ -122,7 +123,6 @@ export default function Socratics({ topic, volume }) {
             <Typography variant="body2" color="text.secondary">{`${Math.round(value)}%`}</Typography>
         </Box>
     </div>
-
 
 
     if (!FullName(skillSession)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
@@ -143,20 +143,20 @@ export default function Socratics({ topic, volume }) {
                         <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("男孩") === 0 && " ring-4 animate-pulse"} src="/image-man.jpeg"></img> </div>
                 </div>
 
-                <div className="flex flex-row w-full text-base justify-start items-start h-fit" >
+                <div className="flex flex-row w-full text-base justify-start items-start h-fit -mt-1" >
                     <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
-                        onClick={() => FullName() && API("SkillSocratic", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
+                        onClick={() => FullName() && API("SkillSocrates", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
                         } >
                         <BuildIcon />
                     </div>
-                    <div className="flex flex-row  w-fit self-center gap-1" >
+                    <div className="flex flex-row  w-full self-center gap-1" >
                         <Button size="small" onClick={() => {
                             audio?.pause(); setCurrentScene(CurrentScene - 1)
                         }} disabled={CurrentScene <= 0}>
                             <KeyboardArrowLeft />
                             Back
                         </Button>
-                        <select className="bg-transparent border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1 w-full ring-1" value={CiteQuestion}
+                        <select className="flex flex-row w-full bg-transparent  border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1 ring-1" value={CiteQuestion}
                             onChange={(e) => {
                                 //set CurrentScene according to  CurrentScene
                                 var NewCurrentSceneToPlay = -1
@@ -182,14 +182,19 @@ export default function Socratics({ topic, volume }) {
 
                     {/* play or pause senery accoridng to PlayingSenery */}
                     <div title={"播放演示"} className="flex flex-row pr-1 h-full self-center items-center justify-center" onClick={() => {
-                        if (CurrentScene >= 0) {
+                        if (CurrentScene >= 0 && CurrentScene < ScenerInfos.length) {
                             audio?.pause()
                             setCiteQuestion("")
                             return setCurrentScene(-1)
+                        } else {
+                            setQASocrates([])
+                            setTimeout(() => setCurrentScene(0), 100)
                         }
-                        setCurrentScene(0)
                     }} >
-                        <div className={"flex flex-row gap-3 " + (CurrentScene >= 0 ? " animate-pulse hover:grayscale" : " grayscale-[60%] hover:grayscale-0")} ><TwoIO />   </div>
+                        <div className={"flex flex-row gap-1 self-center items-center justify-center flex-nowrap " + (Playing(CurrentScene) ? " animate-pulse hover:grayscale" : " grayscale-[60%] hover:grayscale-0")} >
+                            <div className="mt-1"><TwoIO /></div>
+                            <div className="text-2xl -mt-2 self-center"> {Playing(CurrentScene) ? "" : ".."}</div>
+                        </div>
                     </div>
                 </div>
 
@@ -217,7 +222,7 @@ export default function Socratics({ topic, volume }) {
         <div key="what-is-my-answered" className="flex flex-col justify-start items-start w-full  max-h-max min-h-min overflow-scroll my-2 " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
             {
                 //display CurrentQAs as dialog box,question on the left,answer on the right
-                QASocratics?.length === 0 && QATraces.reverse().map((qa, index) => {
+                QASocrates?.length === 0 && QATraces.reverse().map((qa, index) => {
                     return <div key={`question-answer-q-${qa.Q}-${index}`} className="flex flex-col justify-start items-start w-full h-fit py-3">
                         <div variant="18px" className="flex flex-row justify-start items-start  text-base text-gray-800 font-sans w-fit bg-orange-100 rounded-full  px-2 mb-2">
                             <div className="text-lg mr-1">🤔</div>  {qa.split("|||")[0]}
@@ -234,13 +239,13 @@ export default function Socratics({ topic, volume }) {
             }
             {
                 //苏格拉底演练
-                QASocratics?.length > 0 && QASocratics.map((qa, index) => {
+                QASocrates?.length > 0 && QASocrates.map((qa, index) => {
                     return <div key={`question-answer-q-${qa.Q}-${index}`} className="flex flex-col justify-start items-start w-full h-fit py-3 gap-1">
                         <div variant="18px" className="flex flex-row justify-start items-start  text-base text-gray-800 font-sans w-fit bg-orange-100 rounded-full  px-2 mb-2">
                             <div className="text-lg mr-1">🤔</div>  {qa.Q}
                         </div>
                         {/* align answer to the right */}
-                        {CurrentScene >= 0 && (CurrentScene == ScenerInfos.length || (CiteQuestion != qa.Q)) && <div key={`question-answer-a${qa[1]}-${index}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
+                        {CurrentScene >= 0 && (CurrentScene == ScenerInfos.length || (CiteQuestion != qa.Q)) && !!qa.A && <div key={`question-answer-a${qa[1]}-${index}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
                             className="flex flex-col justify-start items-start self-end text-sm text-gray-800 font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line bg-orange-100 ">
 
                             💬 {qa.A}
@@ -248,11 +253,11 @@ export default function Socratics({ topic, volume }) {
                         }
                         {
                             qa.Talks?.map((talk, ind) => <div key={`question-answer-talks${qa[1]}-${ind}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
-                                className={"flex flex-row justify-start items-start self-end font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line  selection:bg-fuchsia-300 gap-1" + (talk === ScenerInfos[CurrentScene]?.Text ? " ring-2 text-lg text-gray-900 text-bold " : " text-sm  text-gray-800 ")} >
-                                {talk.substr(0, 3) === "女孩:" && <Avatar alt="女孩" src="/image-girl.jpg"></Avatar>}
-                                {talk.substr(0, 3) === "男孩:" && <Avatar alt="男孩" src="/image-man.jpeg"></Avatar>}
-                                {talk.substr(0, 5) === "苏格拉底:" && <Avatar alt="苏格拉底" src="/socratics.jpeg"></Avatar>}
-                                {talk === ScenerInfos[CurrentScene]?.Text ? ToDialogueTextOnly(talk).substr(0, talk.length * (TalkPassed / SpeechDuration)) : ToDialogueTextOnly(talk)}
+                                className={"flex flex-row justify-start items-start self-end font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line  selection:bg-fuchsia-300 gap-1" + (talk.Raw === ScenerInfos[CurrentScene]?.Text ? " ring-2 text-lg text-gray-900 text-bold " : " text-sm  text-gray-800 ")} >
+                                {talk.User === "女孩:" && <Avatar alt="女孩" src="/image-girl.jpg"></Avatar>}
+                                {talk.User === "男孩:" && <Avatar alt="男孩" src="/image-man.jpeg"></Avatar>}
+                                {talk.User === "苏格拉底:" && <Avatar alt="苏格拉底" src="/socratics.jpeg"></Avatar>}
+                                {talk.Raw === ScenerInfos[CurrentScene]?.Text ? talk.Talk.substr(0, talk.Talk.length * (TalkPassed / SpeechDuration)) : talk.Talk}
                             </div>)
                         }
                     </div>
@@ -287,5 +292,5 @@ export default function Socratics({ topic, volume }) {
         </div> */}
 
 
-    </div>
+    </div >
 }

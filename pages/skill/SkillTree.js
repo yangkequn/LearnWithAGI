@@ -96,6 +96,8 @@ export default function SkillTree({ topic }) {
                             , boxShadow: seq == skillTree?.Sessions.indexOf(skillSession) ? "inset 0px 0px 0px 200px gold" : "none"
                         }} onClick={(e) => setSkillSession(Point)}
                     // StepContent={true}
+                    //in clickable if  Point.ChapterSession is 1.0
+                    clickable={Point.ChapterSession != "1"}
                     >
                         <StepLabel sx={{ margin: "-5px 0 -5px 0" }} className="flex flex-row justify-start items-start w-full  whitespace-nowrap">
                             <div className="flex flex-col  items-start gap-2  w-full whitespace-nowrap justify-between leading-6 " >
