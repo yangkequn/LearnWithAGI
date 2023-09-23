@@ -63,13 +63,14 @@ export default function Socrates({ topic, volume }) {
     //按时间线逐渐显示对话
     const [SpeechDuration, setSpeechDuration] = useState(0)
     const [TalkPassed, setTalkPassed] = useState(0)
+    let intervalSetTalkPassed=null 
     useEffect(() => {
         if (TalkPassed >= SpeechDuration) return
         console.log("TalkPassed", TalkPassed, SpeechDuration)
         //increase duration passed every 100ms
-        let interval = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
+        intervalSetTalkPassed = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
         //clear interval when duration passed
-        setTimeout(() => clearTimeout(interval), 120)
+        setTimeout(() => clearTimeout(intervalSetTalkPassed), 120)
     }, [SpeechDuration, TalkPassed])
     const StartPlay = (CurrentScene) => {
         audio?.pause()
@@ -86,8 +87,8 @@ export default function Socrates({ topic, volume }) {
 
 
         //handle of autoplay
-        StartPlay(CurrentScene)
-        setTalkPassed(0.5)
+        setTalkPassed(0)
+        setTimeout(() => StartPlay(CurrentScene), 700)
         setSpeechDuration((ScenerInfos[CurrentScene]?.Duration ?? 0) + Math.random() * 0.0001)
         var citeQ = ScenerInfos[CurrentScene]?.CiteQuestion
         citeQ && setCiteQuestion(citeQ)
@@ -108,7 +109,7 @@ export default function Socrates({ topic, volume }) {
         let Raw = ScenerInfos[CurrentScene].Text
         let ind = Raw.indexOf(":")
         let User = ind > 0 ? Raw.substr(0, ind + 1) : "苏格拉底", Talk = ind > 0 ? Raw.substr(ind + 1).trim() : Raw
-        if (!latestQASocrates.Talks.includes(Raw)) latestQASocrates.Talks = [{ User, Talk, Raw }, ...latestQASocrates.Talks]
+        if (!latestQASocrates.Talks.includes(Raw)) latestQASocrates.Talks = [{ User, Talk, Raw }, ...latestQASocrates.Talks.filter((talk) => talk.Raw !== Raw)]
         //remove latestQASocrates from _QASocrates
         var _QASocrates = [latestQASocrates, ...QASocrates.filter((qa) => qa.Q !== (citeQ || CiteQuestion))]
         setQASocrates(_QASocrates)
@@ -151,7 +152,9 @@ export default function Socrates({ topic, volume }) {
                     </div>
                     <div className="flex flex-row  w-full self-center gap-1" >
                         <Button size="small" onClick={() => {
-                            audio?.pause(); setCurrentScene(CurrentScene - 1)
+                            audio?.pause();
+                            clearTimeout(intervalSetTalkPassed)
+                            setCurrentScene(CurrentScene - 1)
                         }} disabled={CurrentScene <= 0}>
                             <KeyboardArrowLeft />
                             Back
@@ -175,7 +178,11 @@ export default function Socrates({ topic, volume }) {
 
                             }
                         </select>
-                        <Button size="small" onClick={() => { audio?.pause(); setCurrentScene(CurrentScene + 1) }} disabled={CurrentScene >= ScenerInfos.length}>
+                        <Button size="small" onClick={() => {
+                            audio?.pause();
+                            clearTimeout(intervalSetTalkPassed)
+                            setCurrentScene(CurrentScene + 1)
+                        }} disabled={CurrentScene >= ScenerInfos.length}>
                             Next <KeyboardArrowRight />
                         </Button>
                     </div>
@@ -253,11 +260,14 @@ export default function Socrates({ topic, volume }) {
                         }
                         {
                             qa.Talks?.map((talk, ind) => <div key={`question-answer-talks${qa[1]}-${ind}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
-                                className={"flex flex-row justify-start items-start self-end font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line  selection:bg-fuchsia-300 gap-1" + (talk.Raw === ScenerInfos[CurrentScene]?.Text ? " ring-2 text-lg text-gray-900 text-bold " : " text-sm  text-gray-800 ")} >
+                                className={"flex flex-row justify-start items-start self-end font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line  selection:bg-fuchsia-300 gap-1" + (talk.Raw === ScenerInfos[CurrentScene]?.Text ? " ring-2 text-lg text-gray-900 " : " text-base  text-gray-800 ")} >
                                 {talk.User === "女孩:" && <Avatar alt="女孩" src="/image-girl.jpg"></Avatar>}
                                 {talk.User === "男孩:" && <Avatar alt="男孩" src="/image-man.jpeg"></Avatar>}
                                 {talk.User === "苏格拉底:" && <Avatar alt="苏格拉底" src="/socratics.jpeg"></Avatar>}
-                                {talk.Raw === ScenerInfos[CurrentScene]?.Text ? talk.Talk.substr(0, talk.Talk.length * (TalkPassed / SpeechDuration)) : talk.Talk}
+                                <div className=" flex-nowrap">
+                                    <b className={" text-bold"}>{talk.Raw === ScenerInfos[CurrentScene]?.Text ? talk.Talk.substr(0, talk.Talk.length * (TalkPassed / SpeechDuration)) : ""}</b>
+                                    {talk.Raw === ScenerInfos[CurrentScene]?.Text ? talk.Talk.substr(talk.Talk.length * (TalkPassed / SpeechDuration), talk.Talk.length) : talk.Talk}
+                                </div>
                             </div>)
                         }
                     </div>
