@@ -19,7 +19,6 @@ export default function QuestionAandAnswer() {
         var existedQA = topics.filter((topic) => topic.Q === question)
         if (existedQA.length > 0) return setQA(existedQA[0])
     }, [question, topicLoaded])
-
     const OnSubmitQuestion = (Question) => {
         var noEnoughQuota = modelGPT === "gpt-4" ? quota.AllowedDayGPT4 <= 0 : quota.AllowedDayGPT35 <= 0
         if (noEnoughQuota) return setOpenAlert("今日" + modelGPT + "次数已用完")

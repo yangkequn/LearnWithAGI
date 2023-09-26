@@ -15,6 +15,15 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import HistoryTopics from "./historyTopics";
 //https://github.com/JedWatson/react-select
 
+export const LoadingComponent = () => {
+    return (
+        <div className="flex justify-center items-center min-h-screen space-x-4">
+            <div className="loader w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+            <div className="text-3xl text-blue-500">Loading...</div>
+        </div>
+    );
+}
+
 function ExploreComponent({ topic }) {
     const router = useRouter()
     const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)

@@ -11,6 +11,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { Context } from "./Context";
 import { Tooltip } from "@mui/material";
 import { Jwt } from "../../component/jwt";
+import { LoadingComponent } from ".";
 export default function SkillTree({ topic }) {
     const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
 
@@ -82,7 +83,9 @@ export default function SkillTree({ topic }) {
         <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 pb-2"            >
             目录：
         </div>
-
+        {
+            !skillTree?.Sessions?.length && <LoadingComponent />
+        }
 
         {skillTree?.Sessions?.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTree?.Sessions.indexOf(skillSession)}>
             {
@@ -95,9 +98,9 @@ export default function SkillTree({ topic }) {
                             //if index equals nextSkill, change box shadow
                             , boxShadow: seq == skillTree?.Sessions.indexOf(skillSession) ? "inset 0px 0px 0px 200px gold" : "none"
                         }} onClick={(e) => setSkillSession(Point)}
-                    // StepContent={true}
-                    //in clickable if  Point.ChapterSession is 1.0
-                    clickable={Point.ChapterSession != "1"}
+                        // StepContent={true}
+                        //in clickable if  Point.ChapterSession is 1.0
+                        clickable={Point.ChapterSession != "1"}
                     >
                         <StepLabel sx={{ margin: "-5px 0 -5px 0" }} className="flex flex-row justify-start items-start w-full  whitespace-nowrap">
                             <div className="flex flex-col  items-start gap-2  w-full whitespace-nowrap justify-between leading-6 " >

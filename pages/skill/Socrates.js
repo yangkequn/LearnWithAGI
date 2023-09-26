@@ -8,6 +8,7 @@ import { Avatar, Box, Button, LinearProgress, MobileStepper, Tooltip, Typography
 import { AvatarWithName } from "../Auth/avatar";
 import { TwoIO } from "../../component/appFrame/navigator";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import { LoadingComponent } from ".";
 
 let audio = null
 export default function Socrates({ topic, volume }) {
@@ -63,7 +64,7 @@ export default function Socrates({ topic, volume }) {
     //按时间线逐渐显示对话
     const [SpeechDuration, setSpeechDuration] = useState(0)
     const [TalkPassed, setTalkPassed] = useState(0)
-    let intervalSetTalkPassed=null 
+    let intervalSetTalkPassed = null
     useEffect(() => {
         if (TalkPassed >= SpeechDuration) return
         console.log("TalkPassed", TalkPassed, SpeechDuration)
@@ -190,8 +191,15 @@ export default function Socrates({ topic, volume }) {
                     {/* play or pause senery accoridng to PlayingSenery */}
                     <div title={"播放演示"} className="flex flex-row pr-1 h-full self-center items-center justify-center" onClick={() => {
                         if (CurrentScene >= 0 && CurrentScene < ScenerInfos.length) {
-                            audio?.pause()
-                            setCiteQuestion("")
+                            //if audio is playing ,then pause it
+                            let playing = !audio?.paused
+                            if (!playing) {
+                                audio?.pause()
+                                setCiteQuestion("")
+                            } else {
+                                //continue play
+                                audio?.play()
+                            }
                             return setCurrentScene(-1)
                         } else {
                             setQASocrates([])
@@ -244,6 +252,7 @@ export default function Socrates({ topic, volume }) {
                     </div>
                 })
             }
+            {!QAs?.length && <LoadingComponent />}
             {
                 //苏格拉底演练
                 QASocrates?.length > 0 && QASocrates.map((qa, index) => {
