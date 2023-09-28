@@ -23,11 +23,11 @@ export const LoadingComponent = () => {
         </div>
     );
 }
-
 function ExploreComponent({ topic }) {
     const router = useRouter()
     const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)
     const [volume, setVolume] = useState(0.5)
+    const [playbackRate, setPlaybackRate] = useState(1)
     const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     useEffect(() => {
         if (!topic) return router.push("/")
@@ -44,6 +44,7 @@ function ExploreComponent({ topic }) {
             setRelatedSkills(names)
         })
     }, [topic])
+
     useEffect(() => {
         setMenuL2(<div className="flex justify-between w-full items-center">
             <HistoryTopics></HistoryTopics>
@@ -61,7 +62,22 @@ function ExploreComponent({ topic }) {
             <div key="reward" className="flex flex-row overflow-hidden w-full items-center justify-between">
                 <Rewards creditTM={creditTM} volume={volume}></Rewards>
             </div>
-            <div>
+            <div className="flex flex-row   gap-2 items-center justify-between">
+                {/* playbackRate */}
+                <div title="设置倍速" className="group flex flex-col w-12 h-8 items-center relative z-10 rounded-md opacity-100 mt-1 bg-inherit ">
+                    <div className="flex flex-row group-hover:flex items-center self-center rounded-md h-fit bg-inherit">
+                        倍速
+                    </div>
+
+                    {[0.5, 0.75, 1, 1.25, 1.5, 2, 2.25, 2.5, 2.75, 3].map((value, ind) => (
+                        <button key={`speed-${value}-${ind}`} onClick={() => { setPlaybackRate(value) }}
+                            className="flex flex-row group-hover:visible invisible items-center space-x-2 hover:bg-gray-200 p-2 rounded-md focus:outline-none" >
+                            <span className={playbackRate == value ? " text-blue-400" : ""} >{value === 1 ? "Normal" : value + "x"}</span>
+                        </button>
+                    ))
+                    }
+                </div >
+
                 {/* set volume here , and allow mute. a broad cast emoj followed by a slider */}
                 <div className="flex flex-row justify-center items-center gap-2 mr-1">
                     <div>音量</div>
@@ -73,7 +89,7 @@ function ExploreComponent({ topic }) {
                 </div>
             </div>
         </div>)
-    }, [creditTM, volume, RelatedSkills])
+    }, [creditTM, volume, RelatedSkills, playbackRate])
     return <div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center " style={{
         backgroundImage: "url(/MAUL0r_Reme_kawaii_anime_cumulonimbus_happily_floating_through__01999efc-f065-4823-bf48-40be9c285ec5.png)"
         //use boxShadow to create a shadow of 50% opacity
@@ -83,7 +99,7 @@ function ExploreComponent({ topic }) {
         <SkillTree topic={topic} />
         {/* 大板块分割线 */}
         <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
-        <Socrates topic={topic} volume={volume}></Socrates>
+        <Socrates topic={topic} volume={volume} playbackRate={playbackRate}></Socrates>
         {/* right side panel */}
 
         {/* 大板块分割线 */}

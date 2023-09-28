@@ -9,9 +9,43 @@ import { AvatarWithName } from "../Auth/avatar";
 import { TwoIO } from "../../component/appFrame/navigator";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { LoadingComponent } from ".";
-
+import ScrollingBanner from "../../component/banner";
 let audio = null
-export default function Socrates({ topic, volume }) {
+
+const HoldInRoadAlert = () => <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-2 px-2 pb-2 h-36"            >
+    <div className=" w-40 h-32  rounded-3xl mt-0 self-stretch " title={"苏格拉底之问"}>
+        <img className={`rounded-3xl -mr-2 `} src="/holeInRoad.webp" ></img>
+    </div>
+    <div className="flex h-full text-2xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 items-center pl-4"                    >
+        高能！坑已挖好，等你来填!
+    </div>
+</div>
+
+const Talkers = ({ ScenerInfos, CurrentScene }) => <div key={`talker-${CurrentScene}-${ScenerInfos}`}
+    className="flex flex-row  text-xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 justify-between items-center h-36">
+
+    <div className="flex flex-col  h-full text-2xl text-gray-800 font-sans leading-4   bg-white/70 rounded-md my-2 px-4 py-6 gap-4 items-center "                    >
+        <div>            苏格拉底        </div>
+        <div>            的        </div>
+        <div>          演练场 </div>
+    </div>
+
+    <div className={"w-32 h-32 rounded-lg"} >
+        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("女孩") === 0 && " ring-4 animate-pulse"} src="/image-girl.jpg"></img>
+    </div>
+
+    <div className={" w-36 h-32 mt-1 self-stretch overflow-hidden rounded-lg "} title={"苏格拉底之问"}>
+        <img className={(CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("苏格拉底") === 0 && "ring-4 animate-pulse ") + `  -mr-8`} src="/socrates.webp"
+        ></img>
+    </div>
+
+    <div className="w-32 h-32 rounded-lg" >
+        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("男孩") === 0 && " ring-4 animate-pulse"} src="/image-man.jpeg"></img>
+    </div>
+</div>
+
+
+export default function Socrates({ topic, volume, playbackRate }) {
     const { setCreditTM } = useContext(GlobalContext)
     const { skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     //all QAs about this skill topic
@@ -51,12 +85,16 @@ export default function Socrates({ topic, volume }) {
     const PlayTTSOgg = (...urls) => {
         //play each audio one by one
         let url = urls[0]
+        let isOGG = url.indexOf("TTSOgg") >= 0
         audio = new Audio(url)
         //set volume
         audio.volume = isNaN(volume) ? 0.5 : volume
+        if (audio && isOGG) {
+            audio.playbackRate = playbackRate;
+        }
         audio.onended = () => {
             if (urls.length > 1) PlayTTSOgg(...urls.slice(1))
-            if (url.indexOf("TTSOgg") >= 0) setCurrentScene(CurrentScene + 1)
+            if (isOGG) setCurrentScene(CurrentScene + 1)
         }
         audio.play()
     }
@@ -67,7 +105,6 @@ export default function Socrates({ topic, volume }) {
     let intervalSetTalkPassed = null
     useEffect(() => {
         if (TalkPassed >= SpeechDuration) return
-        console.log("TalkPassed", TalkPassed, SpeechDuration)
         //increase duration passed every 100ms
         intervalSetTalkPassed = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
         //clear interval when duration passed
@@ -90,7 +127,7 @@ export default function Socrates({ topic, volume }) {
         //handle of autoplay
         setTalkPassed(0)
         setTimeout(() => StartPlay(CurrentScene), 700)
-        setSpeechDuration((ScenerInfos[CurrentScene]?.Duration ?? 0) + Math.random() * 0.0001)
+        setSpeechDuration(((ScenerInfos[CurrentScene]?.Duration ?? 0) + Math.random() * 0.0001) / playbackRate)
         var citeQ = ScenerInfos[CurrentScene]?.CiteQuestion
         citeQ && setCiteQuestion(citeQ)
 
@@ -125,98 +162,93 @@ export default function Socrates({ topic, volume }) {
             <Typography variant="body2" color="text.secondary">{`${Math.round(value)}%`}</Typography>
         </Box>
     </div>
-
-
     if (!FullName(skillSession)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
     return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]"    >
         {/* //list Tags of QAs,using mui tag */}
-        <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full  mt-2 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
+        <div className="flex flex-col flex-wrap justify-start items-start w-full  mt-2 gap-[7px] opacity-90 h-38"        >
 
-            <div className="flex flex-col text-xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 items-center">
-
-                <div className="flex flex-row w-full h-26 justify-between">
-                    <div className="w-24 h-24" >
-                        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("女孩") === 0 && " ring-4 animate-pulse"} src="/image-girl.jpg"></img> </div>
-
-                    <div className="w-32 h-21 mt-0 self-stretch" title={"苏格拉底之问"}>
-                        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("苏格拉底") === 0 && " ring-4 animate-pulse"} src="/socratics.jpeg"></img></div>
-
-                    <div className="w-24 h-24" >
-                        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("男孩") === 0 && " ring-4 animate-pulse"} src="/image-man.jpeg"></img> </div>
-                </div>
-
-                <div className="flex flex-row w-full text-base justify-start items-start h-fit -mt-1" >
-                    <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
-                        onClick={() => FullName() && API("SkillSocrates", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
-                        } >
-                        <BuildIcon />
-                    </div>
-                    <div className="flex flex-row  w-full self-center gap-1" >
-                        <Button size="small" onClick={() => {
-                            audio?.pause();
-                            clearTimeout(intervalSetTalkPassed)
-                            setCurrentScene(CurrentScene - 1)
-                        }} disabled={CurrentScene <= 0}>
-                            <KeyboardArrowLeft />
-                            Back
-                        </Button>
-                        <select className="flex flex-row w-full bg-transparent  border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1 ring-1" value={CiteQuestion}
-                            onChange={(e) => {
-                                //set CurrentScene according to  CurrentScene
-                                var NewCurrentSceneToPlay = -1
-                                ScenerInfos.map((v, i) => {
-                                    if (v?.CiteQuestion === e.target.value) {
-                                        NewCurrentSceneToPlay = i;
-                                    }
-                                })
-                                setCurrentScene(NewCurrentSceneToPlay)
-
-                            }} >
-                            {
-                                // options betwenn 1 to 100, default 10 
-                                // ScenerInfos.map((v, i) => <option key={`option-${i}`} value={i} className={"flex-wrap "} title={v.CiteQuestion} > {!!v.CiteQuestion ? v.CiteQuestion + "\n" + v.Text : "\xA0\xA0\xA0\xA0 " + v.Text} </option>)
-                                ScenerInfos.filter((v, i) => { return !!v.CiteQuestion }).map((v, i) => <option key={`option-${i}`} value={v.CiteQuestion} > {(i + 1) + ": " + v.CiteQuestion} </option>)
-
-                            }
-                        </select>
-                        <Button size="small" onClick={() => {
-                            audio?.pause();
-                            clearTimeout(intervalSetTalkPassed)
-                            setCurrentScene(CurrentScene + 1)
-                        }} disabled={CurrentScene >= ScenerInfos.length}>
-                            Next <KeyboardArrowRight />
-                        </Button>
-                    </div>
-
-                    {/* play or pause senery accoridng to PlayingSenery */}
-                    <div title={"播放演示"} className="flex flex-row pr-1 h-full self-center items-center justify-center" onClick={() => {
-                        if (CurrentScene >= 0 && CurrentScene < ScenerInfos.length) {
-                            //if audio is playing ,then pause it
-                            let playing = !audio?.paused
-                            if (!playing) {
-                                audio?.pause()
-                                setCiteQuestion("")
-                            } else {
-                                //continue play
-                                audio?.play()
-                            }
-                            return setCurrentScene(-1)
-                        } else {
-                            setQASocrates([])
-                            setTimeout(() => setCurrentScene(0), 100)
-                        }
-                    }} >
-                        <div className={"flex flex-row gap-1 self-center items-center justify-center flex-nowrap " + (Playing(CurrentScene) ? " animate-pulse hover:grayscale" : " grayscale-[60%] hover:grayscale-0")} >
-                            <div className="mt-1"><TwoIO /></div>
-                            <div className="text-2xl -mt-2 self-center"> {Playing(CurrentScene) ? "" : ".."}</div>
-                        </div>
-                    </div>
-                </div>
-
+            <div className="flex flex-row w-full">
+                <ScrollingBanner
+                    components={[<HoldInRoadAlert />, <Talkers ScenerInfos={ScenerInfos} CurrentScene={CurrentScene} />]}
+                    durations={[3000, 8000]}
+                ></ScrollingBanner>
             </div>
 
+            <div title="playSocratesDemo" className="flex flex-row w-full text-base justify-start items-start h-10 -mt-1 " >
+                <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
+                    onClick={() => FullName() && API("SkillSocrates", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
+                    } >
+                    <BuildIcon />
+                </div>
+                <div className="flex flex-row  w-full self-center gap-1" >
+                    <Button size="small" onClick={() => {
+                        audio?.pause();
+                        clearTimeout(intervalSetTalkPassed)
+                        setCurrentScene(CurrentScene - 1)
+                    }} disabled={CurrentScene <= 0}>
+                        <KeyboardArrowLeft />
+                        Back
+                    </Button>
+                    <select className="flex flex-row w-full bg-transparent  border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1 ring-1" value={CiteQuestion}
+                        onChange={(e) => {
+                            //set CurrentScene according to  CurrentScene
+                            var NewCurrentSceneToPlay = -1
+                            ScenerInfos.map((v, i) => { if (v?.CiteQuestion === e.target.value) NewCurrentSceneToPlay = i; })
+                            setCurrentScene(NewCurrentSceneToPlay)
+
+                        }} >
+                        {
+                            // options betwenn 1 to 100, default 10 
+                            // ScenerInfos.map((v, i) => <option key={`option-${i}`} value={i} className={"flex-wrap "} title={v.CiteQuestion} > {!!v.CiteQuestion ? v.CiteQuestion + "\n" + v.Text : "\xA0\xA0\xA0\xA0 " + v.Text} </option>)
+                            ScenerInfos.filter((v, i) => { return !!v.CiteQuestion }).map((v, i) => <option key={`option-${i}`} value={v.CiteQuestion} > {(i + 1) + ": " + v.CiteQuestion} </option>)
+
+                        }
+                    </select>
+                    <Button size="small" onClick={() => {
+                        audio?.pause();
+                        clearTimeout(intervalSetTalkPassed)
+                        setCurrentScene(CurrentScene + 1)
+                    }} disabled={CurrentScene >= ScenerInfos.length}>
+                        Next <KeyboardArrowRight />
+                    </Button>
+                </div>
+
+                {/* play or pause senery accoridng to PlayingSenery */}
+                <div title={"播放演示"} className="flex flex-row pr-1 h-full self-center items-center justify-center" onClick={() => {
+                    if (CurrentScene >= 0 && CurrentScene < ScenerInfos.length) {
+                        //if audio is playing ,then pause it
+                        let playing = !audio?.paused
+                        console.info("playing", playing)
+                        if (!playing) {
+                            //play at speed of 2x
+                            if (audio) {
+                                audio.playbackRate = playbackRate;
+                            }
+
+                            //continue play
+                            audio?.play()
+                            intervalSetTalkPassed = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
+                        } else {
+                            audio?.pause()
+                            clearTimeout(intervalSetTalkPassed)
+                            setCiteQuestion("")
+                        }
+                    } else {
+                        setQASocrates([])
+                        setTimeout(() => setCurrentScene(0), 100)
+                    }
+                }} >
+                    <div className={"flex flex-row gap-1 self-center items-center justify-center flex-nowrap " + (Playing(CurrentScene) ? " animate-pulse hover:grayscale" : " grayscale-[60%] hover:grayscale-0")} >
+                        <div className="mt-1"><TwoIO /></div>
+                        <div className="text-2xl -mt-2 self-center"> {Playing(CurrentScene) ? "" : ".."}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full  mt-2 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
             {
-                QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
+                (CurrentScene < 0 || CurrentScene >= ScenerInfos.length) && QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
                     return <div key={QA.Q} className=" text-base  even:bg-lime-100 odd: bg-amber-100 max-w-[49%] rounded-md px-4 py-[4px]  items-center"
                         onClick={() => API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
                             let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
@@ -228,8 +260,8 @@ export default function Socrates({ topic, volume }) {
                     </div>
                 })
             }
-        </div>
 
+        </div>
 
         {/* <div className="bg" style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)" }}>        </div> */}
 
