@@ -12,42 +12,59 @@ import { LoadingComponent } from ".";
 import ScrollingBanner from "../../component/banner";
 let audio = null
 
-const HoldInRoadAlert = () => <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-2 px-2 pb-2 h-36"            >
-    <div className=" w-40 h-32  rounded-3xl mt-0 self-stretch " title={"苏格拉底之问"}>
-        <img className={`rounded-3xl -mr-2 `} src="/holeInRoad.webp" ></img>
+const HoldInRoadAlert = () => {
+    var items = `警惕！这里可能有误区。
+内容有“坑”：你能发现吗？
+不靠谱的内容，你辨识出来了吗！
+谁能捕捉到有哪些失误？
+错误就在眼前：留心观察！
+警觉！别让错误滑过你的眼睛。
+内容有“小陷阱”：你会掉进去吗？`.split("\n")
+    const RaondomItem = () => items[Math.floor(Math.random() * items.length)]
+    const [randomText, setRandomText] = React.useState(null);
+
+    React.useEffect(() => {
+        setRandomText(RaondomItem());
+    }, []);
+
+
+    return <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-2 px-2 pb-2 h-36"            >
+        <div className=" w-40 h-32  rounded-3xl mt-0 self-stretch " title={"苏格拉底之问"}>
+            <img className={`rounded-3xl -mr-2 `} src="/holeInRoad.webp" ></img>
+        </div>
+        <div className="flex h-full text-2xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 items-center pl-4"                    >
+            {randomText}
+        </div>
     </div>
-    <div className="flex h-full text-2xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 items-center pl-4"                    >
-        高能！坑已挖好，等你来填!
-    </div>
-</div>
+}
 
 const Talkers = ({ ScenerInfos, CurrentScene }) => <div key={`talker-${CurrentScene}-${ScenerInfos}`}
     className="flex flex-row  text-xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 justify-between items-center h-36">
 
-    <div className="flex flex-col  h-full text-2xl text-gray-800 font-sans leading-4   bg-white/70 rounded-md my-2 px-4 py-6 gap-4 items-center "                    >
-        <div>            苏格拉底        </div>
-        <div>            的        </div>
-        <div>          演练场 </div>
-    </div>
 
     <div className={"w-32 h-32 rounded-lg"} >
-        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("女孩") === 0 && " ring-4 animate-pulse"} src="/image-girl.jpg"></img>
+        <img className={!isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < ScenerInfos?.length && ScenerInfos[CurrentScene].Text.indexOf("女孩") === 0 && " ring-4 animate-pulse" || ""} src="/image-girl.jpg"></img>
     </div>
 
     <div className={" w-36 h-32 mt-1 self-stretch overflow-hidden rounded-lg "} title={"苏格拉底之问"}>
-        <img className={(CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("苏格拉底") === 0 && "ring-4 animate-pulse ") + `  -mr-8`} src="/socrates.webp"
+        <img className={(!isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < ScenerInfos?.length && ScenerInfos[CurrentScene].Text.indexOf("苏格拉底") === 0 && "ring-4 animate-pulse " || "") + `  -mr-8`} src="/socrates.webp"
         ></img>
     </div>
 
     <div className="w-32 h-32 rounded-lg" >
-        <img className={CurrentScene >= 0 && CurrentScene < ScenerInfos.length && ScenerInfos[CurrentScene].Text.indexOf("男孩") === 0 && " ring-4 animate-pulse"} src="/image-man.jpeg"></img>
+        <img className={!isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < ScenerInfos?.length && ScenerInfos[CurrentScene].Text.indexOf("男孩") === 0 && " ring-4 animate-pulse" || ""} src="/image-man.jpeg"></img>
+    </div>
+    <div className="flex flex-col  h-full text-2xl text-gray-800 font-sans leading-4   bg-white/70 rounded-xl my-2 px-4 py-6 gap-6 items-center "                    >
+        <div>            苏格拉底        </div>
+        <div>          之          </div>
+        <div>追问、思辨、自我发现</div>
     </div>
 </div>
 
 
-export default function Socrates({ topic, volume, playbackRate }) {
-    const { setCreditTM } = useContext(GlobalContext)
-    const { skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+export default function Socrates({ volume, playbackRate }) {
+    const { setCreditTM, debugMode } = useContext(GlobalContext)
+    const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
     //CurrentQAs QA that use has selected. format [question,answer,question,answer,...]
@@ -56,8 +73,10 @@ export default function Socrates({ topic, volume, playbackRate }) {
 
     const [ScenerInfos, setScenerInfos] = useState([])
     const [CurrentScene, setCurrentScene] = useState(-1)
+    const [paused, setPaused] = useState(false)
     const [CiteQuestion, setCiteQuestion] = useState("")
     const [QASocrates, setQASocrates] = useState([])
+    const topic = () => skillTree?.Name + ":" + skillTree?.Detail
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
@@ -65,22 +84,24 @@ export default function Socrates({ topic, volume, playbackRate }) {
         setQASocrates([])
         let Name = FullName()
         if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
+        if (!skillTree?.Sessions || skillTree?.Sessions?.length <= 0) return
+        var Topic = topic()
         //loadSkillSessionQAs
-        API("SkillSocrates", { Name, Topic: topic, Rebuild: false }).then((res) => (Name === FullName()) && setQAs(res ?? []))
+        API("SkillSocrates", { Name, Topic, Rebuild: false }).then((res) => (Name === FullName()) && setQAs(res ?? []))
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
         //Senery TTSInfo
-        API("SkillSocratesTTS", { Session: FullName(), Topic: topic }).then((res) => {
+        API("SkillSocratesTTS", { Session: FullName(), Topic }).then((res) => {
             if (Name !== FullName()) return
             if (!res || res.length == 0) return setScenerInfos([])
             setScenerInfos(res)
         })
 
-    }, [topic, skillSession])
+    }, [skillTree, skillSession])
 
     useEffect(() => {
         if (!FullName()) return
         setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
-    }, [topic, skillSession, skillMyTrace])
+    }, [skillSession, skillMyTrace])
 
     const PlayTTSOgg = (...urls) => {
         //play each audio one by one
@@ -175,11 +196,13 @@ export default function Socrates({ topic, volume, playbackRate }) {
             </div>
 
             <div title="playSocratesDemo" className="flex flex-row w-full text-base justify-start items-start h-10 -mt-1 " >
-                <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
-                    onClick={() => FullName() && API("SkillSocrates", { Name: FullName(), Topic: topic, Rebuild: true }).then((res) => setQAs(res ?? []))
-                    } >
-                    <BuildIcon />
-                </div>
+                {
+                    debugMode >= 3 && <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"
+                        onClick={() => FullName() && API("SkillSocrates", { Name: FullName(), Topic: topic(), Rebuild: true }).then((res) => setQAs(res ?? []))
+                        } >
+                        <BuildIcon />
+                    </div>
+                }
                 <div className="flex flex-row  w-full self-center gap-1" >
                     <Button size="small" onClick={() => {
                         audio?.pause();
@@ -214,33 +237,47 @@ export default function Socrates({ topic, volume, playbackRate }) {
                 </div>
 
                 {/* play or pause senery accoridng to PlayingSenery */}
-                <div title={"播放演示"} className="flex flex-row pr-1 h-full self-center items-center justify-center" onClick={() => {
-                    if (CurrentScene >= 0 && CurrentScene < ScenerInfos.length) {
-                        //if audio is playing ,then pause it
-                        let playing = !audio?.paused
-                        console.info("playing", playing)
-                        if (!playing) {
-                            //play at speed of 2x
-                            if (audio) {
-                                audio.playbackRate = playbackRate;
+                <div title={"播放演示"} className="flex flex-row pr-1 h-10 self-center items-center justify-center" >
+                    <div className={"flex flex-row gap-1 self-center items-center justify-center flex-nowrap h-10 "} >
+                        <div className={"mt-1" + (Playing(CurrentScene) ? " animate-pulse hover:grayscale" : " grayscale-[60%] hover:grayscale-0")}><TwoIO /></div>
+                        {
+                            !Playing(CurrentScene) && <div className="flex flex-row w-10 flex-nowrap h-fit text-2xl -mt-2 self-center" onClick={() => {
+                                //play at speed of 2x
+                                if (audio) {
+                                    audio.playbackRate = playbackRate;
+                                }
+                                setQASocrates([])
+                                setPaused(false)
+                                setTimeout(() => setCurrentScene(0), 100)
                             }
-
-                            //continue play
-                            audio?.play()
-                            intervalSetTalkPassed = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
-                        } else {
-                            audio?.pause()
-                            clearTimeout(intervalSetTalkPassed)
-                            setCiteQuestion("")
+                            } >.. ▶️</div>
                         }
-                    } else {
-                        setQASocrates([])
-                        setTimeout(() => setCurrentScene(0), 100)
-                    }
-                }} >
-                    <div className={"flex flex-row gap-1 self-center items-center justify-center flex-nowrap " + (Playing(CurrentScene) ? " animate-pulse hover:grayscale" : " grayscale-[60%] hover:grayscale-0")} >
-                        <div className="mt-1"><TwoIO /></div>
-                        <div className="text-2xl -mt-2 self-center"> {Playing(CurrentScene) ? "" : ".."}</div>
+                        {
+                            Playing(CurrentScene) && <div className="flex -mt-1 flex-row gap-2  self-center">
+                                {!paused && <div title="暂停播放" className="flex h-fit" onClick={() => {
+                                    if (!!audio) audio.pause()
+                                    clearTimeout(intervalSetTalkPassed)
+                                    setPaused(true)
+                                }} >⏸️</div>
+                                }
+
+                                {paused && <div title="继续播放" className="flex h-fit" onClick={() => {
+                                    //continue play
+                                    audio?.play()
+                                    setPaused(false)
+                                    intervalSetTalkPassed = setTimeout(() => setTalkPassed(TalkPassed + 0.11), 100)
+                                }}>▶️</div>
+                                }
+                                <div className="flex h-fit" onClick={() => {
+                                    if (!!audio) audio.pause()
+                                    setCurrentScene(-1)
+                                    setCiteQuestion("")
+                                    setQASocrates([])
+                                    clearTimeout(intervalSetTalkPassed)
+                                    setTalkPassed(0)
+                                }}>⏹️</div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -250,7 +287,7 @@ export default function Socrates({ topic, volume, playbackRate }) {
             {
                 (CurrentScene < 0 || CurrentScene >= ScenerInfos.length) && QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
                     return <div key={QA.Q} className=" text-base  even:bg-lime-100 odd: bg-amber-100 max-w-[49%] rounded-md px-4 py-[4px]  items-center"
-                        onClick={() => API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
+                        onClick={() => API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
                             let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                             setSkillMyTrace(newMySkillTrace)
                             //update creditTM to refresh rewards
@@ -284,7 +321,7 @@ export default function Socrates({ topic, volume, playbackRate }) {
                     </div>
                 })
             }
-            {!QAs?.length && <LoadingComponent />}
+            {!QAs?.length && <LoadingComponent Text="Loading..." />}
             {
                 //苏格拉底演练
                 QASocrates?.length > 0 && QASocrates.map((qa, index) => {
@@ -330,7 +367,7 @@ export default function Socrates({ topic, volume, playbackRate }) {
                                 e.target.value = ""
                                 API("SkillSocratic", { Name: FullName(), Quetion: question })
                                     .then((res) => setQAs(res ?? []))
-                                API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Ask: `${question}|||${answer}` }).then((res) => {
+                                API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Ask: `${question}|||${answer}` }).then((res) => {
                                     let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                                     setSkillMyTrace(newMySkillTrace)
                                     //update creditTM to refresh rewards

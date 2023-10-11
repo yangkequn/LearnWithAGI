@@ -15,23 +15,31 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import HistoryTopics from "./historyTopics";
 //https://github.com/JedWatson/react-select
 
-export const LoadingComponent = () => {
+export const LoadingComponent = ({ Text }) => {
     return (
         <div className="flex justify-center items-center min-h-screen space-x-4">
             <div className="loader w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
-            <div className="text-3xl text-blue-500">Loading...</div>
+            <div className="text-3xl text-blue-500">{Text}</div>
         </div>
     );
 }
-function ExploreComponent({ topic }) {
+export function ExploreComponent() {
     const router = useRouter()
     const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)
     const [volume, setVolume] = useState(0.5)
     const [playbackRate, setPlaybackRate] = useState(1)
-    const { skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { topic, setTopic, skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { Params } = useContext(GlobalContext)
     useEffect(() => {
-        if (!topic) return router.push("/")
-    }, [])
+        const { t } = Params;
+        // Since useRouter will only be invoked inside useEffect, it's ensured to run on the client side only
+        if (!!t) {
+            setTopic(t);
+            return
+        }
+    }, [Params]);
+
+
     const [RelatedSkills, setRelatedSkills] = useState([])
     useEffect(() => {
         API("SkillSearch", { Name: topic }).then((data) => {
@@ -96,30 +104,33 @@ function ExploreComponent({ topic }) {
         , boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)"
     }}>
 
-        <SkillTree topic={topic} />
+        <SkillTree />
         {/* 大板块分割线 */}
-        <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
-        <Socrates topic={topic} volume={volume} playbackRate={playbackRate}></Socrates>
+        <div title="divider" className="h-full bg-gray-400 w-[2px] my-[4px] mx-1"></div>
+        <Socrates volume={volume} playbackRate={playbackRate}></Socrates>
         {/* right side panel */}
 
         {/* 大板块分割线 */}
-        <Divider sx={{ height: "100%", m: 0.5 }} orientation="vertical" />
+        <div title="divider" className="h-full bg-gray-400 w-[2px] my-[4px] mx-1"></div>
         {/* 底部的搜索结果,immerse chatbox */}
-        <QAComponent setCreditTM={setCreditTM} topic={topic} volume={volume}></QAComponent>
+        <QAComponent setCreditTM={setCreditTM} volume={volume}></QAComponent>
 
     </div >
 
 }
 
-export default function Home({ topic }) {
-    return <ContextComponent><AppFrame >
-        <ExploreComponent topic={topic}></ExploreComponent>
-    </AppFrame></ContextComponent>
+export default function Home({ }) {
+
+    return (
+        <ContextComponent>
+            <AppFrame>
+                <ExploreComponent></ExploreComponent>
+            </AppFrame>
+        </ContextComponent>
+    );
 }
-export const getServerSideProps = async (context) => {
+export async function getStaticProps() {
     return {
-        props: {
-            topic: context.query.t ?? ""
-        }
-    }
+        props: {}
+    };
 }

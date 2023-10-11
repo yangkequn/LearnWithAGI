@@ -71,7 +71,7 @@ export const HEXISTS = (Key: string, Field: string = "") =>
     JwtRequest().get(`${Url}/HEXISTS--${Key}?F=${encodeURIComponent(Field)}`)
 
 export const HSET = (Key: string, Field: string = "", data: any) =>
-    JwtRequest().put(`${Url}/HSET--${Key}--${RspFields}?F=${encodeURIComponent(Field)}`, data)
+    JwtRequest().put(`${Url}/HSET--${Key}?F=${encodeURIComponent(Field)}`, data)
 
 export const HGET = (Key: string, Field: string = "", rspType: RspType = RspType.json) => {
     if (!Key || Key == undefined) {

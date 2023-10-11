@@ -12,7 +12,7 @@ import { GlobalContext } from "../_app";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Jwt } from "../../component/jwt";
 
-export default function QAComponent({ topic, volume }) {
+export default function QAComponent({ volume }) {
     const { setCreditTM } = useContext(GlobalContext)
     const [QANum, setQANum] = useState(5)
     const [loading, setLoading] = useState(false)
@@ -20,6 +20,7 @@ export default function QAComponent({ topic, volume }) {
     //QAs: []struct {	Type     string	Question string	Answers  []string	Shown    int64	Answer   int64	Correct  int64}
     const [QAs, setQAs] = useState([]);
     const [qaIndex, setQAIndex] = useState(-1);
+    const topic = () => skillTree?.Name + ":" + skillTree?.Detail
     const AnswersShuffled = (qa) => {
         //calculate hash of qa.question
         let hash = 0;
@@ -35,14 +36,14 @@ export default function QAComponent({ topic, volume }) {
     const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
 
     //loadSkillPoint according to skillTreeSelected
-    const LoadSkillQAs = (Name, topic, useCallback) => API("SkillQAs", { Name: Name, Topic: topic }).then((qas) => useCallback && !!qas?.length > 0 && (Name === FullName()) && setQAs(qas))
+    const LoadSkillQAs = (Name, useCallback) => API("SkillQAs", { Name: Name, Topic: topic() }).then((qas) => useCallback && !!qas?.length > 0 && (Name === FullName()) && setQAs(qas))
     useEffect(() => {
         setQAs([])
         setQAIndex(-1)
         //auto load the first skill point
         let Name = FullName()
         if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
-        LoadSkillQAs(Name, topic, true)
+        LoadSkillQAs(Name, true)
     }, [skillSession])
 
     //join skillMyTrace to string,for faster processing
@@ -95,7 +96,7 @@ export default function QAComponent({ topic, volume }) {
             <div key="question-title-box" className={`flex flex-row  w-full flex-grow items-center md:pl-4 border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
             rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-fit ${loading && "animate-pulse"}`}  >
                 <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
-                    API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), Action: "reset-qas" }).then((res) => {
+                    API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Action: "reset-qas" }).then((res) => {
                         let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
                         setSkillMyTrace(newMySkillTrace)
                     })
@@ -123,7 +124,7 @@ export default function QAComponent({ topic, volume }) {
                         }
                     </select>
                     <button className={`self-center m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
-                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic, Action: QANum < 0 ? "rebuild" : "append", "QANum": parseInt(QANum) })
+                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic(), Action: QANum < 0 ? "rebuild" : "append", "QANum": parseInt(QANum) })
                             .then((res) => setQAs(res ?? []))
                     }}>
                         <div title={"申请重建练习列表"} className="mx=1 self-center items-center justify-center w-6 h-6">
@@ -161,7 +162,7 @@ export default function QAComponent({ topic, volume }) {
                                 <div className=" flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
                                     <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon></div>
                                     <div title="删除该条目" > <DeleteIcon onClick={() => {
-                                        API("SkillQAs", { Name: FullName(), Topic: topic, Action: `deleteItem:${qa.Q}` })
+                                        API("SkillQAs", { Name: FullName(), Topic: topic(), Action: `deleteItem:${qa.Q}` })
                                             .then((res) => setQAs(res ?? []))
                                     }}></DeleteIcon></div>
 
@@ -232,7 +233,7 @@ export default function QAComponent({ topic, volume }) {
                             QAs[qaIndex]?.Answers[0] === a ? PlayTTSOgg(...rightSound) : PlayTTSOgg(...wrongSound)
 
                             //	Name    string	Answer  int32	Ask     int32
-                            API("SkillMyTraceReport", { SkillName: topic, SessionName: FullName(), QA: QAs[qaIndex].Q + "|||" + answerIndex }).then((res) => {
+                            API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), QA: QAs[qaIndex].Q + "|||" + answerIndex }).then((res) => {
                                 //update creditTM to refresh rewards
                                 setCreditTM(new Date().getTime())
                                 let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }

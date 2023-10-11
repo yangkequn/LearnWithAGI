@@ -66,26 +66,26 @@ export default function Home({ search }) {
       })
     }
     // 实时创建 新的课程
-    if (!!search && search.length < 6 && !newskillSearched) {
-      //allow loading info display while searching
-      setNewSkillSearched("searching")
-      API("SkillGetNewTopics", { Keyword: search }).then((data) => {
-        setNewSkillSearched(search)
-        if (!data || !Array.isArray(data)) return
-        //set SkillTrees
-        let treeData = data.reduce((acc, item) => {
-          acc[item?.Name + ":" + item?.Detail] = item
-          return acc
-        }, SkillTrees)
-        setSkillTrees(treeData)
-        //skillNames setted after SkillTrees, to avoid early render
-        var names = data.map((item) => item.Name + ":" + item.Detail)
-        names = [...names, ...SkillNames]
-        names = [...new Set(names)]
-        setSkillNames(names)
-        setRefreshTM(new Date().getTime())
-      })
-    }
+    // if (!!search && search.length < 6 && !newskillSearched) {
+    //   //allow loading info display while searching
+    //   setNewSkillSearched("searching")
+    //   API("SkillGetNewTopics", { Keyword: search }).then((data) => {
+    //     setNewSkillSearched(search)
+    //     if (!data || !Array.isArray(data)) return
+    //     //set SkillTrees
+    //     let treeData = data.reduce((acc, item) => {
+    //       acc[item?.Name + ":" + item?.Detail] = item
+    //       return acc
+    //     }, SkillTrees)
+    //     setSkillTrees(treeData)
+    //     //skillNames setted after SkillTrees, to avoid early render
+    //     var names = data.map((item) => item.Name + ":" + item.Detail)
+    //     names = [...names, ...SkillNames]
+    //     names = [...new Set(names)]
+    //     setSkillNames(names)
+    //     setRefreshTM(new Date().getTime())
+    //   })
+    // }
     //case not search, but logged in, then get recommended skilltress
     if (!search && Jwt.Id() && !skillRecommended ) {
       setSkillRecommended("searched")

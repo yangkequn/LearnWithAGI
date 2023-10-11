@@ -1,7 +1,16 @@
 import { API, HMGET, ZRANGEBYSCORE } from "../../component/api";
 import React, { useEffect, useState } from "react";
-
-export const AskContext = React.createContext(undefined)
+export const AskContext = React.createContext({
+    topics: [],
+    QA: { Q: "", A: "", Time: 0 },
+    topicLoaded: false,
+    modelGPT: "gpt-3.5",
+    setTopics: () => { },
+    setQA: () => { },
+    setTopicLoaded: () => { },
+    setReload: () => { },
+    setModelGPT: () => { },
+});
 export default function AskContextComponent({ children }) {
     const [topics, setTopics] = useState([])
     const [QA, setQA] = useState({ Q: "", A: "", Time: 0 })
