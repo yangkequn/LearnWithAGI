@@ -30,8 +30,9 @@ const ListItem = ({ skillTree }) => {
   </div >
 
 }
-export default function Home({ search }) {
-  const { LoggedIn, RedirectUrl, setRedirectUrl, MenuL2, setMenuL2 } = useContext(GlobalContext)
+export default function Home() {
+  const { Params, LoggedIn, RedirectUrl, setRedirectUrl, MenuL2, setMenuL2 } = useContext(GlobalContext)
+  const { search } = Params
   const [skillSearched, setSkillSearched] = useState("")
   const [skillRecommended, setSkillRecommended] = useState("")
   const Router = useRouter();
@@ -87,7 +88,7 @@ export default function Home({ search }) {
     //   })
     // }
     //case not search, but logged in, then get recommended skilltress
-    if (!search && Jwt.Id() && !skillRecommended ) {
+    if (!search && Jwt.Id() && !skillRecommended) {
       setSkillRecommended("searched")
       API("SkillRecommend", {}).then((skillTrees) => {
         //recommended skilltress responded
@@ -161,11 +162,3 @@ export default function Home({ search }) {
     </div>
   </AppFrame>
 }
-export const getServerSideProps = async (context) => {
-  return {
-    props: {
-      search: context.query.search ?? ""
-    }
-  }
-}
-

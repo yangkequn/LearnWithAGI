@@ -10,8 +10,9 @@ import Purchase from "./Purchase";
 import { Jwt } from "@/component/jwt";
 
 const UserCenterPages = { MyProfile: "MyProfile", Order: "Order", Purchase: "Purchase", None: "" }
-const UserCenter = ({ Page, To }) => {
-    const { LoggedIn, setMenuL2 } = useContext(GlobalContext)
+const UserCenter = () => {
+    const { Params, LoggedIn, setMenuL2 } = useContext(GlobalContext)
+    let { page, To } = Params
     const router = useRouter()
     const MenuL2 = (Page) => <div className="flex flex-row justify-center items-center w-full h-full  ">
         <div className="flex flex-row max-w-lg gap-4 text-base self-center">
@@ -42,26 +43,18 @@ const UserCenter = ({ Page, To }) => {
         </div>
     </div>
     useEffect(() => {
-        setMenuL2(MenuL2(Page))
-        let validPage = Page === UserCenterPages.MyProfile || Page === UserCenterPages.Order || Page === UserCenterPages.Purchase || Page === UserCenterPages.None
-        if (!validPage) return router.push(To ?? "/")
-    }, [LoggedIn, Page])
+        setMenuL2(MenuL2(page))
+        let validPage = page === UserCenterPages.MyProfile || page === UserCenterPages.Order || page === UserCenterPages.Purchase || page === UserCenterPages.None
+        if (LoggedIn && !!page && !validPage) return router.push(To ?? "/")
+    }, [LoggedIn, page])
     return <div className="flex flex-col items-start self-center justify-center w-full h-full mt-4 ">
-        {LoggedIn && (Page === UserCenterPages.MyProfile || Page === UserCenterPages.MyProfile) && <MyProfile />}
-        {LoggedIn && Page === UserCenterPages.Order && <Order />}
-        {LoggedIn && Page === UserCenterPages.Purchase && <Purchase />}
+        {LoggedIn && (page === UserCenterPages.MyProfile || page === UserCenterPages.MyProfile) && <MyProfile />}
+        {LoggedIn && page === UserCenterPages.Order && <Order />}
+        {LoggedIn && page === UserCenterPages.Purchase && <Purchase />}
     </div>
 }
 export default function UserCenterPage({ Page, To }) {
     return <AppFrame>
-        <UserCenter Page={Page} To={To} />
+        <UserCenter />
     </AppFrame>
-}
-export const getServerSideProps = async (context) => {
-    return {
-        props: {
-            Page: context.query.page ?? "",
-            To: context.query.To ?? "",
-        }
-    }
 }

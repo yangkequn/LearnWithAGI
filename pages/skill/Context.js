@@ -31,5 +31,5 @@ export default function ContextComponent({ children }) {
         topic, setTopic,
     }
 
-    return <Context.Provider value={store}>{children}</Context.Provider>
+    return <Context.Provider value={store}>{children}</Context.Provider> 
 }

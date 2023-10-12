@@ -53,9 +53,3 @@ export default function Home() {
         </AppFrame >
     </AskContextComponent>
 }
-export const getServerSideProps = async (context) => {
-    return {
-        props: {
-        }
-    }
-}
