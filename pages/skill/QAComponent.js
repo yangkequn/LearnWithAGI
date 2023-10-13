@@ -10,11 +10,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { Context } from "./Context"
 import { GlobalContext } from "../_app";
 import DeleteIcon from '@mui/icons-material/Delete';
+import ListIcon from '@mui/icons-material/List';
 import { Jwt } from "../../component/jwt";
 
 export default function QAComponent({ volume }) {
-    const { setCreditTM } = useContext(GlobalContext)
-    const [QANum, setQANum] = useState(5)
+    const { debugMode, setCreditTM } = useContext(GlobalContext)
     const [loading, setLoading] = useState(false)
     const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     //QAs: []struct {	Type     string	Question string	Answers  []string	Shown    int64	Answer   int64	Correct  int64}
@@ -88,50 +88,65 @@ export default function QAComponent({ volume }) {
         }
         audio.play()
     }
+    const TreeName = () => skillTree?.Name + ":" + skillTree?.Detail
+    const [closePlayList, setClosePlayList] = useState(false)
 
-    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full   overflow-scroll  max-w-[40%] min-w-[20%] pr-1">
+    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full     max-w-[40%] min-w-[20%] pr-1">
 
+        {
+            skillTree?.TreeList?.length > 0 && !closePlayList && <div className="flex flex-col ring-2 rounded-md m-2  w-[97%]  p-3 bg-white opacity-90 shadow-md">
+                <div className="flex flex-row justify-between items-center overflow-hidden w-full h-7 mb-2">
+                    <div className="flex flex-row text-xl font-semibold gap-2" title={skillTree?.TreeListName}>
+                        <ListIcon className="text-blue-500 w-6 h-6"></ListIcon>
+                        <div>{skillTree?.TreeListName}</div>
+                        <div className="text-lg font-medium text-gray-800">  {`${skillTree?.TreeList.indexOf(TreeName()) + 1} / ${skillTree?.TreeList?.length}`}</div>
+                    </div>
+
+                    <button onClick={() => { setClosePlayList(!closePlayList) }} className="p-1 hover:bg-gray-200 rounded"                    >
+                        X
+                    </button>
+                </div>
+
+
+                <div className="flex flex-col bg-gray-50 rounded p-3">
+                    {skillTree?.TreeList.map((item, index) => (
+                        <div key={`skillTree${index}`}
+                            className={`flex flex-row justify-start self-center items-center w-full whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 py-1 mb-1 hover:bg-blue-100 rounded ${item === skillTree.Name + ":" + skillTree.Detail && "bg-blue-200"}`}
+                            onClick={() => {
+                                router.push(`/skill?t=${item}`)
+                            }}
+                        >
+                            {item}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        }
         <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-3 w-full">
 
             <div key="question-title-box" className={`flex flex-row  w-full flex-grow items-center md:pl-4 border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
             rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-fit ${loading && "animate-pulse"}`}  >
-                <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
-                    API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Action: "reset-qas" }).then((res) => {
-                        let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
-                        setSkillMyTrace(newMySkillTrace)
-                    })
-                }}>
-                    <div ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
-                </div>
 
                 <div className="flex  w-full self-center resize-none border-0 bg-transparent  pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none ">
                     {`问答练习：${FullName()}`}
                 </div>
-                <div className="flex self-center  right-10 md:right-9">
-                    {/* select how many questions to ask */}
-                    <select className="bg-transparent border-0 text-gray-500 dark:text-gray-400 dark:bg-gray-900 dark:border-gray-900 dark:hover:text-gray-400 dark:hover:bg-gray-900 dark:disabled:hover:bg-transparent dark:disabled:hover:text-gray-400 hover:bg-gray-100 rounded-md p-1" disabled={loading} value={QANum}
-                        onChange={(e) => {
-                            setQANum(e.target.value)
-                        }} >
-                        {
-
-                            <option key={`option-negtive-1`} value={-1}>-1题</option>
-                        }
-                        {
-                            // options betwenn 1 to 100, default 10 
-                            [...Array(10).keys()].map((i) => <option key={`option-${i}`} value={(i + 1) * 5}>{(i + 1) * 5}题</option>)
-
-                        }
-                    </select>
+                {debugMode >= 3 && <div className="flex self-center  right-10 md:right-9">
                     <button className={`self-center m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
-                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic(), Action: QANum < 0 ? "rebuild" : "append", "QANum": parseInt(QANum) })
+                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic(), Append: true })
                             .then((res) => setQAs(res ?? []))
                     }}>
                         <div title={"申请重建练习列表"} className="mx=1 self-center items-center justify-center w-6 h-6">
                             <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AddIcon" tabIndex="-1" title="Add"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
                         </div>
-
                     </button>
+                </div>}
+                <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
+                    API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(),  Action: "reset-qas" }).then((res) => {
+                        let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                        setSkillMyTrace(newMySkillTrace)
+                    })
+                }}>
+                    <div ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
                 </div>
             </div>
 
@@ -162,7 +177,7 @@ export default function QAComponent({ volume }) {
                                 <div className=" flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
                                     <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon></div>
                                     <div title="删除该条目" > <DeleteIcon onClick={() => {
-                                        API("SkillQAs", { Name: FullName(), Topic: topic(), Action: `deleteItem:${qa.Q}` })
+                                        API("SkillQAs", { Name: FullName(), Topic: topic(), DeleteQ: `${qa.Q}` })
                                             .then((res) => setQAs(res ?? []))
                                     }}></DeleteIcon></div>
 

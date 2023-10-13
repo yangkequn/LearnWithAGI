@@ -55,9 +55,9 @@ const Talkers = ({ ScenerInfos, CurrentScene }) => <div key={`talker-${CurrentSc
         <img className={!isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < ScenerInfos?.length && ScenerInfos[CurrentScene].Text.indexOf("男孩") === 0 && " ring-4 animate-pulse" || ""} src="/image-man.jpeg"></img>
     </div>
     <div className="flex flex-col  h-full text-2xl text-gray-800 font-sans leading-4   bg-white/70 rounded-xl my-2 px-4 py-6 gap-6 items-center "                    >
-        <div>            苏格拉底        </div>
-        <div>          之          </div>
-        <div>追问、思辨、自我发现</div>
+        <div>追问        </div>
+        <div>          思辨</div>
+        <div>-&gt; 自我发现</div>
     </div>
 </div>
 

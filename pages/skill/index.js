@@ -99,7 +99,8 @@ export function ExploreComponent() {
         </div>)
     }, [creditTM, volume, RelatedSkills, playbackRate])
     return <div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center " style={{
-        backgroundImage: "url(/MAUL0r_Reme_kawaii_anime_cumulonimbus_happily_floating_through__01999efc-f065-4823-bf48-40be9c285ec5.png)"
+        //我有一个学习网站，我希望得到一张作为背景的图片,使得阅读时候有一点灵动的感觉。以使得网站背景不会太过无聊。这个图片有干净的天空，一朵淡淡的云，一个小女孩。整个图片是漫画，看起来是宫崎骏的风格。
+        backgroundImage: "url(/bg03.webp)"
         //use boxShadow to create a shadow of 50% opacity
         , boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)"
     }}>

@@ -76,54 +76,23 @@ export default function SkillTree({ }) {
         let correctAsks = myTrace.Asks?.length ?? 0, correctQAs = myTrace.QAs?.filter((qa) => qa.indexOf("|||0") > 0)?.length ?? 0
         return (correctAsks / 2) + correctQAs
     }
-    const fullName = () => skillTree?.Name + ":" + skillTree?.Detail
+    const TreeName = () => skillTree?.Name + ":" + skillTree?.Detail
 
-    const [closePlayList, setClosePlayList] = useState(false)
     {/* 相关的主题 */ }
     return <div className="flex flex-col justify-start items-start w-full max-w-[390px] h-full overflow-x-scroll gap-1 mt-1"    >
-        {
-            skillTree?.TreeList?.length > 0 && !closePlayList && <div className="flex flex-col ring-2 rounded-md m-1  w-full p-3 bg-white opacity-90 shadow-md">
-                <div className="flex flex-row justify-between items-center overflow-hidden w-full h-7 mb-3">
-                    <div className="text-xl font-semibold" title={skillTree?.TreeListName}>
-                        {skillTree?.TreeListName}
-                    </div>
-                    <button onClick={() => { setClosePlayList(!closePlayList) }} className="p-1 hover:bg-gray-200 rounded"                    >
-                        X
-                    </button>
-                </div>
+        <div key="title" className="flex flex-row pt-1 whitespace-normal text-lg bg-yellow-50 rounded-lg w-[97%] ml-2 gap-2 items-center" >
 
-                <div className="flex flex-row gap-3 px-3 items-center mb-2">
-                    {/* icon for list */}
-                    <ListIcon className="text-blue-500 w-6 h-6"></ListIcon>
-                    <div className="text-lg font-medium text-gray-800">
-                        Play list {`${skillTree?.TreeList.indexOf(fullName()) + 1} / ${skillTree?.TreeList?.length}`}
-                    </div>
-                </div>
-
-                <div className="flex flex-col bg-gray-50 rounded p-3">
-                    {skillTree?.TreeList.map((item, index) => (
-                        <div key={`skillTree${index}`}
-                            className={`flex flex-row justify-start self-center items-center w-full whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 py-1 mb-1 hover:bg-blue-100 rounded ${item === skillTree.Name + ":" + skillTree.Detail && "bg-blue-200"}`}
-                            onClick={() => {
-                                router.push(`/skill?t=${item}`)
-                            }}
-                        >
-                            {item}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        }
-        <div key="title" className="flex flex-row pt-1 whitespace-normal text-lg bg-yellow-50 w-full rounded ml-2 gap-2 items-center" >
-            <div className="flex font-semibold h-12 self-center items-center   ">
-                <div className="pl-1">课程</div>
-            </div>
             <div className="flex flex-col">
-                <div className=" font-semibold text-base "> {skillTree.Name}</div>
-                <div className=" font-semibold text-sm "> {skillTree.Detail}</div>
+                <div className="flex flex-row gap-4 items-center h-8">
+                    <div className="flex font-semibold self-center items-center   ">
+                        <div className="pl-1"></div>
+                    </div>
+                    <div className=" font-semibold text-base "> {skillTree.Name}</div>
+                </div>
+                <div className=" font-semibold text-sm px-2 pb-1"> {skillTree.Detail}</div>
             </div>
         </div>
-        <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 pb-2"            >
+        <div className=" flex flex-row justify-start items-center w-[97%]  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 pb-2"            >
             目录：
         </div>
         {
