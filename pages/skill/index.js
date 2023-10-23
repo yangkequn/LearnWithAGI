@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import QAComponent from "./QAComponent";
 import SkillTree from "./SkillTree";
 import Rewards from "./Rewards";
-import Socrates from "./Socrates";
+import DemoTalk from "./DemoTalk";
 import AppFrame from "../../component/appFrame"
 import { useParams, useRouter } from "next/navigation";
 import { API, HGET, HGETALL, HKEYS, HMGET, ZCARD, ZREVRANGE } from "../../component/api";
@@ -13,6 +13,8 @@ import ContextComponent, { Context } from "./Context"
 import { Jwt } from "../../component/jwt";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import HistoryTopics from "./historyTopics";
+import TreeList from "./TreeLIst";
+import AskAnswer from "./AskAnswer";
 //https://github.com/JedWatson/react-select
 
 export const LoadingComponent = ({ Text }) => {
@@ -29,6 +31,7 @@ export function ExploreComponent() {
     const [volume, setVolume] = useState(0.5)
     const [playbackRate, setPlaybackRate] = useState(1)
     const { topic, setTopic, skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { ShowDemo, ShowAskAnswer, ShowQA, setShowDemo, setShowAskAnswer, setShowQA } = useContext(Context)
     const { Params } = useContext(GlobalContext)
     useEffect(() => {
         const { t } = Params;
@@ -38,6 +41,7 @@ export function ExploreComponent() {
             return
         }
     }, [Params]);
+    console.log("topic", topic)
 
 
     const [RelatedSkills, setRelatedSkills] = useState([])
@@ -70,6 +74,27 @@ export function ExploreComponent() {
             <div key="reward" className="flex flex-row overflow-hidden w-full items-center justify-between">
                 <Rewards creditTM={creditTM} volume={volume}></Rewards>
             </div>
+
+            <div className="flex flex-row gap-4 items-center justify-between mr-4 ">
+
+                <button className="flex flex-row items-center gap-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded transition duration-300 ease-in-out border border-gray-400 hover:border-gray-500" onClick={() => setShowDemo(!ShowDemo)}>
+                    <div className="text-lg font-medium">讲解</div>
+                    <div>{ShowDemo ? "🟢" : "🔴"}</div>
+                </button>
+
+                <button className="flex flex-row items-center gap-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded transition duration-300 ease-in-out border border-gray-400 hover:border-gray-500" onClick={() => setShowAskAnswer(!ShowAskAnswer)}>
+                    <div className="text-lg font-medium">深问</div>
+                    <div>{ShowAskAnswer ? "🟢" : "🔴"}</div>
+                </button>
+
+                <button className="flex flex-row items-center gap-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded transition duration-300 ease-in-out border border-gray-400 hover:border-gray-500" onClick={() => setShowQA(!ShowQA)}>
+                    <div className="text-lg font-medium">练习</div>
+                    <div>{ShowQA ? "🟢" : "🔴"}</div>
+                </button>
+
+            </div>
+
+
             <div className="flex flex-row   gap-2 items-center justify-between">
                 {/* playbackRate */}
                 <div title="设置倍速" className="group flex flex-col w-12 h-8 items-center relative z-10 rounded-md opacity-100 mt-1 bg-inherit ">
@@ -97,24 +122,29 @@ export function ExploreComponent() {
                 </div>
             </div>
         </div>)
-    }, [creditTM, volume, RelatedSkills, playbackRate])
+    }, [creditTM, volume, RelatedSkills, playbackRate, ShowDemo, ShowAskAnswer, ShowQA])
     return <div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center " style={{
         //我有一个学习网站，我希望得到一张作为背景的图片,使得阅读时候有一点灵动的感觉。以使得网站背景不会太过无聊。这个图片有干净的天空，一朵淡淡的云，一个小女孩。整个图片是漫画，看起来是宫崎骏的风格。
         backgroundImage: "url(/bg03.webp)"
         //use boxShadow to create a shadow of 50% opacity
         , boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)"
     }}>
-
-        <SkillTree />
+        <div className="flex flex-col h-full max-w-[390px] overflow-y: auto">
+            <SkillTree />
+            <TreeList></TreeList>
+        </div>
         {/* 大板块分割线 */}
         <div title="divider" className="h-full bg-gray-400 w-[2px] my-[4px] mx-1"></div>
-        <Socrates volume={volume} playbackRate={playbackRate}></Socrates>
+        {ShowDemo && <DemoTalk volume={volume} playbackRate={playbackRate}></DemoTalk>}
         {/* right side panel */}
 
+        {
+            ShowAskAnswer && <AskAnswer />
+        }
         {/* 大板块分割线 */}
-        <div title="divider" className="h-full bg-gray-400 w-[2px] my-[4px] mx-1"></div>
+        {ShowQA && <div title="divider" className="h-full bg-gray-400 w-[2px] my-[4px] mx-1"></div>}
         {/* 底部的搜索结果,immerse chatbox */}
-        <QAComponent setCreditTM={setCreditTM} volume={volume}></QAComponent>
+        {ShowQA && <QAComponent setCreditTM={setCreditTM} volume={volume}></QAComponent>}
 
     </div >
 

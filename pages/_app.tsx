@@ -91,9 +91,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     //listen to key press event, if press ctrl +(dbg) then toggle debug mode
     const keyPress = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key == "d" && debugMode == 0) return setDebugMode(1)
-      if (e.ctrlKey && e.key == "b" && debugMode == 1) return setDebugMode(2)
-      if (e.ctrlKey && e.key == "g" && debugMode == 2) return setDebugMode(3)
+      //如果已经是debugMode,只要不按ctrl，那么一直是这种模式
+      if (!e.ctrlKey) return
+      if (e.key == "d" && debugMode == 0) return setDebugMode(1)
+      if (e.key == "b" && debugMode == 1) return setDebugMode(2)
+      if (e.key == "g" && debugMode == 2) return setDebugMode(3)
       return setDebugMode(0)
     }
     window.addEventListener("keydown", keyPress)

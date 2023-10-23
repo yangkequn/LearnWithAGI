@@ -62,13 +62,11 @@ const Talkers = ({ ScenerInfos, CurrentScene }) => <div key={`talker-${CurrentSc
 </div>
 
 
-export default function Socrates({ volume, playbackRate }) {
+export default function DemoTalk({ volume, playbackRate }) {
     const { setCreditTM, debugMode } = useContext(GlobalContext)
     const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
-    //CurrentQAs QA that use has selected. format [question,answer,question,answer,...]
-    const [QATraces, setQAsTraces] = useState([])
     const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
 
     const [ScenerInfos, setScenerInfos] = useState([])
@@ -80,7 +78,6 @@ export default function Socrates({ volume, playbackRate }) {
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
-        setQAsTraces([])
         setQASocrates([])
         let Name = FullName()
         if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
@@ -88,7 +85,6 @@ export default function Socrates({ volume, playbackRate }) {
         var Topic = topic()
         //loadSkillSessionQAs
         API("SkillSocrates", { Name, Topic, Rebuild: false }).then((res) => (Name === FullName()) && setQAs(res ?? []))
-        setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
         //Senery TTSInfo
         API("SkillSocratesTTS", { Session: FullName(), Topic }).then((res) => {
             if (Name !== FullName()) return
@@ -100,7 +96,6 @@ export default function Socrates({ volume, playbackRate }) {
 
     useEffect(() => {
         if (!FullName()) return
-        setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
     }, [skillSession, skillMyTrace])
 
     const PlayTTSOgg = (...urls) => {
@@ -144,7 +139,6 @@ export default function Socrates({ volume, playbackRate }) {
         if (!FullName()) return
         if (CurrentScene < 0 || CurrentScene >= ScenerInfos.length) return
 
-
         //handle of autoplay
         setTalkPassed(0)
         setTimeout(() => StartPlay(CurrentScene), 700)
@@ -183,8 +177,8 @@ export default function Socrates({ volume, playbackRate }) {
             <Typography variant="body2" color="text.secondary">{`${Math.round(value)}%`}</Typography>
         </Box>
     </div>
-    if (!FullName(skillSession)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]" ></div>
-    return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[40%]"    >
+    if (!FullName(skillSession)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full  max-w-[40%]" ></div>
+    return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full max-w-[97%]"    >
         {/* //list Tags of QAs,using mui tag */}
         <div className="flex flex-col flex-wrap justify-start items-start w-full  mt-2 gap-[7px] opacity-90 h-38"        >
 
@@ -283,44 +277,10 @@ export default function Socrates({ volume, playbackRate }) {
             </div>
         </div>
 
-        <div className="flex flex-col flex-wrap justify-start items-start overflow-scroll w-full  mt-2 gap-[7px] opacity-90 max-h-[60%] min-h-min"        >
-            {
-                (CurrentScene < 0 || CurrentScene >= ScenerInfos.length) && QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
-                    return <div key={QA.Q} className=" text-base  even:bg-lime-100 odd: bg-amber-100 max-w-[49%] rounded-md px-4 py-[4px]  items-center"
-                        onClick={() => API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
-                            let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
-                            setSkillMyTrace(newMySkillTrace)
-                            //update creditTM to refresh rewards
-                            setCreditTM(new Date().getTime())
-                        })} >
-                        ❓{QA.Q}
-                    </div>
-                })
-            }
 
-        </div>
-
-        {/* <div className="bg" style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)" }}>        </div> */}
 
         {/* The whole chat box is scrollable */}
-        <div key="what-is-my-answered" className="flex flex-col justify-start items-start w-full  max-h-max min-h-min overflow-scroll my-2 " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
-            {
-                //display CurrentQAs as dialog box,question on the left,answer on the right
-                QASocrates?.length === 0 && QATraces.reverse().map((qa, index) => {
-                    return <div key={`question-answer-q-${qa.Q}-${index}`} className="flex flex-col justify-start items-start w-full h-fit py-3">
-                        <div variant="18px" className="flex flex-row justify-start items-start  text-base text-gray-800 font-sans w-fit bg-orange-100 rounded-full  px-2 mb-2">
-                            <div className="text-lg mr-1">🤔</div>  {qa.split("|||")[0]}
-                        </div>
-
-                        {/* align answer to the right */}
-                        <div key={`question-answer-a${qa[1]}-${index}`} style={{ maxWidth: "80%", backgroundColor: "#d2f9d1" }}
-                            className="flex flex-col justify-start items-start self-end text-sm text-gray-800 font-sans w-fit rounded-lg  px-2 py-2 whitespace-pre-line">
-
-                            💬 {qa.split("|||")[1]}
-                        </div>
-                    </div>
-                })
-            }
+        <div key="what-is-my-answered" className="flex flex-col justify-start items-start w-full max-h-max min-h-min overflow-auto my-2 pr-1 " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
             {!QAs?.length && <LoadingComponent Text="Loading..." />}
             {
                 //苏格拉底演练
@@ -352,33 +312,6 @@ export default function Socrates({ volume, playbackRate }) {
                 })
             }
         </div>
-        {/* <div key="question-box" className="flex flex-col justify-start items-start w-full h-28 overflow-scroll py-2"  >
-            <TextField label="提出一个新问题, Shift + Enter换行, 按Enter提交" multiline={true} rows={1} className="text-base text-gray-800 font-sans w-full h-full" style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.25)" }}
-                onKeyDown={
-                    (e) => {
-                        //if key press enter+shift,add a new line
-                        //if press enter without shift,submit
-                        if (e.keyCode === 13 && !e.shiftKey) {
-                            e.preventDefault()
-                            if (!IsValidSkillPoint()) return
-                            //if not empty
-                            let question = e.target.value
-                            if (!!question) {
-                                e.target.value = ""
-                                API("SkillSocratic", { Name: FullName(), Quetion: question })
-                                    .then((res) => setQAs(res ?? []))
-                                API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Ask: `${question}|||${answer}` }).then((res) => {
-                                    let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
-                                    setSkillMyTrace(newMySkillTrace)
-                                    //update creditTM to refresh rewards
-                                    setCreditTM(new Date().getTime())
-                                })
-                            }
-                        }
-                    }}
-            />
-        </div> */}
-
 
     </div >
 }

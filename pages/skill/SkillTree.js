@@ -24,6 +24,11 @@ export default function SkillTree({ }) {
         if (!topic) return
         //step1: auto load skillTree
         var Name = topic.split(":")[0], Detail = topic.split(":")[1]
+        //if skillTree is already loaded, then return
+        if (TreeName() == `${Name}:${Detail}`) {
+            console.log("skilltree", skillTree)
+            return
+        }
         API("SkillLoadList", { Name, Detail }).then((tree) => {
 
             //sort sessions by session.ChapterSession
@@ -79,27 +84,28 @@ export default function SkillTree({ }) {
     const TreeName = () => skillTree?.Name + ":" + skillTree?.Detail
 
     {/* 相关的主题 */ }
-    return <div className="flex flex-col justify-start items-start w-full max-w-[390px] h-full overflow-x-scroll gap-1 mt-1"    >
-        <div key="title" className="flex flex-row pt-1 whitespace-normal text-lg bg-yellow-50 rounded-lg w-[97%] ml-2 gap-2 items-center" >
+    return <div className="flex flex-col justify-start items-start w-full ring-2 rounded-lg m-1  h-fit  gap-1 p-2"    >
+        <div key="title" className="flex pt-1 bg-yellow-50 rounded-lg w-full  gap-2 items-center">
 
-            <div className="flex flex-col">
-                <div className="flex flex-row gap-4 items-center h-8">
-                    <div className="flex font-semibold self-center items-center   ">
-                        <div className="pl-1"></div>
+            <div className="flex flex-col w-full">
+                <div className="flex gap-4 items-center">
+                    <div className="font-semibold flex items-center p-2">
+                        <span className="pl-1">主题:</span>
                     </div>
-                    <div className=" font-semibold text-base "> {skillTree.Name}</div>
+                    <div className="font-semibold text-base">{skillTree.Name}</div>
                 </div>
-                <div className=" font-semibold text-sm px-2 pb-1"> {skillTree.Detail}</div>
+                <div className="font-semibold text-sm px-2 pb-1">{skillTree.Detail}</div>
             </div>
+
         </div>
-        <div className=" flex flex-row justify-start items-center w-[97%]  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 pb-2"            >
+        <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 pb-2" >
             目录：
         </div>
         {
             !skillTree?.Sessions?.length && <LoadingComponent Text={"正在创建课程..."} />
         }
 
-        {skillTree?.Sessions?.length > 0 && <Stepper orientation="vertical" className="flex w-full break-all whitespace-nowrap h-fit" activeStep={skillTree?.Sessions.indexOf(skillSession)}>
+        {skillTree?.Sessions?.length > 0 && <Stepper orientation="vertical" className="flex w-full ml-1 mb-2 break-all whitespace-nowrap h-fit" activeStep={skillTree?.Sessions.indexOf(skillSession)}>
             {
                 !!skillTree && skillTree?.Sessions.map((Point, seq) => {
                     return <Step key={`skillTree${seq}`} className={`flex flex-col justify-start items-start w-full h-fit whitespace-nowrap min-h-max`}

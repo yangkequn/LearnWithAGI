@@ -31,14 +31,16 @@ export class Jwt {
     public static Nick(): string { return Jwt.Get().sub }
     public static Id(): string { return Jwt.Get().id }
     public static Clear = (): void => {
+        if (typeof window === 'undefined') return;
         SaveStorage("jwt", new Jwt("", "", "", "", ""));
-        typeof window !== 'undefined' && localStorage.removeItem("Authorization");
+        localStorage.removeItem("Authorization");
         Jwt.LastGetJwtTime = new Date().getTime() + Math.random();
         CustomEvents.LoginStatusDispatch(false);
     };
     public static Save = (data: Jwt): void => {
+        if (typeof window === 'undefined') return;
         SaveStorage("jwt", data);
-        typeof window !== 'undefined' && localStorage.setItem("Authorization", data.jwt || "");
+        localStorage.setItem("Authorization", data.jwt || "");
         Jwt.LastGetJwtTime = new Date().getTime() + Math.random();
 
         CustomEvents.LoginStatusDispatch(data.IsValid());

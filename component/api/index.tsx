@@ -24,9 +24,7 @@ const JwtRequest = (headers: any = {}) => {
                     config.data = buf;
                 }
                 config.headers["Content-Type"] = "application/octet-stream";
-
             }
-
             return config;
         },
         (error: any) => {
@@ -59,8 +57,8 @@ export enum Action { GET, PUT, DELETE, }
 //export enum RspType { json = "&RspType=application/json", jpeg = "&RspType=image/jpeg", ogg = "&RspType=audio/ogg", mpeg = "&RspType=video/mpeg", mp4 = "&RspType=video/mp4", none = "", text = "&RspType=text/plain", stream = "&RspType=application/octet-stream" }
 export enum RspType { json = "--!JSON", jpeg = "--!JPG", ogg = "--!OGG", mpeg = "--!MPEG", mp4 = "--!MP4", none = "", text = "--!TEXT", stream = "--!STREAM" }
 
-//const Url = "https://api.iam26.com:3080/rSvc"
-const Url = "http://localhost:8080"
+//const Url = "https://jp.voiceofai.cc"
+const Url = "http://127.0.0.1:8080"
 export enum Cmd { HEXISTS = "HEXISTS", HGET = "HGET", HGETALL = "HGETALL", HMGET = "HMGET" }
 export const GetUrl = (cmd = Cmd.HGET, Key: string, Field: string = "", rspType: RspType = RspType.json) => {
     var url = `${Url}/${cmd}--${Key}${rspType}?F=${encodeURIComponent(Field)}`;

@@ -88,47 +88,25 @@ export default function QAComponent({ volume }) {
         }
         audio.play()
     }
-    const TreeName = () => skillTree?.Name + ":" + skillTree?.Detail
-    const [closePlayList, setClosePlayList] = useState(false)
 
-    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full     max-w-[40%] min-w-[20%] pr-1">
+    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full     max-w-[560px] min-w-[20%] pr-1">
 
-        {
-            skillTree?.TreeList?.length > 0 && !closePlayList && <div className="flex flex-col ring-2 rounded-md m-2  w-[97%]  p-3 bg-white opacity-90 shadow-md">
-                <div className="flex flex-row justify-between items-center overflow-hidden w-full h-7 mb-2">
-                    <div className="flex flex-row text-xl font-semibold gap-2" title={skillTree?.TreeListName}>
-                        <ListIcon className="text-blue-500 w-6 h-6"></ListIcon>
-                        <div>{skillTree?.TreeListName}</div>
-                        <div className="text-lg font-medium text-gray-800">  {`${skillTree?.TreeList.indexOf(TreeName()) + 1} / ${skillTree?.TreeList?.length}`}</div>
-                    </div>
-
-                    <button onClick={() => { setClosePlayList(!closePlayList) }} className="p-1 hover:bg-gray-200 rounded"                    >
-                        X
-                    </button>
-                </div>
-
-
-                <div className="flex flex-col bg-gray-50 rounded p-3">
-                    {skillTree?.TreeList.map((item, index) => (
-                        <div key={`skillTree${index}`}
-                            className={`flex flex-row justify-start self-center items-center w-full whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 px-2 py-1 mb-1 hover:bg-blue-100 rounded ${item === skillTree.Name + ":" + skillTree.Detail && "bg-blue-200"}`}
-                            onClick={() => {
-                                router.push(`/skill?t=${item}`)
-                            }}
-                        >
-                            {item}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        }
-        <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-3 w-full">
+        <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-4 w-full">
 
             <div key="question-title-box" className={`flex flex-row  w-full flex-grow items-center md:pl-4 border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
             rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-fit ${loading && "animate-pulse"}`}  >
 
-                <div className="flex  w-full self-center resize-none border-0 bg-transparent  pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none ">
-                    {`问答练习：${FullName()}`}
+                <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
+                    API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Action: "reset-qas" }).then((res) => {
+                        let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                        setSkillMyTrace(newMySkillTrace)
+                    })
+                }}>
+                    <div ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
+                </div>
+                <div className="flex flex-row gap-2 items-center w-full self-center resize-none border-0 bg-transparent  pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none ">
+                    <div className="text-lg ">{`练习题:`}</div>
+                    <div>  {FullName()}</div>
                 </div>
                 {debugMode >= 3 && <div className="flex self-center  right-10 md:right-9">
                     <button className={`self-center m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
@@ -140,14 +118,6 @@ export default function QAComponent({ volume }) {
                         </div>
                     </button>
                 </div>}
-                <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
-                    API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(),  Action: "reset-qas" }).then((res) => {
-                        let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
-                        setSkillMyTrace(newMySkillTrace)
-                    })
-                }}>
-                    <div ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
-                </div>
             </div>
 
         </div>
@@ -159,34 +129,42 @@ export default function QAComponent({ volume }) {
             </div>}
         </div>
 
-        <div key="knowledge-point-questions" className="flex flex-row w-full justify-start text-gra-800 gap-5 mt-2"        >
-            <div key="current-questions-all" className="flex flex-row justify-start items-start rounded-md w-full  text-gray-800 text-lg min-h-[300px]  max-h-[460px] flex-auto overflow-x-auto flex-wrap" >
-                <div key={`activeStep-${qaIndex}`} variant="dots" position="static"
-                    className=" flex flex-col justify-start rounded-md w-full  text-gray-800 text-lg leading-5  flex-wrap gap-2"
-                    sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
-                    {QAs?.map((qa, index) => <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Q}-${index}`}
-                        className={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 max-w-[48%] min-w-[200px] w-full flex-grow  even:bg-lime-100 odd: bg-amber-100`}
-                        onClick={() => setQAIndex(index)} >
-                        <div key={`OtherQA${qa.Q}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}>
-                            <div className=" flex flex-row justify-between items-center pr-2 gap-1  w-full">
-                                <div className="rounded ">{AnswerRight(qa)}</div>
-                                <div className="flex flex-row w-full" onClick={() => {
-                                    PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggQA", qa.Q, RspType.ogg))
-                                }}
-                                >{qa.Q}</div>
-                                <div className=" flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
-                                    <div title="复制到剪贴板" > <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon></div>
-                                    <div title="删除该条目" > <DeleteIcon onClick={() => {
-                                        API("SkillQAs", { Name: FullName(), Topic: topic(), DeleteQ: `${qa.Q}` })
-                                            .then((res) => setQAs(res ?? []))
-                                    }}></DeleteIcon></div>
-
+        <div key="knowledge-point-questions" className="flex flex-row w-full justify-start text-gra-800 gap-5 mt-2 h-full" >
+            <div key="current-questions-all" className="flex flex-row justify-start items-start rounded-md w-full  text-gray-800 text-lg min-h-[300px]  max-h-[460px] flex-auto overflow-y-auto flex-wrap" >
+                <div key={`activeStep-${qaIndex}`} variant="dots" position="static" className="grid grid-cols-2 gap-4 justify-start rounded-md w-full text-gray-800 text-lg leading-5"
+                    sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }}
+                >
+                    {QAs?.map((qa, index) => (
+                        <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Q}-${index}`}
+                            className={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 min-w-[200px] w-full flex-grow even:bg-lime-100 odd: bg-amber-100`}
+                            onClick={() => setQAIndex(index)} >
+                            <div key={`OtherQA${qa.Q}`}
+                                className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}                            >
+                                <div className="flex flex-row justify-between items-center pr-2 gap-1 w-full">
+                                    <div className="rounded ">{AnswerRight(qa)}</div>
+                                    <div className="flex flex-row w-full" onClick={() => {
+                                        PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggQA", qa.Q, RspType.ogg))
+                                    }}
+                                    >{qa.Q}</div>
+                                    <div className="flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
+                                        <div title="复制到剪贴板" >
+                                            <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon>
+                                        </div>
+                                        {debugMode >= 3 && (
+                                            <div title="删除该条目" >
+                                                <DeleteIcon onClick={() => {
+                                                    API("SkillQAs", { Name: FullName(), Topic: topic(), DeleteQ: `${qa.Q}` })
+                                                        .then((res) => setQAs(res ?? []))
+                                                }}></DeleteIcon>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    )}
+                    ))}
                 </div>
+
 
                 {/* Dots stepper, current index is {QAIndex}, length is {QAS.length} */}
                 {/* <Stepper activeStep={qaIndex} orientation="vertical" variant="dots" position="static"
@@ -218,8 +196,8 @@ export default function QAComponent({ volume }) {
         <Divider sx={{ width: 280, m: 0.5 }} orientation="horizontal" />
 
         {
-            !!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start w-full items-start]" >
-                <div variant="h4" className="flex flex-row justify-between font-semibold text-lg text-gray-800  font-sans leading-8 my-2 " >
+            !!QAs[qaIndex] && <div key="knowledge-point-answers" className="flex flex-col justify-start w-full items-start" >
+                <div variant="h4" className="flex flex-row justify-between font-semibold text-lg text-gray-800  font-sans leading-8 my-2 w-full " >
                     <div>回答正确的是: </div>
                     <div className="flex flex-row justify-start items-center gap-2">
                         {/* button with text 上一题, with color light-blue like alipay */}
@@ -235,7 +213,7 @@ export default function QAComponent({ volume }) {
                         </div>
                     </div>
                 </div>
-                <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full overflow-scroll  max-w-screen-sm min-w-min gap-3  " >
+                <div key={`QA-answers-${qaIndex}`} className=" flex flex-row flex-wrap justify-center items-center w-full  max-w-screen-sm min-w-min gap-3  " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
                     {AnswersShuffled(QAs[qaIndex]).map((a, i) => <div key={`answer-item${a}-${i}`}
                         className={`flex flex-row items-center justify-center rounded text-gray-800  w-[48%] p-2
                         ${AnswerItemRightWrong(QAs[qaIndex], a) == "✅" ? " text-lg w-5/12 bg-green-200 font-bold min-h-max  py-4" : " text-base w-4/12 bg-orange-200 min-h-min"}`}
