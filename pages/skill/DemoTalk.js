@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { createRef, useContext, useEffect, useMemo, useState } from "react"
+import React, { createRef, use, useContext, useEffect, useMemo, useState } from "react"
 import { API, Cmd, GetUrl, HGET, RspType } from "../../component/api";
 import BuildIcon from '@mui/icons-material/Build';
 import { Context } from "./Context"
@@ -10,6 +10,10 @@ import { TwoIO } from "../../component/appFrame/navigator";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { LoadingComponent } from ".";
 import ScrollingBanner from "../../component/banner";
+import { ToMermaidMindmapFormat, ToPlayingFormat } from "./mindmap";
+import mermaid from 'mermaid';
+import { parse } from "path";
+
 let audio = null
 
 const HoldInRoadAlert = () => {
@@ -61,7 +65,6 @@ const Talkers = ({ ScenerInfos, CurrentScene }) => <div key={`talker-${CurrentSc
     </div>
 </div>
 
-
 export default function DemoTalk({ volume, playbackRate }) {
     const { setCreditTM, debugMode } = useContext(GlobalContext)
     const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
@@ -75,6 +78,25 @@ export default function DemoTalk({ volume, playbackRate }) {
     const [CiteQuestion, setCiteQuestion] = useState("")
     const [QASocrates, setQASocrates] = useState([])
     const topic = () => skillTree?.Name + ":" + skillTree?.Detail
+    const [mermaidMindmap, setMermaidMindmap] = useState([]);
+    //playingMindmap 是 mermaidMindmap的子集。同时添加了样式控制。以便更好聚焦正在讲授的内容
+    const [playingMindmap, setPlayingMindmap] = useState("");
+    const [MindmapRawText, setMindmapRawText] = useState(null);
+
+
+    useEffect(() => {
+        if (FullName().length < 1) return
+        API("SkillSessionMindmap", { SessionName: FullName() }).then((res) => {
+            if (!res) return
+            setMindmapRawText(res)
+            var map = ToMermaidMindmapFormat(res)
+            setMermaidMindmap(map)
+            setPlayingMindmap(map.join("\n"))
+        })
+    }, [skillSession])
+
+
+
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
@@ -135,6 +157,7 @@ export default function DemoTalk({ volume, playbackRate }) {
         !!Text && PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggSocrates", Text, RspType.ogg))
 
     }
+
     useEffect(() => {
         if (!FullName()) return
         if (CurrentScene < 0 || CurrentScene >= ScenerInfos.length) return
@@ -168,6 +191,65 @@ export default function DemoTalk({ volume, playbackRate }) {
         setQASocrates(_QASocrates)
 
     }, [CurrentScene])
+
+    //儿童成长阶段的行为差异探讨
+
+    // 1 儿童行为的阶段差异:探讨儿童在不同成长阶段的行为表现及其差异|||0
+    // 1.1 幼儿期
+    // 1.1.1 情感需求较多
+    // 1.1.2 依赖家庭
+    // 1.2 青少年期
+    // 1.2.1 寻求自主性
+    // 1.2.2 独立性增强
+
+    const Mermaid = ({ chart }) => {
+        useEffect(() => {
+            mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+
+
+
+            //确保图表渲染完成后添加点击事件监听器
+            mermaid.init(undefined, '.mermaid', (charID) => {
+                const mermaidNodes = document.querySelectorAll('.mindmap-node');
+
+                var playingMap = playingMindmap.split("\n")
+                //remove lines that contains "animate-pulse"
+                playingMap = playingMap.filter((line) => line.indexOf(":::") < 0)
+                if (playingMap.length != mermaidNodes.length) {
+                    console.log("playingMap.length!=mermaidNodes.length", playingMap.length, mermaidNodes.length)
+                    return
+                }
+                mermaidNodes.forEach((node, ind) => {
+                    node.id = playingMap[ind].trim().split("-")[0];
+                    node.addEventListener('click', (e) => {
+
+                        if (!!audio) audio.pause()
+                        clearTimeout(intervalSetTalkPassed)
+                        setQASocrates([])
+
+
+                        var idSentenceStr = e.currentTarget.id
+                        console.log("id clicked:", idSentenceStr)
+                        var id_sentense = idSentenceStr.split("_")
+                        var playingmapStr = ToPlayingFormat(mermaidMindmap, id_sentense[0]).join("\n")
+                        setPlayingMindmap(playingmapStr)
+                        setCurrentScene(parseInt(id_sentense[1]))
+                        setPaused(false)
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                })
+            });
+
+        }, [chart]);
+
+        return <div className="mermaid" key={`mermaid-mindmap-${chart}`}>{chart}</div>;
+    };
+    useEffect(() => {
+        console.log("playingMindmap changed", playingMindmap)
+
+    }, [playingMindmap])
+
     const Playing = (CurrentScene) => !isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < ScenerInfos.length
     const LinearProgressWithLabel = (value, label) => <div className="flex items-center w-full self-center">
         <div className="w-full mr-1">
@@ -183,10 +265,10 @@ export default function DemoTalk({ volume, playbackRate }) {
         <div className="flex flex-col flex-wrap justify-start items-start w-full  mt-2 gap-[7px] opacity-90 h-38"        >
 
             <div className="flex flex-row w-full">
-                <ScrollingBanner
+                {!Playing(CurrentScene) && <ScrollingBanner
                     components={[<HoldInRoadAlert />, <Talkers ScenerInfos={ScenerInfos} CurrentScene={CurrentScene} />]}
                     durations={[3000, 8000]}
-                ></ScrollingBanner>
+                ></ScrollingBanner>}
             </div>
 
             <div title="playSocratesDemo" className="flex flex-row w-full text-base justify-start items-start h-10 -mt-1 " >
@@ -275,6 +357,25 @@ export default function DemoTalk({ volume, playbackRate }) {
                     </div>
                 </div>
             </div>
+            {/* <Mermaid chart={
+`mindmap
+root((mindmap))
+  Tools
+    Pen and paper
+    Mermaid`
+            } /> */}
+
+            {/* <Mermaid chart={`
+mindmap
+root((mindmap))
+    Origin))Origin((
+    history[Long history]
+    :::animate-pulse
+
+  `} />      */}
+            {playingMindmap?.length > 0 && <div className="w-full " key={playingMindmap}>
+                <Mermaid chart={"mindmap\n" + playingMindmap} />
+            </div>}
         </div>
 
 

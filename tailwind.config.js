@@ -56,7 +56,7 @@ module.exports = {
     , "dark:border-gray-900/50"
     , "shadow-[0_0_10px_rgba(0,0,0,0.10)]"
     , "dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]"
-    , "animate-darken", 'animate-brighten'
+    , "animate-darken", 'animate-brighten', 'animate-pulse'
   ],
   plugins: [],
 }

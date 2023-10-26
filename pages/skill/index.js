@@ -2,7 +2,7 @@
 import React, { createRef, useContext, useEffect, useState } from "react"
 import Divider from '@mui/material/Divider';
 import QAComponent from "./QAComponent";
-import SkillTree from "./SkillTree";
+import SkillTree from "./_SkillTree";
 import Rewards from "./Rewards";
 import DemoTalk from "./DemoTalk";
 import AppFrame from "../../component/appFrame"
@@ -41,7 +41,6 @@ export function ExploreComponent() {
             return
         }
     }, [Params]);
-    console.log("topic", topic)
 
 
     const [RelatedSkills, setRelatedSkills] = useState([])

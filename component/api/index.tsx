@@ -2,7 +2,6 @@ import axios from "axios";
 import CustomEvents from "../customEvents";
 import { Jwt } from "../jwt";
 import { json } from "stream/consumers";
-import { debug } from "console";
 var msgpack = require('@ygoe/msgpack');
 const JwtRequest = (headers: any = {}) => {
     let jwt = typeof window !== 'undefined' && localStorage.getItem("Authorization");
