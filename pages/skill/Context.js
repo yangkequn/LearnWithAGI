@@ -35,7 +35,7 @@ export default function ContextComponent({ children }) {
     const [skillMyTrace, setSkillMyTrace] = useState({});
     const [skillSession, setSkillSession] = useState(null)
     const [ShowDemo, setShowDemo] = useState(true)
-    const [ShowAskAnswer, setShowAskAnswer] = useState(true)
+    const [ShowAskAnswer, setShowAskAnswer] = useState(false)
     const [ShowQA, setShowQA] = useState(true)
     const store = {
         skillTree, setSkillTree,

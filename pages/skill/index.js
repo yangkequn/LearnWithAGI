@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import QAComponent from "./QAComponent";
 import SkillTree from "./_SkillTree";
 import Rewards from "./Rewards";
-import DemoTalk from "./DemoTalk";
+import DemoTalk from "./_DemoTalk";
 import AppFrame from "../../component/appFrame"
 import { useParams, useRouter } from "next/navigation";
 import { API, HGET, HGETALL, HKEYS, HMGET, ZCARD, ZREVRANGE } from "../../component/api";
@@ -15,6 +15,7 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import HistoryTopics from "./historyTopics";
 import TreeList from "./TreeLIst";
 import AskAnswer from "./AskAnswer";
+import DemoContextComponent, { DemoContext } from "./_DemoContext";
 //https://github.com/JedWatson/react-select
 
 export const LoadingComponent = ({ Text }) => {
@@ -154,7 +155,9 @@ export default function Home({ }) {
     return (
         <ContextComponent>
             <AppFrame>
-                <ExploreComponent></ExploreComponent>
+                <DemoContextComponent>
+                    <ExploreComponent></ExploreComponent>
+                </DemoContextComponent>
             </AppFrame>
         </ContextComponent>
     );
