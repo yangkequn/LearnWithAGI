@@ -23,25 +23,28 @@ export default function DemoMindmap() {
     const [mermaidMindmap, setMermaidMindmap] = useState([]);
     //playingMindmap 是 mermaidMindmap的子集。同时添加了样式控制。以便更好聚焦正在讲授的内容
     const [playingMindmap, setPlayingMindmap] = useState("");
-    const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos, MindmapRawText, setMindmapRawText } = useContext(DemoContext)
-    const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos, MindmapRaw, setMindmapRaw } = useContext(DemoContext)
+    const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession, SessionName } = useContext(Context)
+
+    //这个mindmap 会被转换成mermaidMindmap
+
     //auto load SkillSessionMindmap
     useEffect(() => {
-        const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
-        if (FullName().length < 1) return
-        API("SkillSessionMindmap", { SessionName: FullName() }).then((res) => {
+        if (!SessionName || !setMindmapRaw) return
+        API("SkillSessionMindmap", { SessionName: SessionName }).then((res) => {
             if (!res) return
-            setMindmapRawText(res)
+            setMindmapRaw(res)
             var map = ToMermaidMindmapFormat(res)
             setMermaidMindmap(map)
             setPlayingMindmap(map.join("\n"))
         })
-    }, [skillSession])
+    }, [SessionName, setMindmapRaw])
 
 
 
     //AutoMoveMindmapToNextTopic
     useEffect(() => {
+        if (!SceneryInfos || SceneryInfos.length == 0 || !mermaidMindmap || mermaidMindmap.length == 0) return
         var playing = !isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < SceneryInfos.length
         if (!playing) {
             setPlayingMindmap(mermaidMindmap.join("\n"))
@@ -50,13 +53,13 @@ export default function DemoMindmap() {
         for (var i = 0; i < mermaidMindmap.length; i++) {
             var s = mermaidMindmap[i]
             if (s.indexOf(`_${CurrentScene}-`) < 0) continue
-            console.log("topic moved to next one", s, "CurrentScene", CurrentScene, "i", i)
+            //console.log("topic moved to next one", s, "CurrentScene", CurrentScene, "i", i)
             var idL1 = s.split("_")[0].trim()
-            var playingmapStr = ToPlayingFormat(mermaidMindmap, idL1).join("\n")
+            var playingmapStr = ToPlayingFormat(MindmapRaw, idL1).join("\n")
             setPlayingMindmap(playingmapStr)
             break
         }
-    }, [CurrentScene])
+    }, [CurrentScene, SceneryInfos, mermaidMindmap])
     //儿童成长阶段的行为差异探讨
 
     // 1 儿童行为的阶段差异:探讨儿童在不同成长阶段的行为表现及其差异|||0
@@ -67,19 +70,20 @@ export default function DemoMindmap() {
     // 1.2.1 寻求自主性
     // 1.2.2 独立性增强
 
+    const [mermaidMindmapComponent, setMermaidMindmapComponent] = useState(null);
+    useEffect(() => {
+        if (!playingMindmap) return setMermaidMindmap(null)
+        setMermaidMindmapComponent(<Mermaid chart={"mindmap\n" + playingMindmap} />)
+    }, [playingMindmap])
     const Mermaid = ({ chart }) => {
         useEffect(() => {
             mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
-
-
-
             //确保图表渲染完成后添加点击事件监听器
             mermaid.init(undefined, '.mermaid', (charID) => {
                 const mermaidNodes = document.querySelectorAll('.mindmap-node');
-
                 var playingMap = playingMindmap.split("\n")
                 //remove lines that contains "animate-pulse"
-                playingMap = playingMap.filter((line) => line.indexOf(":::") < 0)
+                playingMap = playingMap.filter((line) => line.indexOf(":::") < 0 && !!line.trim())
                 if (playingMap.length != mermaidNodes.length) {
                     console.log("playingMap.length!=mermaidNodes.length", playingMap.length, mermaidNodes.length)
                     return
@@ -87,15 +91,11 @@ export default function DemoMindmap() {
                 mermaidNodes.forEach((node, ind) => {
                     node.id = playingMap[ind].trim().split("-")[0];
                     node.addEventListener('click', (e) => {
-
-                        setPaused(true)
-
                         var idSentenceStr = e.currentTarget.id
-                        console.log("id clicked:", idSentenceStr)
+                        //console.log("id clicked:", idSentenceStr)
                         var id_sentense = idSentenceStr.split("_")
-                        var playingmapStr = ToPlayingFormat(mermaidMindmap, id_sentense[0]).join("\n")
+                        var playingmapStr = ToPlayingFormat(MindmapRaw, id_sentense[0]).join("\n")
                         setPlayingMindmap(playingmapStr)
-                        setPaused(false)
                         setCurrentScene(parseInt(id_sentense[1]))
                         e.preventDefault();
                         e.stopPropagation();
@@ -117,15 +117,7 @@ root((mindmap))
     Mermaid`
             } /> */}
 
-    {/* <Mermaid chart={`
-mindmap
-root((mindmap))
-    Origin))Origin((
-    history[Long history]
-    :::animate-pulse
-
-  `} />      */}
     return <div className="w-full " key={playingMindmap}>
-        {playingMindmap?.length > 0 ? <Mermaid chart={"mindmap\n" + playingMindmap} /> : null}
+        {mermaidMindmapComponent}
     </div>
 }

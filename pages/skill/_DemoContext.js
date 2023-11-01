@@ -17,12 +17,12 @@ export const DemoContext = React.createContext({
     setTalkPassed: () => { },
 
     SceneryInfos: [],
-    setSceneryInfos: () => { },
+    setSceneryInfos: undefined,
 
-    MindmapRawText: [],
-    setMindmapRawText: () => { },
-
-
+    MindmapRaw: [],
+    setMindmapRaw: undefined,
+    SpeechDuration: 0,
+    Playing: false,
 });
 var audio = null
 
@@ -34,7 +34,16 @@ export default function DemoContextComponent({ children }) {
     const [CurrentScene, setCurrentScene] = useState(-1)
     const [TalkPassed, setTalkPassed] = useState(0)
     const [SceneryInfos, setSceneryInfos] = useState([])
-    const [MindmapRawText, setMindmapRawText] = useState(null);
+    const [MindmapRaw, setMindmapRaw] = useState(null);
+    const [SpeechDuration, setSpeechDuration] = useState(0)
+    const [Playing, setPlaying] = useState(false)
+
+    useEffect(() => {
+        var playing = !isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < SceneryInfos.length
+        if (playing != Playing) setPlaying(playing)
+    }, [CurrentScene, SceneryInfos])
+
+
     useEffect(() => {
         audio = new Audio(undefined)
     }, [])
@@ -46,21 +55,35 @@ export default function DemoContextComponent({ children }) {
         if (!audio) return
         audio.playbackRate = playbackRate;
     }, [playbackRate, audio])
+    //set volume if changed
     useEffect(() => {
         audio.volume = isNaN(volume) ? 0.5 : volume
     }, [volume, audio])
 
-    const PlayTTSOgg = (...urls) => {
+    //set duration of each scene
+    useEffect(() => {
+        if (CurrentScene < 0) return
+        if (CurrentScene >= SceneryInfos.length) return
+        setSpeechDuration(((SceneryInfos[CurrentScene]?.Duration ?? 0) + Math.random() * 0.0001) / playbackRate)
+    }, [CurrentScene, SceneryInfos, playbackRate])
+
+    const PlayTTSOgg = (urlObj) => {
         //play each audio one by one
-        audio.src = urls[0].url
+        audio.src = urlObj.url
         //use default playbackRate
-        audio.playbackRate = urls[0].playbackRate ?? playbackRate
+        audio.playbackRate = urlObj.playbackRate ?? playbackRate
         //set volume
         audio.volume = isNaN(volume) ? 0.5 : volume
-        audio.onended = () => {
-            if (urls.length > 1) PlayTTSOgg(...urls.slice(1))
-            else setCurrentScene(CurrentScene + 1)
-        }
+        audio.onended = () => setCurrentScene(CurrentScene + 1)
+        audio.play()
+    }
+
+    const PlayTDing = () => {
+        var audio = new Audio("/DingSoundEffect.ogg")
+        //use default playbackRate
+        audio.playbackRate = 1.0
+        //set volume
+        audio.volume = isNaN(volume) ? 0.5 : volume
         audio.play()
     }
     //autoplayTTSAudio
@@ -68,15 +91,16 @@ export default function DemoContextComponent({ children }) {
         if (!audio) return
         if (CurrentScene < 0) return
         if (CurrentScene >= SceneryInfos.length) return
-        console.log("CurrentScene changed",CurrentScene)
-
-        var urlToPlay = []
-        let Text = SceneryInfos[CurrentScene]?.Text
-        if (!!Text) urlToPlay.push({ url: GetUrl(Cmd.HGET, "TTSOggSocrates", Text, RspType.ogg), playbackRate: undefined })
+        //console.log("CurrentScene changed", CurrentScene)
 
         //when CiteQuestion move to another question, play mario ding sound
-        if (!!SceneryInfos[CurrentScene]?.CiteQuestion) urlToPlay.push({ url: "/DingSoundEffect.ogg", playbackRate: 1 })
-        PlayTTSOgg(...urlToPlay)
+        var playDing = MindmapRaw.filter((line) => line.Layer.length === 1 && line.SeqNum === CurrentScene).length > 0
+        CurrentScene > 0 && (CurrentScene >= SceneryInfos.length || playDing) && PlayTDing()
+
+        let Text = SceneryInfos[CurrentScene]?.Text
+
+        var urlObj = { url: GetUrl(Cmd.HGET, "TTSOggSocrates", Text, RspType.ogg), playbackRate: undefined }
+        if (!!Text) PlayTTSOgg(urlObj)
 
     }, [CurrentScene, SceneryInfos, audio])
 
@@ -88,7 +112,9 @@ export default function DemoContextComponent({ children }) {
         setCurrentScene,
         TalkPassed, setTalkPassed,
         SceneryInfos, setSceneryInfos,
-        MindmapRawText, setMindmapRawText,
+        MindmapRaw, setMindmapRaw,
+        SpeechDuration,
+        Playing
     }
 
     return <DemoContext.Provider value={store}>{children}</DemoContext.Provider>

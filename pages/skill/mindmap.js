@@ -29,126 +29,41 @@ export const Mermaid = ({ chart }) => {
 };
 
 //     format:
-// 儿童成长阶段的行为差异探讨
-
-// 1 儿童行为的阶段差异:探讨儿童在不同成长阶段的行为表现及其差异|||0
-// 1.1 幼儿期
-// 1.1.1 情感需求较多
-// 1.1.2 依赖家庭
-// 1.2 青少年期
-// 1.2.1 寻求自主性
-// 1.2.2 独立性增强
-// 2 影响因素分析:分析生理和社会因素如何影响儿童的行为|||3
-// 2.1 生理因素
-// 2.1.1 大脑和神经系统发展
-// 2.1.2 认知能力提高
-// 2.1.3 荷尔蒙水平变化
-// 2.1.4 情感调控
-// 2.2 社会因素
-// 2.2.1 家庭影响
-// 2.2.2 学校作用
-// 2.2.3 同伴关系
-// 2.2.4 文化背景
-export const ToMermaidMindmapFormat = (raw, currentTopic) => {
+//[{Layer: "0", Name: "成长阶段:儿童如何在不同阶段表现出特定的行为", SeqNum: 0},{Layer: "1", Name: "生理和社会因素的影响", SeqNum: 3},{Layer: "1.1", Name: "生理因素的作用", SeqNum: 4},]
+export const ToMermaidMindmapFormat = (raw) => {
     if (!raw) return []
-    const lines = raw.split("\n")
-    var startSentence = 0
-    var result = lines.map(line => {
-        if (line?.length === 0) return ""
-
-        var leadingTabs = 0, ind = 0
-        for (ind = 0; ind < line.length; ind++) {
-            if (line[ind] == " " || line[ind] == "\t" || line[ind] == ".") continue
-            if ((line[ind] >= "0" && line[ind] <= "9")) {
-                leadingTabs += 1
-                continue
-            }
-            break
-        }
-
-        var leadingSessionNum = line.substr(0, ind).trim()
-        var marshaled = line.substr(ind, line.length - ind)
-        if (marshaled?.length === 0) return ""
-        var marshaledItems = marshaled.split("|||")
-        if (marshaledItems.length > 1) {
-            var numStr = marshaledItems[marshaledItems.length - 1]
-            startSentence = parseInt(numStr)
-        }
-        var text = marshaledItems[0]
-        //if  contains :,then split and remove post part
-        if (text.indexOf(":") >= 0) {
-            text = text.split(":")[0]
-        }
+    var TonicN = 0;
+    var result = raw.map(line => {
         //repeat \t for leadingTabs times
-        if (leadingTabs == 0) return `0_0-((${text}))`
-        if (leadingTabs == 1) return `${"\t"}${leadingSessionNum + "_" + startSentence + "-"}(${leadingSessionNum[0] ?? ""} ${text})`
-        if (leadingTabs == 2) return `${"\t\t"}${leadingSessionNum + "_" + startSentence + "-"}))${text}((`
-        if (leadingTabs == 3) return `${"\t\t\t"}${leadingSessionNum + "_" + startSentence + "-"}[${text}]`
+        let layer = line.Layer.replace(".", "")
+        if (layer == "0") return `0_0-((${line.Name}))`
+        else if (layer.length == 1) return `${"\t"}${line.Layer + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
+        else if (layer.length == 2) return `${"\t\t"}${line.Layer + "_" + line.SeqNum + "-"}{{${line.Name}}}`
+        else if (layer.length == 3) return `${"\t\t\t"}${line.Layer + "_" + line.SeqNum + "-"}[${line.Name}]`
         return ""
     })
-    result = result.filter(line => line?.length > 0)
-    console.log("result\n", result)
+    //console.log("result\n", result)
     return result
 }
-export const ToPlayingFormat = (lines, topicID) => {
-    // "root((儿童成长阶段的行为差异探讨))
-    // "\t1_0-(儿童行为的阶段差异)
-    // "\t\t1.1_0-))幼儿期((
-    // "\t\t\t1.1.1_0-[情感需求较多]
-    // "\t\t\t1.1.2_0-[依赖家庭]
-    // "\t\t1.2_0-))青少年期((
-    // "\t\t\t1.2.1_0-[寻求自主性]
-    // "\t\t\t1.2.2_0-[独立性增强]
-    // "\t2_3-(影响因素分析)
-    // "\t\t2.1_3-))生理因素(("
-    // "\t\t\t2.1.1_3-[大脑和神经系统发展]"
-    // "\t\t\t2.1.2_3-[认知能力提高]"
-    // "\t\t\t2.1.3_3-[荷尔蒙水平变化]"
-    // "\t\t\t2.1.4_3-[情感调控]"
-    // "\t\t2.2_3-))社会因素(("
-    // "\t\t\t2.2.1_3-[家庭影响]"
-    // "\t\t\t2.2.2_3-[学校作用]"
-    // "\t\t\t2.2.3_3-[同伴关系]"
-    // "\t\t\t2.2.4_3-[文化背景]"
-    // "\t3_12-(如何支持儿童行为发展)"
-    // "\t\t3.1_12-))积极教育方法(("
-    // "\t\t\t3.1.1_12-[鼓励积极行为]"
-    // "\t\t\t3.1.2_12-[提供正面反馈]"
-    // "\t\t3.2_12-))情感支持(("
-    // "\t\t\t3.2.1_12-[处理情感需求]"
-    // "\t\t3.3_12-))开放沟通(("
-    // "\t\t\t3.3.1_12-[建立信任和尊重]"
-    // "\t4_15-(情感发展与行为表现)"
-    // "\t\t4.1_15-))幼儿时期(("
-    // "\t\t\t4.1.1_15-[情感需求强烈]"
-    // "\t\t\t4.1.2_15-[表现出依赖和焦虑]"
-    // "\t\t4.2_15-))青少年时期(("
-    // "\t\t\t4.2.1_15-[寻求独立处理情感]"
-    // "\t\t\t4.2.2_15-[依然存在情感需求]"
-    if (!topicID) return lines;
-    //root id is 0, so if topicID is 0, then set it to 1
+//选中的思维导图分支加闪动CSS，其它分支只显示到第一级
+export const ToPlayingFormat = (raw, topicID) => {
     if (topicID == "0") topicID = "1"
+    if (topicID.length > 1) topicID = topicID.substr(0, 1)
+    var TonicN = 0;
     //如果不为空，topicID 是 1.* ,那么只有1.* 的内容会被全部显示。其它2.* 3.* 的内容只显示到第一级为止
-    const result = [];
-    let currentLevel = 0;
-    result.push(lines[0]);
-    result.push("::: animate-pulse");
-    for (let i = 1; i < lines.length; i++) {
-        let line = lines[i];
-        let level = line.split(' ')[0].split('.').length;
-        let leadingTabNum = 0;
-        for (let ind = 0; ind < line.length; ind++) if (line[ind] == "\t") leadingTabNum++; else break;
-        if (line.trim().indexOf(topicID.substr(0, 1)) === 0) {
-            result.push(line);
-            result.push(line.substr(0, leadingTabNum) + "::: animate-pulse hover:grayscale hover:text-yellow-700");
+    var result = raw.map(line => {
+        //repeat \t for leadingTabs times
+        let layer = line.Layer.replace(/\./g, ""), focused = line.Layer.indexOf(topicID) == 0, ret = ""
+        if (!(focused || layer.length == 1 || layer == "0")) return ""
 
-            currentLevel = line.split(' ')[0].split('.').length;
-        } else {
-            if (level < 2) {
-                result.push(line);
-            }
-        }
-    }
-    console.log("resultresult", result)
+        if (layer == "0") ret = `0_0-((${line.Name}))`
+        else if (layer.length == 1) ret = `${"\t"}${line.Layer + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
+        else if (layer.length == 2) ret = `${"\t\t"}${line.Layer + "_" + line.SeqNum + "-"})${line.Name}(`
+        else if (layer.length == 3) ret = `${"\t\t\t"}${line.Layer + "_" + line.SeqNum + "-"}[${line.Name}]`
+        if (focused) ret += "\n:::customAnimate hover:grayscale hover:text-yellow-700"
+        return ret
+    })
+    result = result.filter((line) => !!line.trim())
+    console.log("result\n", result.join("\n"))
     return result;
 }

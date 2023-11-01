@@ -14,36 +14,34 @@ import ScrollingBanner from "../../component/banner";
 
 export default function AskAnswer({ }) {
     const { setCreditTM, debugMode } = useContext(GlobalContext)
-    const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, SessionName } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
     //CurrentQAs QA that use has selected. format [question,answer,question,answer,...]
     const [QATraces, setQAsTraces] = useState([])
-    const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
 
     const topic = () => skillTree?.Name + ":" + skillTree?.Detail
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
         setQAsTraces([])
-        let Name = FullName()
-        if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
+        if (!SessionName || SessionName.indexOf("undefined") >= 0 || SessionName.indexOf("undefined") >= 0) return
         if (!skillTree?.Sessions || skillTree?.Sessions?.length <= 0) return
         var Topic = topic()
         //loadSkillSessionQAs
-        API("SkillSocrates", { Name, Topic, Rebuild: false }).then((res) => (Name === FullName()) && setQAs(res ?? []))
-        setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
+        API("SkillSocrates", { SessionName, Topic, Rebuild: false }).then((res) => setQAs(res ?? []))
+        setQAsTraces(skillMyTrace[SessionName]?.Asks ?? [])
 
-    }, [skillTree, skillSession])
+    }, [skillTree, skillSession, SessionName])
 
     useEffect(() => {
-        if (!FullName()) return
-        setQAsTraces(skillMyTrace[FullName()]?.Asks ?? [])
+        if (!SessionName) return
+        setQAsTraces(skillMyTrace[SessionName]?.Asks ?? [])
     }, [skillSession, skillMyTrace])
 
 
-    if (!FullName(skillSession)) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[560px]" ></div>
-    return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-scroll  max-w-[560px]"    >
+    if (!SessionName) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full overflow-auto  max-w-[560px]" ></div>
+    return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full overflow-auto  max-w-[560px]"    >
 
 
         <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-4 w-full ">
@@ -59,13 +57,13 @@ rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0
         </div>
 
         {/* <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full mt-2 opacity-90 max-h-[60%] min-h-min h-fit"> */}
-        <div className="flex flex-row items-start h-full px-1">
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full mt-2 opacity-90 max-h-[60%] min-h-min h-fit ">
+        <div className="flex flex-row items-start max-h-[60%] min-h-min h-fit  mb-4 px-1">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full mt-2 opacity-90 ">
                 {
                     QAs.filter((QA) => QATraces.join("").indexOf(QA.Q) < 0).map((QA, index) => {
                         return <div key={QA.Q} className="text-base even:bg-lime-100 odd:bg-amber-100 max-w-full rounded-md px-4 py-[4px] items-center"
-                            onClick={() => API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
-                                let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                            onClick={() => API("SkillMyTraceReport", { SkillName: topic(), SessionName: SessionName, Ask: `${QA.Q}|||${QA.A}` }).then((res) => {
+                                let newMySkillTrace = { ...skillMyTrace, [SessionName]: res }
                                 setSkillMyTrace(newMySkillTrace)
                                 //update creditTM to refresh rewards
                                 setCreditTM(new Date().getTime())
@@ -80,13 +78,14 @@ rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0
         {/* <div className="bg" style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.75)" }}>        </div> */}
 
         {/* The whole chat box is scrollable */}
-        {QATraces?.length > 0 && <div key="what-is-my-answered" className="flex flex-col justify-start items-start w-full  max-h-max min-h-min overflow-scroll my-2 " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
+        { <div key="what-is-my-answered" className="flex flex-col justify-start items-start w-full h-full  max-h-max min-h-min overflow-auto my-2 rounded-2xl " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
             {
                 //display CurrentQAs as dialog box,question on the left,answer on the right
                 QATraces.reverse().map((qa, index) => {
-                    return <div key={`question-answer-q-${qa.Q}-${index}`} className="flex flex-col justify-start items-start w-full h-fit py-3">
-                        <div variant="18px" className="flex flex-row justify-start items-start  text-base text-gray-800 font-sans w-fit bg-orange-100 rounded-full  px-2 mb-2">
-                            <div className="text-lg mr-1">🤔</div>  {qa.split("|||")[0]}
+                    return <div key={`question-answer-q-${qa.Q}-${index}`} className="flex flex-col justify-start items-center w-full h-fit py-3">
+                        <div variant="18px" className="flex flex-row justify-start items-center  text-base text-gray-800 font-sans w-fit bg-orange-100 rounded-full  px-2 mb-2">
+                            <div className="text-4xl mr-1 " >🤔</div>
+                            <div>{qa.split("|||")[0]}</div>
                         </div>
 
                         {/* align answer to the right */}
@@ -114,10 +113,10 @@ rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0
                             let question = e.target.value
                             if (!!question) {
                                 e.target.value = ""
-                                API("SkillSocratic", { Name: FullName(), Quetion: question })
+                                API("SkillSocratic", { Name: SessionName, Quetion: question })
                                     .then((res) => setQAs(res ?? []))
-                                API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Ask: `${question}|||${answer}` }).then((res) => {
-                                    let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                                API("SkillMyTraceReport", { SkillName: topic(), SessionName: SessionName, Ask: `${question}|||${answer}` }).then((res) => {
+                                    let newMySkillTrace = { ...skillMyTrace, [SessionName]: res }
                                     setSkillMyTrace(newMySkillTrace)
                                     //update creditTM to refresh rewards
                                     setCreditTM(new Date().getTime())

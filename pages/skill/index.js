@@ -31,14 +31,14 @@ export function ExploreComponent() {
     const { setMenuL2, creditTM, setCreditTM } = useContext(GlobalContext)
     const [volume, setVolume] = useState(0.5)
     const [playbackRate, setPlaybackRate] = useState(1)
-    const { topic, setTopic, skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { TopicName, setTopicName, skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession, SessionName } = useContext(Context)
     const { ShowDemo, ShowAskAnswer, ShowQA, setShowDemo, setShowAskAnswer, setShowQA } = useContext(Context)
     const { Params } = useContext(GlobalContext)
     useEffect(() => {
         const { t } = Params;
         // Since useRouter will only be invoked inside useEffect, it's ensured to run on the client side only
         if (!!t) {
-            setTopic(t);
+            setTopicName(t);
             return
         }
     }, [Params]);
@@ -46,7 +46,7 @@ export function ExploreComponent() {
 
     const [RelatedSkills, setRelatedSkills] = useState([])
     useEffect(() => {
-        API("SkillSearch", { Name: topic }).then((data) => {
+        API("SkillSearch", { Name: TopicName }).then((data) => {
             //if data of null or not array, then return
             if (!data || !Array.isArray(data)) return
 
@@ -55,7 +55,7 @@ export function ExploreComponent() {
             names = [...new Set(names)]
             setRelatedSkills(names)
         })
-    }, [topic])
+    }, [TopicName])
 
     useEffect(() => {
         setMenuL2(<div className="flex justify-between w-full items-center">

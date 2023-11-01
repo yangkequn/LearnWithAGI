@@ -8,7 +8,7 @@ const ProgressBar = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [newProgress, setNewProgress] = useState(0);
     const [TotalDuration, setTotalDuration] = useState(0);
-    const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos, TalkPassed, MindmapRawText } = useContext(DemoContext)
+    const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos, TalkPassed, MindmapRaw } = useContext(DemoContext)
 
     //calculate total duration
     //accumulate each scene duration
@@ -21,10 +21,11 @@ const ProgressBar = () => {
 
     //calculate newProgress
     useEffect(() => {
-        if (CurrentScene < 0) return
-        let totalDuration = 0
-        SceneryInfos.forEach((item, ind) => { if (ind < CurrentScene) totalDuration += item.Duration })
-        totalDuration += TalkPassed
+        if (CurrentScene < 0 || SceneryInfos.length == 0 || TotalDuration <= 2) return setNewProgress(0)
+        if (CurrentScene >= SceneryInfos.length) return setNewProgress(100)
+
+        let totalDuration = TalkPassed
+        for (var ind = 0; ind < CurrentScene; ind++) totalDuration += SceneryInfos[ind].Duration
         let newProgressValue = (totalDuration / TotalDuration) * 100;
         setNewProgress(newProgressValue);
     }, [CurrentScene, SceneryInfos, TalkPassed])
@@ -53,24 +54,20 @@ const ProgressBar = () => {
         return (totalDuration / TotalDuration) * 100;
     }
     useEffect(() => {
-        if (TotalDuration <= 0 || !MindmapRawText || MindmapRawText.length == 0) {
+        if (TotalDuration <= 0 || !MindmapRaw || MindmapRaw.length == 0) {
             setChapters([])
             return
         }
         //1 儿童行为的阶段差异:探讨儿童在不同成长阶段的行为表现及其差异|||0
         var _chapters = []
-        var MindmapLines = MindmapRawText.split("\n")
-        for (let i = 0; i < MindmapLines.length; i++) {
-            let line = MindmapLines[i]
-            var ind = line.indexOf("|||")
-            if (ind < 0) continue
-            var position = line.split("|||")[1]
-            position = StartPosition(parseInt(position))
-            let chapter = line?.split(" ")[1]?.split(":")[0]
-            _chapters.push({ position, text: chapter })
-        }
+        MindmapRaw.map((node, index) => {
+            if (node.Layer.length != 1) return
+            if (node.Layer == "0") return
+            var position = StartPosition(parseInt(node.SeqNum))
+            _chapters.push({ position, text: node.Name })
+        })
         setChapters(_chapters)
-    }, [TotalDuration, MindmapRawText])
+    }, [TotalDuration, MindmapRaw])
 
     const formatTime = (percentage) => {
         const totalSeconds = (percentage / 100) * TotalDuration;
@@ -89,7 +86,7 @@ const ProgressBar = () => {
             <div className='flex w-full absolute -top-0'>
                 {isHovered && <div className='flex flex-row relative w-full h-4'>
                     {chapters.map((chapter, index) => (
-                        <div key={index} style={{ left: `${chapter.position}%` }} className={`absolute flex flex-row bottom-0 mb-5 text-xs`}>
+                        <div key={index} style={{ left: `${chapter.position}%` }} className={`absolute flex flex-row bottom-0 mb-5 text-xs  -rotate-12`}>
                             <div className={`mt-1 text-white rounded p-1 ${index % 2 == 0 ? " bg-black" : " bg-gray-600"} `}>{chapter.text}</div>
                         </div>
                     ))}
@@ -99,7 +96,7 @@ const ProgressBar = () => {
                 <div className=" flex w-full flex-row  h-1 bg-gray-50 opacity-90  rounded-r" > </div>
                 <div style={{ width: `${newProgress}%` }} className="flex flex-row absolute h-1 bg-red-600 opacity-60  rounded-r" > </div>
                 {chapters.map((chapter, index) => (
-                    <div key={index} style={{ left: `${chapter.position}%` }} className="absolute flex flex-row bottom-0 mb-0 text-xs">
+                    <div key={index} style={{ left: `${chapter.position}%` }} className="absolute flex flex-row bottom-0 mb-0 text-xs ">
                         <div className="w-1 h-1 bg-black"></div>
                     </div>
                 ))}
@@ -125,7 +122,7 @@ const ProgressBar = () => {
                         e.stopPropagation()
                     }}></StopIcon>
                 </div>
-                <span className="mx-2">{formatTime(newProgress)} / {formatTime(100)}</span>
+                <span className="mx-2 py-1">{formatTime(newProgress)} / {formatTime(100)}</span>
             </div>
         </div>
     );

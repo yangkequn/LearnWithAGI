@@ -6,11 +6,11 @@ import { API } from '../../component/api';
 
 
 function StaticHomeWithinContext({ Topic, skillTree }) {
-    const { setTopic, setSkillTree } = useContext(Context);
+    const { setTopicName, setSkillTree } = useContext(Context);
     const [subComponent, setSubComponent] = useState(null);
 
     useEffect(() => {
-        setTopic(Topic);
+        setTopicName(Topic);
         setSkillTree(skillTree);
         setSubComponent(
             <AppFrame>

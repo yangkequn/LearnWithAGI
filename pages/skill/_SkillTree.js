@@ -14,22 +14,18 @@ import { Jwt } from "../../component/jwt";
 import { LoadingComponent } from ".";
 import ListIcon from '@mui/icons-material/List';
 import { useRouter } from "next/router";
+import { DemoContext } from "./_DemoContext";
 export default function SkillTree({ }) {
     const router = useRouter()
-    const { topic, setTopic, skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { TopicName, setTopicName, skillTree, setSkillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { paused, setPaused, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos, MindmapRaw, setMindmapRaw, Playing } = useContext(DemoContext)
 
     //load skillTree according to topic.
     //load skillMyTrace according to skillTree
     useEffect(() => {
-        if (!topic) return
-        //step1: auto load skillTree
-        var Name = topic.split(":")[0], Detail = topic.split(":")[1]
-        //if skillTree is already loaded, then return
-        if (TreeName() == `${Name}:${Detail}`) {
-            console.log("skilltree", skillTree)
-            return
-        }
-        API("SkillLoadList", { Name, Detail }).then((tree) => {
+        if (!TopicName) return
+        var Name = TopicName.split(":")[0], Detail = TopicName.split(":")[1]
+        API("SkillLoadList", { Name: Name, Detail }).then((tree) => {
 
             //sort sessions by session.ChapterSession
             tree?.Sessions?.sort((a, b) => a.ChapterSession - b.ChapterSession)
@@ -46,7 +42,7 @@ export default function SkillTree({ }) {
                 setSkillMyTrace(_mytrace)
             })
         })
-    }, [topic])
+    }, [TopicName])
 
     //auto select the first uncompleted skill path as default.
     //only set once, in order to avoid disturbing user
@@ -59,20 +55,20 @@ export default function SkillTree({ }) {
             return setSkillSession(skillTree.Sessions[0])
         }
         //allow set only once. in order to avoid disturbing user
-        if (topicSessionSelectedOnce == topic) return
+        if (topicSessionSelectedOnce == TopicName) return
         for (var i = 0; i < skillTree?.Sessions?.length; i++) {
             var session = skillTree.Sessions[i]
             var myTraceOnSession = skillMyTrace[session.Name + ":" + session.Detail]
             if (!myTraceOnSession) continue
             if (Complete(myTraceOnSession) < 2) {
-                setTopicSessionSelectedOnce(topic)
+                setTopicSessionSelectedOnce(TopicName)
                 return setSkillSession(session)
             }
         }
         //if all sessions are completed, then select the first one
         setSkillSession(skillTree.Sessions[0])
         //if skillMyTrace is not fecthed to local, allow reset later
-        setTopicSessionSelectedOnce(topic)
+        setTopicSessionSelectedOnce(TopicName)
     }, [skillTree, skillMyTrace])
 
 
@@ -81,7 +77,6 @@ export default function SkillTree({ }) {
         let correctAsks = myTrace.Asks?.length ?? 0, correctQAs = myTrace.QAs?.filter((qa) => qa.indexOf("|||0") > 0)?.length ?? 0
         return (correctAsks / 2) + correctQAs
     }
-    const TreeName = () => skillTree?.Name + ":" + skillTree?.Detail
 
     {/* 相关的主题 */ }
     return <div className="flex flex-col justify-start items-start w-full ring-2 rounded-lg m-1  h-fit  gap-1 p-2"    >
@@ -115,7 +110,12 @@ export default function SkillTree({ }) {
                             ":hover": { backgroundColor: "#e8e8e8" }
                             //if index equals nextSkill, change box shadow
                             , boxShadow: seq == skillTree?.Sessions.indexOf(skillSession) ? "inset 0px 0px 0px 200px gold" : "none"
-                        }} onClick={(e) => setSkillSession(Point)}
+                        }} onClick={(e) => {
+                            setCurrentScene(-1)
+                            setPaused(true)
+                            setSceneryInfos([])
+                            setSkillSession(Point)
+                        }}
                     // StepContent={true}
                     //in clickable if  Point.ChapterSession is 1.0
                     //clickable={Point.ChapterSession != "1"}
@@ -129,7 +129,7 @@ export default function SkillTree({ }) {
                                     </div>
 
                                     <div className=" flex flex-row justify-end items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 mr-2" >
-                                        <div>难度:{Point.Difficulty}</div>
+                                        {/* <div>难度:{Point.Difficulty}</div> */}
                                         <div className="mr-2">{Complete(skillMyTrace[Point.Name + ":" + Point.Detail]) >= 2 ? "✅" : "⬜"}</div>
                                     </div>
                                 </div>

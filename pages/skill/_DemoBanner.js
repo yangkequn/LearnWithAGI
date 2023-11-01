@@ -16,21 +16,28 @@ import { parse } from "path";
 import DemoTextShow from "./_DemoTextShow";
 
 const HoldInRoadAlert = () => {
-    var items = `警惕！这里可能值得想一想。
-天才在左，疯子在右：你能发现吗？
-想象力和幻想只有一步之遥：好好想想！
-内容有“小陷阱”：你会掉进去吗？`.split("\n")
-    const RaondomItem = () => items[Math.floor(Math.random() * items.length)]
+    const items = `想象力和幻想是邻居：这是AI的特性，也是探索者的本性！
+voiceofai 目标: 让AI提供全局最重要, 最均衡的事实和观点
+voiceofai.cc ...更多的内容、练习`.split("\n")
+    const Images = [<img className={`rounded-3xl -mr-2 `} src="/holeInRoad.webp" ></img>,
+    <img className={`rounded-3xl -mr-2 `} src="/voice-of-ai.webp" ></img>,
+    <TwoIO className={`rounded-3xl -mr-2 w-full h-full `} ></TwoIO>]
+    const [randIndex, setRandIndex] = React.useState(0);
     const [randomText, setRandomText] = React.useState(null);
+    const [img, setImg] = React.useState(null);
 
     React.useEffect(() => {
-        setRandomText(RaondomItem());
-    }, []);
+        setRandIndex(Math.floor(Math.random() * items.length))
+    });
+    React.useEffect(() => {
+        setRandomText(items[randIndex])
+        setImg(Images[randIndex])
+    }, [randIndex]);
 
 
     return <div className=" flex flex-row justify-start items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-2 px-2 pb-2 h-36"            >
         <div className=" w-40 h-32  rounded-3xl mt-0 self-stretch " title={"苏格拉底之问"}>
-            <img className={`rounded-3xl -mr-2 `} src="/holeInRoad.webp" ></img>
+            {img}
         </div>
         <div className="flex h-full text-2xl text-gray-800 font-sans leading-4  w-full  bg-white/70 rounded-md px-2 pt-1 gap-1 items-center pl-4"                    >
             {randomText}
@@ -65,7 +72,7 @@ export default function DemoBanner() {
     return <div className="flex flex-row w-full">
         <ScrollingBanner
             components={[<HoldInRoadAlert />, <HoldInRoadAlert />]}
-            durations={[3000, 8000]}
+            durations={[3000, 3000]}
         ></ScrollingBanner>
     </div>
 }

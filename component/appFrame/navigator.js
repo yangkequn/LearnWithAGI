@@ -13,7 +13,7 @@ const MenuSignIn = { name: `登录`, path: "/Auth", icon: null }
 const MenuItems = [MenuRetro]
 
 
-export const TwoIO = () => <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 360 360" enableBackground="new 0 0 360 360" width="56" height="56" data-uid="o_f8g157ak0_6"><g data-uid="o_f8g157ak0_7"><g data-uid="o_f8g157ak0_8"><g data-uid="o_f8g157ak0_9"><g data-uid="o_f8g157ak0_10"><g data-uid="o_f8g157ak0_11"><path className="st0" d="M241.67 202.99c-13.18 49.17-63.71 78.35-112.88 65.17c-49.17-13.17-78.35-63.71-65.17-112.88
+export const TwoIO = ({ className }) => <svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 360 360" enableBackground="new 0 0 360 360" width="56" height="56" data-uid="o_f8g157ak0_6" className={className}><g data-uid="o_f8g157ak0_7"><g data-uid="o_f8g157ak0_8"><g data-uid="o_f8g157ak0_9"><g data-uid="o_f8g157ak0_10"><g data-uid="o_f8g157ak0_11"><path className="st0" d="M241.67 202.99c-13.18 49.17-63.71 78.35-112.88 65.17c-49.17-13.17-78.35-63.71-65.17-112.88
 c13.17-49.17 63.71-78.35 112.88-65.17C225.66 103.28 254.84 153.82 241.67 202.99z" fill="#FFD300" data-uid="o_f8g157ak0_12"></path><path className="st0" fill="#FFD300" data-type="polygon" d="M90.81 242.85L42.81 242.55L66.55 200.83Z" data-uid="o_f8g157ak0_13"></path></g></g><g data-uid="o_f8g157ak0_14"><g data-uid="o_f8g157ak0_15"><path className="st1" d="M118.97 164.23c13.18 49.17 63.71 78.35 112.88 65.17c49.17-13.17 78.35-63.71 65.17-112.88
 c-13.17-49.17-63.71-78.35-112.88-65.17C134.98 64.52 105.8 115.06 118.97 164.23z" fill="#2D3CE9" data-uid="o_f8g157ak0_16"></path><path className="st1" fill="#2D3CE9" data-type="polygon" d="M269.83 204.09L317.83 203.78L294.09 162.06Z" data-uid="o_f8g157ak0_17"></path></g></g></g><path className="st2" d="M229.52 229.96c5.33-8.07 9.5-17.11 12.14-26.97c13.17-49.17-16-99.71-65.17-112.88
 c-15.37-4.12-30.87-4.1-45.32-0.62c-14.07 21.25-19.32 48.19-12.21 74.74C131.93 212.62 181.1 241.62 229.52 229.96z" fill="#FA0EB8" data-uid="o_f8g157ak0_18"></path></g><g data-uid="o_f8g157ak0_19"><g data-uid="o_f8g157ak0_20"><path className="st3" d="M161.58 159.74c0 4.92-3.99 8.92-8.92 8.92s-8.92-3.99-8.92-8.92c0-4.92 3.99-8.92 8.92-8.92
@@ -27,11 +27,22 @@ export default function Navigator() {
   const [question, setQuestion] = useState("")
   const router = useRouter()
   const pathName = usePathname()
+  const [hint, setHint] = useState("")
   useEffect(() => {
     if (!RedirectUrl) return
     router.push(RedirectUrl)
     setRedirectUrl("")
   }, [RedirectUrl, router, setRedirectUrl])
+  useEffect(() => {
+    //每3秒轮显一次
+    var hintContent = ["Ask life, the universe, and everything..", "听听AI的声音,看看它觉得重要的看法"]
+    var index = 0
+    var timer = setInterval(() => {
+      setHint(hintContent[index])
+      index = (index + 1) % hintContent.length
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [])
 
 
 
@@ -52,7 +63,7 @@ export default function Navigator() {
             <div className="flex flex-row w-full  h-full items-center self-center">
               <textarea className="flex flex-row flex-grow m-0 w-full min-w-[285px]  h-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 dark:bg-transparent outline-none self-center  text-base text-gray-700 resize-none flex-nowrap overflow-clip"
                 value={question}
-                placeholder="Ask life, the universe, and everything.."
+                placeholder={hint}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.keyCode !== 13) return
