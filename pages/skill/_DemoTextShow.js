@@ -18,10 +18,13 @@ export default function DemoTextShow({ QAs }) {
         timoutTalk = setTimeout(() => increaseTalkPassed(talkpassed + 0.3, speechduration), 300)
     }
 
-    //continue playing
     useEffect(() => {
         if (!setTalkPassed || !Playing) return
+        //continue playing
         if (!paused) increaseTalkPassed(TalkPassed, SpeechDuration)
+        //stop playing
+        if (paused) clearTimeout(timoutTalk)
+
     }, [Playing, paused, setTalkPassed])
 
     //start new playing
@@ -29,7 +32,7 @@ export default function DemoTextShow({ QAs }) {
         if (!setTalkPassed) return
         clearTimeout(timoutTalk)
         increaseTalkPassed(0, SpeechDuration)
-    }, [SpeechDuration, Playing, paused, setTalkPassed,])
+    }, [SpeechDuration, Playing, setTalkPassed,])
 
 
 

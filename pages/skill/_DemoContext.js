@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Cmd, GetUrl, RspType } from "../../component/api";
 export const DemoContext = React.createContext({
     paused: false,
@@ -37,6 +37,14 @@ export default function DemoContextComponent({ children }) {
     const [MindmapRaw, setMindmapRaw] = useState(null);
     const [SpeechDuration, setSpeechDuration] = useState(0)
     const [Playing, setPlaying] = useState(false)
+    //listen to key event if space pressed, then set paused or continue
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.code === "Space") setPaused(!paused)
+        }
+        window.addEventListener("keydown", handleKeyDown)
+        return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [paused])
 
     useEffect(() => {
         var playing = !isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < SceneryInfos.length
