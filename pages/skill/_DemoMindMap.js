@@ -117,6 +117,14 @@ root((mindmap))
     Mermaid`
             } /> */}
 
+    {/* <Mermaid chart={`
+mindmap
+root((mindmap))
+    Origin))Origin((
+    history[Long history]
+    :::animate-pulse
+
+  `} />      */}
     return <div className="w-full " key={playingMindmap}>
         {mermaidMindmapComponent}
     </div>

@@ -35,7 +35,7 @@ export default function Navigator() {
   }, [RedirectUrl, router, setRedirectUrl])
   useEffect(() => {
     //每3秒轮显一次
-    var hintContent = ["Ask life, the universe, and everything..", "听听AI的声音,看看它觉得重要的看法"]
+    var hintContent = ["Ask life, the universe, and everything..", "听一听,AI觉得重要的看法"]
     var index = 0
     var timer = setInterval(() => {
       setHint(hintContent[index])

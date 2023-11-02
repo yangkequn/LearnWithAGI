@@ -82,7 +82,8 @@ export default function DemoContextComponent({ children }) {
         audio.playbackRate = urlObj.playbackRate ?? playbackRate
         //set volume
         audio.volume = isNaN(volume) ? 0.5 : volume
-        audio.onended = () => setCurrentScene(CurrentScene + 1)
+        //stop at the end of last audio
+        if (CurrentScene < SceneryInfos.length - 1) audio.onended = () => setCurrentScene(CurrentScene + 1)
         audio.play()
     }
 

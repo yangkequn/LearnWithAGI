@@ -38,6 +38,8 @@ export default function DemoTextShow({ QAs }) {
 
     const [DemoDialogueSessionLatestTwo, setDemoDialogueSessionLatestTwo] = useState([])
     const [DemoDialogueSessionAll, setDemoDialogueSessionsAll] = useState([])
+    //建立全部的分组对话
+    // build all dialogue sessions
     useEffect(() => {
         if (!SessionName) return
         var NotReady = !SceneryInfos || SceneryInfos.length <= 0 || !MindmapRaw || MindmapRaw.length <= 0
@@ -71,7 +73,7 @@ export default function DemoTextShow({ QAs }) {
         }
         setDemoDialogueSessionsAll(_DemoDialogueTexts)
     }, [SceneryInfos, SessionName, MindmapRaw])
-    //
+    //选择最近的dialogue session
     useEffect(() => {
         if (DemoDialogueSessionAll.length == 0) return
         var playing = !isNaN(CurrentScene) && CurrentScene >= 0 && CurrentScene < SceneryInfos.length
