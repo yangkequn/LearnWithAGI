@@ -8,8 +8,8 @@ export const Context = React.createContext({
     skillMyTrace: {},
     setSkillMyTrace: () => { },
 
-    skillSession: null,
-    setSkillSession: () => { },
+    skillSessionNum: 0,
+    setskillSessionNum: () => { },
 
     TopicName: "",
 
@@ -34,16 +34,20 @@ export default function ContextComponent({ children }) {
     //for each line of QA, the first is question, the second is answer,seperated by |||. the answer is 0 or 1 or 2 or 3
     //for each line of Asks, the first is question, the second is answer,seperated by |||
     const [skillMyTrace, setSkillMyTrace] = useState({});
-    const [skillSession, setSkillSession] = useState(null)
+    const [skillSessionNum, setskillSessionNum] = useState(0)
     const [ShowDemo, setShowDemo] = useState(true)
     const [ShowAskAnswer, setShowAskAnswer] = useState(false)
     const [ShowQA, setShowQA] = useState(true)
     const [SessionName, setSessionName] = useState("")
     const [TopicName, setTopicName] = useState("")
     useEffect(() => {
-        if (!!skillSession && skillSession?.Name?.length > 0 && skillSession?.Detail?.length > 0) setSessionName(`${skillSession?.Name}:${skillSession?.Detail}`)
-        else setSessionName("")
-    }, [skillSession])
+        if (skillSessionNum == -1) setSessionName("")
+        if (!skillTree?.Sessions || skillTree.Sessions.length == 0 || skillTree.Sessions.length <= skillSessionNum) return setSessionName("")
+        var session = skillTree.Sessions[skillSessionNum]
+        var sessionName = `${session?.Name}:${session?.Detail}`.replace(/:$/, "")
+        //trim : at the end
+        setSessionName(sessionName)
+    }, [skillTree, skillSessionNum])
 
     useEffect(() => {
         var topicName = ""
@@ -52,12 +56,10 @@ export default function ContextComponent({ children }) {
         setTopicName(topicName)
     }, [skillTree])
 
-
-    const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
     const store = {
         skillTree, setSkillTree,
         skillMyTrace, setSkillMyTrace,
-        skillSession, setSkillSession,
+        skillSessionNum, setskillSessionNum,
         ShowDemo, setShowDemo,
         ShowAskAnswer, setShowAskAnswer,
         ShowQA, setShowQA,

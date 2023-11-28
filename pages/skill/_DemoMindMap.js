@@ -24,14 +24,14 @@ export default function DemoMindmap() {
     //playingMindmap 是 mermaidMindmap的子集。同时添加了样式控制。以便更好聚焦正在讲授的内容
     const [playingMindmap, setPlayingMindmap] = useState("");
     const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos, MindmapRaw, setMindmapRaw } = useContext(DemoContext)
-    const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession, SessionName } = useContext(Context)
+    const { skillTree, skillMyTrace, setSkillMyTrace, SessionName } = useContext(Context)
 
     //这个mindmap 会被转换成mermaidMindmap
 
-    //auto load SkillSessionMindmap
+    //auto load skillSessionNumMindmap
     useEffect(() => {
         if (!SessionName || !setMindmapRaw) return
-        API("SkillSessionMindmap", { SessionName: SessionName }).then((res) => {
+        HGET("keyMindmap", SessionName).then((res) => {
             if (!res) return
             setMindmapRaw(res)
             var map = ToMermaidMindmapFormat(res)

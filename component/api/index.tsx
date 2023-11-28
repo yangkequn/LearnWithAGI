@@ -57,7 +57,7 @@ export enum Action { GET, PUT, DELETE, }
 export enum RspType { json = "--!JSON", jpeg = "--!JPG", ogg = "--!OGG", mpeg = "--!MPEG", mp4 = "--!MP4", none = "", text = "--!TEXT", stream = "--!STREAM" }
 
 //const Url = "https://jp.voiceofai.cc"
-const Url = "http://127.0.0.1:8080"
+const Url = "http://macmini.lan:8081"
 export enum Cmd { HEXISTS = "HEXISTS", HGET = "HGET", HGETALL = "HGETALL", HMGET = "HMGET" }
 export const GetUrl = (cmd = Cmd.HGET, Key: string, Field: string = "", rspType: RspType = RspType.json) => {
     var url = `${Url}/${cmd}--${Key}${rspType}?F=${encodeURIComponent(Field)}`;

@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import StarIcon from '@mui/icons-material/Star';
 import { API, HGET, ZRANGEBYSCORE } from "../../component/api";
 import { GlobalContext } from "../_app";
-export default function Rewards({ creditTM,volume }) {
+export default function Rewards({ creditTM, volume }) {
     const { LoggedIn } = useContext(GlobalContext)
     //使用localStorage缓存credit
     const [credit, setCredit] = useState(JSON.parse(typeof window !== 'undefined' && localStorage.getItem("Credit" ?? `{ SkillAnswer: 0, SkillAsk: 0, Goal: 0, Score: 0, HealthAgendaDo: 0 }`)))
@@ -72,7 +72,7 @@ export default function Rewards({ creditTM,volume }) {
                 //single line text
                 , overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
             }}>
-                今日积分：{lastCredit}. 回答正确：{credit?.SkillAnswer}. 提问：{credit?.SkillAsk} 日程：{credit?.HealthAgendaDo}
+                今日总分：{isNaN(lastCredit) ? 0 : lastCredit} 练习：{isNaN(credit?.SkillAnswer) ? 0 : credit?.SkillAnswer}. 提问：{isNaN(credit?.SkillAsk) ? 0 : credit?.SkillAsk}
             </Typography>
 
         </div>

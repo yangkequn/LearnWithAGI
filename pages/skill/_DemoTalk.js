@@ -10,18 +10,31 @@ import DemoBanner from "./_DemoBanner";
 import ProgressBar from "./_DemoProgressbar";
 import { DemoContext } from "./_DemoContext";
 import DemoMindmap from "./_DemoMindMap";
+import CustomEvents from "../../component/customEvents";
 
 
 export default function DemoTalk({ volume, playbackRate }) {
-    const { setCreditTM, debugMode } = useContext(GlobalContext)
-    const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos, MindmapRaw, setMindmapRaw, Playing } = useContext(DemoContext)
-    const { skillTree, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession, TopicName, SessionName } = useContext(Context)
+    const { setCreditTM, debugMode, Params } = useContext(GlobalContext)
+    const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos,
+        MindmapRaw, setMindmapRaw, Playing, TalkPassed, SpeechDuration } = useContext(DemoContext)
+    const { skillTree, skillMyTrace, setSkillMyTrace, skillSessionNum,  TopicName, SessionName } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
 
-
     useEffect(() => { setPlaybackRate(playbackRate) }, [playbackRate])
     useEffect(() => { setVolume(volume) }, [volume])
+
+    //read autoPlay from params
+    useEffect(() => {
+        const { autoPlay } = Params;
+        if (autoPlay === "true" && CurrentScene < 0) {
+            setTimeout(() => {
+                //notify screen video capture to start
+                window.AutoPlayStart = true;
+                setTimeout(() => setCurrentScene(0), 1000);
+            }, 2000);
+        }
+    }, [Params]);
 
 
     //QAs and QATrace according to skillTreeSelected
@@ -29,7 +42,7 @@ export default function DemoTalk({ volume, playbackRate }) {
         setQAs([])
         if (!SessionName || SessionName.indexOf("undefined") >= 0 || SessionName.indexOf("undefined") >= 0 || setSceneryInfos == undefined) return
         if (!TopicName) return
-        //loadSkillSessionQAs
+        //loadskillSessionNumQAs
         API("SkillSocrates", { SessionName, Topic: TopicName, Rebuild: false }).then((res) => setQAs(res ?? []))
         //Senery TTSInfo
         API("SkillSocratesTTS", { Session: SessionName, Topic: TopicName }).then((res) => {
@@ -50,10 +63,9 @@ export default function DemoTalk({ volume, playbackRate }) {
         </Box>
     </div>
     if (!SessionName) return <div key={`socratic-container-nodata`} className="flex flex-col justify-between items-start w-full h-full  max-w-[40%]" ></div>
-    return <div key={`socratic-container-${skillSession}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full max-w-[97%]"    >
+    return <div key={`socratic-container-${skillSessionNum}`} style={{ width: "40%" }} className="flex flex-col justify-between items-start w-full h-full max-w-[97%]"    >
         {/* //list Tags of QAs,using mui tag */}
-        <div className="flex flex-col flex-wrap justify-start items-start w-full  mt-2 gap-[7px] opacity-90 h-38"        >
-
+        <div className="flex flex-col flex-wrap justify-start items-start w-full  mt-2 gap-[7px] opacity-90 h-38" >
             {!Playing && <DemoBanner ></DemoBanner>}
             {
                 debugMode >= 3 && <div title={"自动修复错误的问答列表"} className="flex flex-row pr-1 h-full self-center items-center justify-center"

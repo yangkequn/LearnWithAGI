@@ -61,8 +61,8 @@ const ProgressBar = () => {
         //1 儿童行为的阶段差异:探讨儿童在不同成长阶段的行为表现及其差异|||0
         var _chapters = []
         MindmapRaw.map((node, index) => {
-            if (node.Layer.length != 1) return
-            if (node.Layer == "0") return
+            if (node.NodeID.length != 1) return
+            if (node.NodeID == "0") return
             var position = StartPosition(parseInt(node.SeqNum))
             _chapters.push({ position, text: node.Name })
         })

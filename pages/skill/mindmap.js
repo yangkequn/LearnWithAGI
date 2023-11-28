@@ -29,17 +29,17 @@ export const Mermaid = ({ chart }) => {
 };
 
 //     format:
-//[{Layer: "0", Name: "成长阶段:儿童如何在不同阶段表现出特定的行为", SeqNum: 0},{Layer: "1", Name: "生理和社会因素的影响", SeqNum: 3},{Layer: "1.1", Name: "生理因素的作用", SeqNum: 4},]
+//[{NodeID: "0", Name: "成长阶段:儿童如何在不同阶段表现出特定的行为", SeqNum: 0},{NodeID: "1", Name: "生理和社会因素的影响", SeqNum: 3},{NodeID: "1.1", Name: "生理因素的作用", SeqNum: 4},]
 export const ToMermaidMindmapFormat = (raw) => {
     if (!raw) return []
     var TonicN = 0;
     var result = raw.map(line => {
         //repeat \t for leadingTabs times
-        let layer = line.Layer.replace(".", "")
+        let layer = line.NodeID.replace(".", "")
         if (layer == "0") return `0_0-((${line.Name}))`
-        else if (layer.length == 1) return `${"\t"}${line.Layer + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
-        else if (layer.length == 2) return `${"\t\t"}${line.Layer + "_" + line.SeqNum + "-"}{{${line.Name}}}`
-        else if (layer.length == 3) return `${"\t\t\t"}${line.Layer + "_" + line.SeqNum + "-"}[${line.Name}]`
+        else if (layer.length == 1) return `${"\t"}${line.NodeID + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
+        else if (layer.length == 2) return `${"\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}{{${line.Name}}}`
+        else if (layer.length == 3) return `${"\t\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}[${line.Name}]`
         return ""
     })
     //console.log("result\n", result)
@@ -53,13 +53,13 @@ export const ToPlayingFormat = (raw, topicID) => {
     //如果不为空，topicID 是 1.* ,那么只有1.* 的内容会被全部显示。其它2.* 3.* 的内容只显示到第一级为止
     var result = raw.map(line => {
         //repeat \t for leadingTabs times
-        let layer = line.Layer.replace(/\./g, ""), focused = line.Layer.indexOf(topicID) == 0, ret = ""
+        let layer = line.NodeID.replace(/\./g, ""), focused = line.NodeID.indexOf(topicID) == 0, ret = ""
         if (!(focused || layer.length == 1 || layer == "0")) return ""
 
         if (layer == "0") ret = `0_0-((${line.Name}))`
-        else if (layer.length == 1) ret = `${"\t"}${line.Layer + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
-        else if (layer.length == 2) ret = `${"\t\t"}${line.Layer + "_" + line.SeqNum + "-"})${line.Name}(`
-        else if (layer.length == 3) ret = `${"\t\t\t"}${line.Layer + "_" + line.SeqNum + "-"}[${line.Name}]`
+        else if (layer.length == 1) ret = `${"\t"}${line.NodeID + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
+        else if (layer.length == 2) ret = `${"\t\t"}${line.NodeID + "_" + line.SeqNum + "-"})${line.Name}(`
+        else if (layer.length == 3) ret = `${"\t\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}[${line.Name}]`
         if (focused) ret += "\n:::customAnimate hover:grayscale hover:text-yellow-700"
         return ret
     })

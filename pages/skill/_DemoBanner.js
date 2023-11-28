@@ -7,13 +7,7 @@ import { GlobalContext } from "../_app";
 import { Avatar, Box, Button, LinearProgress, MobileStepper, Tooltip, Typography } from "@mui/material";
 import { AvatarWithName } from "../Auth/avatar";
 import { TwoIO } from "../../component/appFrame/navigator";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import { LoadingComponent } from ".";
 import ScrollingBanner from "../../component/banner";
-import { ToMermaidMindmapFormat, ToPlayingFormat } from "./mindmap";
-import mermaid from 'mermaid';
-import { parse } from "path";
-import DemoTextShow from "./_DemoTextShow";
 
 const HoldInRoadAlert = () => {
     const items = `想象力和幻想是邻居：这是AI的特性，也是探索者的本性！
@@ -28,7 +22,7 @@ voiceofai.cc ...更多的内容、练习`.split("\n")
 
     React.useEffect(() => {
         setRandIndex(Math.floor(Math.random() * items.length))
-    });
+    }), [];
     React.useEffect(() => {
         setRandomText(items[randIndex])
         setImg(Images[randIndex])

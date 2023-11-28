@@ -12,11 +12,14 @@ import { GlobalContext } from "../_app";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListIcon from '@mui/icons-material/List';
 import { Jwt } from "../../component/jwt";
+export const CheckBoxSVG = (className) => <svg className={className} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path d="m 3 0 c -1.644531 0 -3 1.355469 -3 3 v 10 c 0 1.644531 1.355469 3 3 3 h 10 c 1.644531 0 3 -1.355469 3 -3 v -10 c 0 -1.644531 -1.355469 -3 -3 -3 z m 0 2 h 10 c 0.570312 0 1 0.429688 1 1 v 10 c 0 0.570312 -0.429688 1 -1 1 h -10 c -0.570312 0 -1 -0.429688 -1 -1 v -10 c 0 -0.570312 0.429688 -1 1 -1 z m 0 0" fill="#2e3434" fill-opacity="0.34902" />
+</svg>
 
 export default function QAComponent({ volume }) {
     const { debugMode, setCreditTM } = useContext(GlobalContext)
     const [loading, setLoading] = useState(false)
-    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillSession, setSkillSession } = useContext(Context)
+    const { skillTree, setSkillTree, skillTreeSelected, setSkillTreeSelected, skillMyTrace, setSkillMyTrace, skillSessionNum, SessionName } = useContext(Context)
     //QAs: []struct {	Type     string	Question string	Answers  []string	Shown    int64	Answer   int64	Correct  int64}
     const [QAs, setQAs] = useState([]);
     const [qaIndex, setQAIndex] = useState(-1);
@@ -24,8 +27,8 @@ export default function QAComponent({ volume }) {
     const AnswersShuffled = (qa) => {
         //calculate hash of qa.question
         let hash = 0;
-        for (let i = 0; i < qa.Q.length; i++) {
-            hash = ((hash << 5) - hash) + qa.Q.charCodeAt(i);
+        for (let i = 0; i < qa.Question.length; i++) {
+            hash = ((hash << 5) - hash) + qa.Question.charCodeAt(i);
             hash &= hash; // Convert to 32bit integer
         }
         let beginindex = hash % qa.Answers.length
@@ -33,49 +36,46 @@ export default function QAComponent({ volume }) {
         let answers = [...p1, ...p2]
         return answers
     }
-    const FullName = () => `${skillSession?.Name}:${skillSession?.Detail}`
 
     //loadSkillPoint according to skillTreeSelected
-    const LoadSkillQAs = (Name, useCallback) => API("SkillQAs", { Name: Name, Topic: topic() }).then((qas) => useCallback && !!qas?.length > 0 && (Name === FullName()) && setQAs(qas))
     useEffect(() => {
         setQAs([])
         setQAIndex(-1)
         //auto load the first skill point
-        let Name = FullName()
-        if (!Name || Name.indexOf("undefined") >= 0 || Name.indexOf("undefined") >= 0) return
-        LoadSkillQAs(Name, true)
-    }, [skillSession])
+        if (!SessionName || SessionName.indexOf("undefined") >= 0 || SessionName.indexOf("undefined") >= 0) return
+        HGET("SkillQAs", SessionName).then((qas) => !!qas?.length > 0 && setQAs(qas))
+    }, [SessionName])
 
     //join skillMyTrace to string,for faster processing
     const [TraceQAsStr, setTraceQAsStr] = useState("")
     //auto scroll to the first uncompleted question
     useEffect(() => {
-        setTraceQAsStr(skillMyTrace[FullName()]?.QAs?.join("") ?? "")
+        setTraceQAsStr(skillMyTrace[SessionName]?.QAs?.join("") ?? "")
         if (!QAs || QAs.length == 0) return setQAIndex(-1)
         if (qaIndex >= 0) return
 
-        let myTraceQAs = skillMyTrace[FullName()]?.QAs
+        let myTraceQAs = skillMyTrace[SessionName]?.QAs
         let myTraceQAsStr = myTraceQAs?.join("") ?? ""
         for (var i = 0; i < QAs.length; i++) {
-            let question = QAs[i].Q, answer = QAs[i].Answer
+            let question = QAs[i].Question, answer = QAs[i].Answer
             if (myTraceQAsStr.indexOf(question + "|||0") >= 0) continue
             return setQAIndex(i)
         }
     }, [QAs, skillMyTrace])
 
     const AnswerRight = (QA) => {
-        if (TraceQAsStr?.indexOf(QA.Q + "|||0") >= 0) return "✅"
-        if (TraceQAsStr?.indexOf(QA.Q) >= 0) return "❌"
-        return "⬜"
+        if (TraceQAsStr?.indexOf(QA.Question + "|||0") >= 0) return "✅"
+        if (TraceQAsStr?.indexOf(QA.Question) >= 0) return "❌"
+        return ""
     }
     const AnswerItemRightWrong = (QA, aswItem) => {
-        let answered = TraceQAsStr.indexOf(QA.Q) >= 0, correct = TraceQAsStr.indexOf(QA.Q + "|||0") >= 0
+        let answered = TraceQAsStr.indexOf(QA.Question) >= 0, correct = TraceQAsStr.indexOf(QA.Question + "|||0") >= 0
         //no answered
-        if (!answered) return "⬜"
+        if (!answered) return ""
         //case ansered
         if (correct && QA.Answers[0] == aswItem) return "✅"
-        if (!correct && TraceQAsStr.indexOf(QA.Q + "|||" + QA.Answers.indexOf(aswItem)) >= 0) return "❌"
-        return "⬜"
+        if (!correct && TraceQAsStr.indexOf(QA.Question + "|||" + QA.Answers.indexOf(aswItem)) >= 0) return "❌"
+        return ""
     }
     const PlayTTSOgg = (...urls) => {
         //play each audio one by one
@@ -89,28 +89,29 @@ export default function QAComponent({ volume }) {
         audio.play()
     }
 
-    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full     max-w-[560px] min-w-[20%] pr-1">
+    return <div key={`QAComponent-${QAs}`} className="flex flex-col justify-start items-start w-full     max-w-[390px] min-w-[20%] pr-1">
 
         <div key='skill-sub-knowledge-point-title' className="flex flex-row text-black items-center my-2 gap-4 w-full">
 
             <div key="question-title-box" className={`flex flex-row  w-full flex-grow items-center md:pl-4 border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 
             rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] max-w-2xl self-center h-fit ${loading && "animate-pulse"}`}  >
 
-                <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
-                    API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), Action: "reset-qas" }).then((res) => {
-                        let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                {!!debugMode && <div title={"重新开始练习 / reset all practice"} key="reset-practice" className="w-8 h-8 self-center" onClick={() => {
+                    API("SkillMyTraceReport", { SkillName: topic(), SessionName: SessionName, Action: "reset-qas" }).then((res) => {
+                        let newMySkillTrace = { ...skillMyTrace, [SessionName]: res }
                         setSkillMyTrace(newMySkillTrace)
                     })
                 }}>
                     <div ><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="RestartAltIcon" tabIndex="-1" ><path d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6 0 2.97-2.17 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93 0-4.42-3.58-8-8-8zm-6 8c0-1.65.67-3.15 1.76-4.24L6.34 7.34C4.9 8.79 4 10.79 4 13c0 4.08 3.05 7.44 7 7.93v-2.02c-2.83-.48-5-2.94-5-5.91z"></path></svg></div>
-                </div>
-                <div className="flex flex-row gap-2 items-center w-full self-center resize-none border-0 bg-transparent  pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none ">
-                    <div className="text-lg ">{`练习题:`}</div>
-                    <div>  {FullName()}</div>
+                </div>}
+                <div className="flex flex-row gap-2 items-center w-full self-center resize-none border-0 bg-transparent  pr-4 focus:ring-0 
+                focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0 outline-none ">
+                    <div className="text-lg  font-bold">{`练习题:`}</div>
+                    <div>  {SessionName}</div>
                 </div>
                 {debugMode >= 3 && <div className="flex self-center  right-10 md:right-9">
                     <button className={`self-center m-1 rounded-md text-gray-500  hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent right-1 md:right-2`} onClick={e => {
-                        !!FullName() && API("SkillQAs", { Name: FullName(), Topic: topic(), Append: true })
+                        !!SessionName && API("SkillQAs", { Name: SessionName, Topic: topic(), Append: true })
                             .then((res) => setQAs(res ?? []))
                     }}>
                         <div title={"申请重建练习列表"} className="mx=1 self-center items-center justify-center w-6 h-6">
@@ -123,7 +124,7 @@ export default function QAComponent({ volume }) {
         </div>
 
         <div key="questions-all-completed-cheers" className=" flex flex-col bg-[#ddba3b]  justify-start items-start rounded-md w-full text-gray-700 text-lg" >
-            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Q) < 0).length == 0 && <div className="flex flex-row w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6  animate-bounce " >
+            {QAs?.length > 0 && QAs?.filter(qa => TraceQAsStr.indexOf(qa.Question) < 0).length == 0 && <div className="flex flex-row w-full h-full justify-center items-center font-semibold text-lg text-gray-800  font-sans leading-8 my-4 gap-6  animate-bounce " >
                 <div className="flex flex-row w-fit self-center text-[56px]">😄</div>
                 <div className="flex flex-row w-fit self-center text-xl">Completed! Nice Job!</div>
             </div>}
@@ -135,25 +136,24 @@ export default function QAComponent({ volume }) {
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }}
                 >
                     {QAs?.map((qa, index) => (
-                        <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Q}-${index}`}
+                        <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Question}-${index}`}
                             className={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 min-w-[200px] w-full flex-grow even:bg-lime-100 odd: bg-amber-100`}
                             onClick={() => setQAIndex(index)} >
-                            <div key={`OtherQA${qa.Q}`}
-                                className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}                            >
+                            <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}                            >
                                 <div className="flex flex-row justify-between items-center pr-2 gap-1 w-full">
                                     <div className="rounded ">{AnswerRight(qa)}</div>
                                     <div className="flex flex-row w-full" onClick={() => {
-                                        PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggQA", qa.Q, RspType.ogg))
+                                        PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggQA", qa.Question, RspType.ogg))
                                     }}
-                                    >{qa.Q}</div>
+                                    >{qa.Question}</div>
                                     <div className="flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
                                         <div title="复制到剪贴板" >
-                                            <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon>
+                                            <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon>
                                         </div>
                                         {debugMode >= 3 && (
                                             <div title="删除该条目" >
                                                 <DeleteIcon onClick={() => {
-                                                    API("SkillQAs", { Name: FullName(), Topic: topic(), DeleteQ: `${qa.Q}` })
+                                                    API("SkillQAs", { Name: SessionName, Topic: topic(), DeleteQ: `${qa.Question}` })
                                                         .then((res) => setQAs(res ?? []))
                                                 }}></DeleteIcon>
                                             </div>
@@ -171,14 +171,14 @@ export default function QAComponent({ volume }) {
                     className=" w-full flex flex-col justify-between rounded-md h-full  text-gray-800 text-lg leading-5 overflow-y-hidden bg-slate-300"
                     sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
                     {QAs?.map((qa, index) => {
-                        return <Step key={`OtherQA${qa.Q}`} className="flex flex-row justify-start items-center w-full h-10 text-lg text-gray-700 "
+                        return <Step key={`OtherQA${qa.Question}`} className="flex flex-row justify-start items-center w-full h-10 text-lg text-gray-700 "
                             sx={{ boxShadow: index == qaIndex ? "inset 0px 0px 0px 200px gold" : "none", marginTop: index == 0 ? 0 : "-22px" }}
                             onClick={() => setQAIndex(index)} >
-                            <StepLabel key={`OtherQA${qa.Q}`} className="flex flex-row w-full justify-between">
+                            <StepLabel key={`OtherQA${qa.Question}`} className="flex flex-row w-full justify-between">
                                 <div className="flex flex-row w-full justify-between pr-2">
-                                    <div>{qa.Q}</div>
+                                    <div>{qa.Question}</div>
                                     <div className="flex flex-row w-min gap-1 items-center">
-                                        {qaIndex == index && <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Q) }}></ContentCopyIcon>}
+                                        {qaIndex == index && <ContentCopyIcon onClick={() => { navigator.clipboard.writeText(qa.Question) }}></ContentCopyIcon>}
                                         <div>{AnserRight(qa)}</div>
                                     </div>
                                 </div>
@@ -226,10 +226,10 @@ export default function QAComponent({ volume }) {
                             QAs[qaIndex]?.Answers[0] === a ? PlayTTSOgg(...rightSound) : PlayTTSOgg(...wrongSound)
 
                             //	Name    string	Answer  int32	Ask     int32
-                            API("SkillMyTraceReport", { SkillName: topic(), SessionName: FullName(), QA: QAs[qaIndex].Q + "|||" + answerIndex }).then((res) => {
+                            API("SkillMyTraceReport", { SkillName: topic(), SessionName: SessionName, QA: QAs[qaIndex].Question + "|||" + answerIndex }).then((res) => {
                                 //update creditTM to refresh rewards
                                 setCreditTM(new Date().getTime())
-                                let newMySkillTrace = { ...skillMyTrace, [FullName()]: res }
+                                let newMySkillTrace = { ...skillMyTrace, [SessionName]: res }
                                 setSkillMyTrace(newMySkillTrace)
                             })
                         }}>
@@ -238,7 +238,7 @@ export default function QAComponent({ volume }) {
                     }
                 </div>
                 <div>
-                    {TraceQAsStr?.indexOf(QAs[qaIndex].Q) >= 0 && QAs[qaIndex]?.Why}
+                    {TraceQAsStr?.indexOf(QAs[qaIndex].Question) >= 0 && QAs[qaIndex]?.Why}
                 </div>
             </div>
         }

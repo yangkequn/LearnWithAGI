@@ -35,7 +35,7 @@ export default function Navigator() {
   }, [RedirectUrl, router, setRedirectUrl])
   useEffect(() => {
     //每3秒轮显一次
-    var hintContent = ["Ask life, the universe, and everything..", "听一听,AI觉得重要的看法"]
+    var hintContent = ["Ask life, the universe, and everything..", "voiceofai.cc AI的长话短说"]
     var index = 0
     var timer = setInterval(() => {
       setHint(hintContent[index])
@@ -82,7 +82,11 @@ export default function Navigator() {
             <div key="create-skill" className=" flex  text-2xl leading-8 px-1 pr-1">
               <div className="flex flex-row gap-1 w-fit items-center  text-gray-700 bg-slate-300 h-fit bg-transparent   dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent rounded-lg  border-black hover:bg-orange-200 px-1"
                 onClick={e => router.push("/?search=" + question)}>
-                <div >📚</div> <div className=' text-lg  mx-1'>深入</div>
+                <div className='' ><svg className='w-7 h-7 rounded-xl' viewBox="0 0 48 48" version="1" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 48 48">
+                  <path fill="#F44336" d="M38,42H10c-2.2,0-4-1.8-4-4V10c0-2.2,1.8-4,4-4h28c2.2,0,4,1.8,4,4v28C42,40.2,40.2,42,38,42z" />
+                  <polygon fill="#ffffff" points="31,24 20,16 20,32" />
+                </svg></div>
+                <div className=' text-lg  mx-1'>探索</div>
               </div>
             </div>
 
@@ -93,7 +97,8 @@ export default function Navigator() {
             router.push("/Asks")
           }} >
             {/* <div className='w-fit h-full ' >📄</div> */}
-            <div className='w-fit h-full'>💬</div> <div className=' text-lg mx-1'>对话</div>
+            <div className='w-fit h-full'><svg fill="#000000" className='w-7 h-7 fill-slate-400' viewBox="0 0 24 24" id="chat" data-name="Line Color" xmlns="http://www.w3.org/2000/svg"><path id="primary" className=' fill-gray-400' d="M18.81,16.23,20,21l-4.95-2.48A9.84,9.84,0,0,1,12,19c-5,0-9-3.58-9-8s4-8,9-8,9,3.58,9,8A7.49,7.49,0,0,1,18.81,16.23Z" ></path></svg></div>
+            <div className=' text-lg mx-1'>对话</div>
           </div>
         </div>
 
@@ -101,7 +106,20 @@ export default function Navigator() {
           {!!MenuItems && MenuItems.map((item, index) => <Link key={`menu-item-${item.name}`} href={item.path}> <button key={`menu_${item.name}`} onClick={(e) => router.push(item.path)}
             className={` text-lg text-gray-800 w-fit px-2  hover:bg-orange-200 font-sans rounded-lg ${pathName?.toLowerCase().indexOf(item.path.toLowerCase()) >= 0 ? "text-black font-bold bg-orange-200" : ""}`}
           >
-            <div className='leading-8'>{item.name}</div>
+            <div className='flex flex-row gap-2 self-center justify-center h-full items-center w-full'>
+              <svg version="1.1" id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" className='w-7 h-7' viewBox="0 0 32 32" >
+                <path class="dashing_een" d="M17.5,22h-2c-0.276,0-0.5-0.224-0.5-0.5s0.224-0.5,0.5-0.5h2c0.276,0,0.5,0.224,0.5,0.5
+	S17.776,22,17.5,22z M13,21.5c0-0.276-0.224-0.5-0.5-0.5h-2c-0.276,0-0.5,0.224-0.5,0.5s0.224,0.5,0.5,0.5h2
+	C12.776,22,13,21.776,13,21.5z M8,21.5C8,21.224,7.776,21,7.5,21h-2C5.224,21,5,21.224,5,21.5S5.224,22,5.5,22h2
+	C7.776,22,8,21.776,8,21.5z M22.5,21c-0.276,0-0.5,0.224-0.5,0.5s0.224,0.5,0.5,0.5s0.5-0.224,0.5-0.5S22.776,21,22.5,21z M26,26.5
+	v-4.798l5.238,3.224c0.156,0.096,0.348,0.099,0.506,0.011C31.902,24.848,32,24.681,32,24.5v-16c0-0.181-0.098-0.348-0.256-0.437
+	c-0.158-0.088-0.351-0.085-0.506,0.011L26,11.298V6.5C26,6.224,25.776,6,25.5,6h-25C0.224,6,0,6.224,0,6.5v20
+	C0,26.776,0.224,27,0.5,27h25C25.776,27,26,26.776,26,26.5z M1,7h24v5.192c0,0.181,0.098,0.348,0.256,0.437
+	c0.159,0.088,0.351,0.085,0.506-0.011L31,9.395v14.211l-5.238-3.224c-0.155-0.096-0.347-0.098-0.506-0.011
+	C25.098,20.46,25,20.627,25,20.808V26H1V7z"/>
+              </svg>
+              <div className='leading-10 text-lg '>{item.name}</div>
+            </div>
           </button></Link>
           )}
 

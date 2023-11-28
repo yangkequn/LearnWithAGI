@@ -23,20 +23,22 @@ export const DemoContext = React.createContext({
     setMindmapRaw: undefined,
     SpeechDuration: 0,
     Playing: false,
+
 });
 var audio = null
 
 export default function DemoContextComponent({ children }) {
     //[{Name,Rank,Path,QAs,Ask,Answer,Correct,Wrong,EmotionValence,EmotionArousal,EmotionDominance},...]
-    const [paused, setPaused] = useState(false)
     const [playbackRate, setPlaybackRate] = useState(false)
     const [volume, setVolume] = useState(0.5)
-    const [CurrentScene, setCurrentScene] = useState(-1)
     const [TalkPassed, setTalkPassed] = useState(0)
     const [SceneryInfos, setSceneryInfos] = useState([])
     const [MindmapRaw, setMindmapRaw] = useState(null);
     const [SpeechDuration, setSpeechDuration] = useState(0)
+    const [CurrentScene, setCurrentScene] = useState(-1)
+    const [paused, setPaused] = useState(false)
     const [Playing, setPlaying] = useState(false)
+    const [playingEnd, setPlayingEnd] = useState(false)
     //listen to key event if space pressed, then set paused or continue
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -56,7 +58,10 @@ export default function DemoContextComponent({ children }) {
         audio = new Audio(undefined)
     }, [])
     useEffect(() => {
-        if (paused) audio?.pause()
+        if (paused) {
+            if (!!audio) audio?.pause()
+            else if (CurrentScene == -1) setCurrentScene(0)
+        }
         if (!paused) audio?.play()
     }, [paused, audio])
     useEffect(() => {
@@ -84,6 +89,7 @@ export default function DemoContextComponent({ children }) {
         audio.volume = isNaN(volume) ? 0.5 : volume
         //stop at the end of last audio
         if (CurrentScene < SceneryInfos.length - 1) audio.onended = () => setCurrentScene(CurrentScene + 1)
+        if (CurrentScene == SceneryInfos.length - 1) audio.onended = () => setTimeout(() => console.log("AutoPlayEnd"), 2000)
         audio.play()
     }
 
@@ -102,8 +108,9 @@ export default function DemoContextComponent({ children }) {
         if (CurrentScene >= SceneryInfos.length) return
         //console.log("CurrentScene changed", CurrentScene)
 
+        if (!MindmapRaw) return
         //when CiteQuestion move to another question, play mario ding sound
-        var playDing = MindmapRaw.filter((line) => line.Layer.length === 1 && line.SeqNum === CurrentScene).length > 0
+        var playDing = MindmapRaw.filter((line) => line.NodeID.length === 1 && line.SeqNum === CurrentScene).length > 0
         CurrentScene > 0 && (CurrentScene >= SceneryInfos.length || playDing) && PlayTDing()
 
         let Text = SceneryInfos[CurrentScene]?.Text
@@ -111,7 +118,7 @@ export default function DemoContextComponent({ children }) {
         var urlObj = { url: GetUrl(Cmd.HGET, "TTSOggSocrates", Text, RspType.ogg), playbackRate: undefined }
         if (!!Text) PlayTTSOgg(urlObj)
 
-    }, [CurrentScene, SceneryInfos, audio])
+    }, [CurrentScene, SceneryInfos, audio, MindmapRaw])
 
     const store = {
         paused, setPaused,
@@ -123,7 +130,7 @@ export default function DemoContextComponent({ children }) {
         SceneryInfos, setSceneryInfos,
         MindmapRaw, setMindmapRaw,
         SpeechDuration,
-        Playing
+        Playing,
     }
 
     return <DemoContext.Provider value={store}>{children}</DemoContext.Provider>
