@@ -31,6 +31,8 @@ export default function DemoMindmap() {
     //auto load skillSessionNumMindmap
     useEffect(() => {
         if (!SessionName || !setMindmapRaw) return
+        //if already loaded, then skip
+        if (MindmapRaw && MindmapRaw.length > 0 && MindmapRaw[0].Name === SessionName) return
         HGET("keyMindmap", SessionName).then((res) => {
             if (!res) return
             setMindmapRaw(res)

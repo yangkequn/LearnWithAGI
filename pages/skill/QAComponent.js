@@ -132,18 +132,17 @@ export default function QAComponent({ volume }) {
 
         <div key="knowledge-point-questions" className="flex flex-row w-full justify-start text-gra-800 gap-5 mt-2 h-full" >
             <div key="current-questions-all" className="flex flex-row justify-start items-start rounded-md w-full  text-gray-800 text-lg min-h-[300px]  max-h-[460px] flex-auto overflow-y-auto flex-wrap" >
-                <div key={`activeStep-${qaIndex}`} variant="dots" position="static" className="grid grid-cols-2 gap-4 justify-start rounded-md w-full text-gray-800 text-lg leading-5"
-                    sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }}
-                >
+                <div key={`activeStep-${qaIndex}`} variant="dots" position="static" className="grid grid-cols-2  gap-3 justify-start rounded-md w-full text-gray-800 text-lg leading-5"
+                    sx={{ boxShadow: "5px 5px 10px 0px gold", backgroundColor: "#f9f0d1" }} >
                     {QAs?.map((qa, index) => (
                         <div title="注意，每5分钟只能回答一次" key={`OtherQA${qa.Question}-${index}`}
-                            className={`group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700 min-w-[200px] w-full flex-grow even:bg-lime-100 odd: bg-amber-100`}
+                            className={`  group flex flex-row justify-start items-center h-fit rounded-lg text-lg leading-7 text-gray-700  w-full flex-grow even:bg-lime-100 odd: bg-amber-100`}
                             onClick={() => setQAIndex(index)} >
                             <div key={`OtherQA${qa.Question}`} className={`p-1 flex flex-row  justify-between w-full  rounded-lg ${qaIndex == index && "font-bold bg-orange-400"}`}                            >
-                                <div className="flex flex-row justify-between items-center pr-2 gap-1 w-full">
+                                <div className="flex flex-row justify-between items-center  gap-1 w-full">
                                     <div className="rounded ">{AnswerRight(qa)}</div>
                                     <div className="flex flex-row w-full" onClick={() => {
-                                        PlayTTSOgg(GetUrl(Cmd.HGET, "TTSOggQA", qa.Question, RspType.ogg))
+                                        PlayTTSOgg(GetUrl(Cmd.HGET, "OggQA", qa.Question, RspType.ogg))
                                     }}
                                     >{qa.Question}</div>
                                     <div className="flex-row w-min gap-1 self-end hidden group-hover:flex group-hover:visible">
@@ -221,8 +220,8 @@ export default function QAComponent({ volume }) {
                         onClick={() => {
                             let answerIndex = QAs[qaIndex]?.Answers?.indexOf(a)
                             if (answerIndex === undefined) return
-                            var wrongSound = [GetUrl(Cmd.HGET, "TTSOggQA", a, RspType.ogg), "/negative_beeps-6008.mp3", GetUrl(Cmd.HGET, "TTSOggQA", QAs[qaIndex]?.Why, RspType.ogg)]
-                            var rightSound = [GetUrl(Cmd.HGET, "TTSOggQA", a, RspType.ogg), "/DingSoundEffect.ogg"]
+                            var wrongSound = [GetUrl(Cmd.HGET, "OggQA", a, RspType.ogg), "/negative_beeps-6008.mp3", GetUrl(Cmd.HGET, "OggQA", QAs[qaIndex]?.Why, RspType.ogg)]
+                            var rightSound = [GetUrl(Cmd.HGET, "OggQA", a, RspType.ogg), "/DingSoundEffect.ogg"]
                             QAs[qaIndex]?.Answers[0] === a ? PlayTTSOgg(...rightSound) : PlayTTSOgg(...wrongSound)
 
                             //	Name    string	Answer  int32	Ask     int32

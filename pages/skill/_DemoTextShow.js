@@ -5,11 +5,13 @@ import { LoadingComponent } from ".";
 import { DemoContext } from "./_DemoContext";
 import { Context } from "./Context";
 import { TwoIO } from "../../component/appFrame/navigator";
+import { GlobalContext } from "../_app";
 var timoutTalk = null
 export default function DemoTextShow({ QAs }) {
 
     const { paused, setPaused, TalkPassed, setTalkPassed, SceneryInfos, SpeechDuration, Playing, CurrentScene, MindmapRaw } = useContext(DemoContext)
     const { TopicName, SessionName } = useContext(Context)
+    const { Params } = useContext(GlobalContext)
     const increaseTalkPassed = (talkpassed, speechduration) => {
         if (speechduration != SpeechDuration) return
         if (paused || !Playing) return
@@ -62,7 +64,6 @@ export default function DemoTextShow({ QAs }) {
             for (let j = BInd; j < EInd; j++) {
                 let Raw = SceneryInfos[j]?.Text
                 if (!Raw) {
-                    debugger
                     continue
                 }
                 let ind = Raw.indexOf(":")
@@ -105,6 +106,14 @@ export default function DemoTextShow({ QAs }) {
     return <div key="what-is-my-answered" className="flex flex-col justify-start items-start w-full h-full overflow-auto my-2 pr-1 " style={{ boxShadow: "inset 0px 0px 0px 1000px rgba(255,255,255,0.20)" }}>
         {!QAs?.length && <LoadingComponent Text="Loading..." />}
         {
+            Params?.autoPlay === "true" && CurrentScene == SceneryInfos.length - 1 && <div className="flex flex-row w-full justify-center items-center animate-bounce ">
+                <div className={"flex flex-row  text-gray-800 font-sans w-fit bg-orange-100 rounded-full  pl-2 pr-8 mb-2 leading-10 text-base self-center mr-4 flex-wrap"}>
+                    播放完毕。<br></br>本节目后续将被改进，欢迎给出您的意见。<br></br>需要新建节目的，请提供有效描述。
+                </div>
+            </div>
+        }
+        {
+
             //苏格拉底演练
             Playing && DemoDialogueSessionLatestTwo.map((qa, index) => {
                 return <div key={`question-answer-q-${qa.Question}-${index}`} className="flex flex-col justify-start items-start w-full h-fit py-3 gap-1">

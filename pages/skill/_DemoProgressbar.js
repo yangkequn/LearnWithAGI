@@ -14,7 +14,7 @@ const ProgressBar = () => {
     //accumulate each scene duration
     useEffect(() => {
         let totalDuration = 0
-        SceneryInfos.forEach((item) => totalDuration += item.Duration)
+        SceneryInfos.forEach((item) => totalDuration += item.DurationSec)
         setTotalDuration(totalDuration)
 
     }, [CurrentScene, SceneryInfos])
@@ -25,7 +25,7 @@ const ProgressBar = () => {
         if (CurrentScene >= SceneryInfos.length) return setNewProgress(100)
 
         let totalDuration = TalkPassed
-        for (var ind = 0; ind < CurrentScene; ind++) totalDuration += SceneryInfos[ind].Duration
+        for (var ind = 0; ind < CurrentScene; ind++) totalDuration += SceneryInfos[ind].DurationSec
         let newProgressValue = (totalDuration / TotalDuration) * 100;
         setNewProgress(newProgressValue);
     }, [CurrentScene, SceneryInfos, TalkPassed])
@@ -38,7 +38,7 @@ const ProgressBar = () => {
         //select senery to play
         let totalDuration = newProgressValue * TotalDuration / 100
         for (let i = 0; i < SceneryInfos.length; i++) {
-            totalDuration -= SceneryInfos[i].Duration
+            totalDuration -= SceneryInfos[i].DurationSec
             if (totalDuration < 0) {
                 setCurrentScene(i)
                 break
@@ -50,7 +50,7 @@ const ProgressBar = () => {
     const [chapters, setChapters] = useState([{ position: 0, text: "章节1" }])
     const StartPosition = (index) => {
         let totalDuration = 0
-        SceneryInfos.forEach((item, ind) => { if (ind < index) totalDuration += item.Duration })
+        SceneryInfos.forEach((item, ind) => { if (ind < index) totalDuration += item.DurationSec })
         return (totalDuration / TotalDuration) * 100;
     }
     useEffect(() => {

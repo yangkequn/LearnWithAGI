@@ -24,8 +24,7 @@ export default function SkillTree({ }) {
     //load skillMyTrace according to skillTree
     useEffect(() => {
         if (!TopicName) return
-        var Name = TopicName.split(":")[0], Detail = TopicName.split(":")[1]
-        API("SkillLoadList", { Name: Name, Detail }).then((tree) => {
+        HGET("SkillTree", TopicName).then((tree) => {
 
             //sort sessions by session.ChapterSession
             tree?.Sessions?.sort((a, b) => a.ChapterSession - b.ChapterSession)
@@ -67,7 +66,8 @@ export default function SkillTree({ }) {
     }
 
     {/* 相关的主题 */ }
-    return <div className="flex flex-col justify-start items-start w-full ring-2 rounded-lg m-1  h-fit  gap-1 p-2 font-sans tracking-wider"    >
+    // use bold font
+    return <div className="flex flex-col justify-start items-start w-full ring-2 rounded-lg m-1  h-fit  gap-1 p-2 font-sans tracking-wider  "    >
         <div key="title" className="flex pt-1 bg-yellow-50 rounded-lg w-full  gap-2 items-center " >
 
             <div className="flex flex-col w-full">
@@ -99,10 +99,8 @@ export default function SkillTree({ }) {
                             //if index equals nextSkill, change box shadow
                             , boxShadow: seq == skillSessionNum ? "inset 0px 0px 0px 200px gold" : "none"
                         }} onClick={(e) => {
-                            setCurrentScene(-1)
-                            setPaused(true)
-                            setSceneryInfos([])
-                            setskillSessionNum(seq)
+                            if (seq == skillSessionNum) return
+                            setskillSessionNum(seq)                            
                         }}
                     // StepContent={true}
                     //in clickable if  Point.ChapterSession is 1.0
@@ -113,7 +111,7 @@ export default function SkillTree({ }) {
 
                                 <div key="first-row" className="flex  first-row justify-between items-start w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 " >
                                     <div className="flex flex-row justify-start w-full  whitespace-nowrap  text-ellipsis text-base text-gray-700 font-sans font-semibold leading-6 gap-3" >
-                                        {Point.ChapterSession + " " + Point.Name}
+                                        {Point?.Session + " " + Point.Name}
                                     </div>
 
                                     <div className=" flex flex-row justify-end items-center w-full  whitespace-nowrap text-base text-gray-700 font-sans font-medium leading-6 gap-3 mr-2" >

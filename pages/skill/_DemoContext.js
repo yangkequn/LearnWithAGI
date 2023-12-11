@@ -10,7 +10,7 @@ export const DemoContext = React.createContext({
     setPlaybackRate: () => { },
     setVolume: () => { },
 
-    CurrentScene: false,
+    CurrentScene: -1,
     setCurrentScene: () => { },
 
     TalkPassed: 0,
@@ -38,7 +38,6 @@ export default function DemoContextComponent({ children }) {
     const [CurrentScene, setCurrentScene] = useState(-1)
     const [paused, setPaused] = useState(false)
     const [Playing, setPlaying] = useState(false)
-    const [playingEnd, setPlayingEnd] = useState(false)
     //listen to key event if space pressed, then set paused or continue
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -62,7 +61,10 @@ export default function DemoContextComponent({ children }) {
             if (!!audio) audio?.pause()
             else if (CurrentScene == -1) setCurrentScene(0)
         }
-        if (!paused) audio?.play()
+        if (!paused) {
+            if (CurrentScene >= 0) audio?.play()
+            else if (CurrentScene == -1) setCurrentScene(0)
+        }
     }, [paused, audio])
     useEffect(() => {
         if (!audio) return
@@ -70,14 +72,14 @@ export default function DemoContextComponent({ children }) {
     }, [playbackRate, audio])
     //set volume if changed
     useEffect(() => {
-        audio.volume = isNaN(volume) ? 0.5 : volume
+        if (!!audio) audio.volume = isNaN(volume) ? 0.5 : volume
     }, [volume, audio])
 
     //set duration of each scene
     useEffect(() => {
         if (CurrentScene < 0) return
         if (CurrentScene >= SceneryInfos.length) return
-        setSpeechDuration(((SceneryInfos[CurrentScene]?.Duration ?? 0) + Math.random() * 0.0001) / playbackRate)
+        setSpeechDuration(((SceneryInfos[CurrentScene]?.DurationSec ?? 0) + Math.random() * 0.0001) / playbackRate)
     }, [CurrentScene, SceneryInfos, playbackRate])
 
     const PlayTTSOgg = (urlObj) => {
@@ -86,10 +88,12 @@ export default function DemoContextComponent({ children }) {
         //use default playbackRate
         audio.playbackRate = urlObj.playbackRate ?? playbackRate
         //set volume
-        audio.volume = isNaN(volume) ? 0.5 : volume
+        if (!!audio) audio.volume = isNaN(volume) ? 0.5 : volume
         //stop at the end of last audio
         if (CurrentScene < SceneryInfos.length - 1) audio.onended = () => setCurrentScene(CurrentScene + 1)
-        if (CurrentScene == SceneryInfos.length - 1) audio.onended = () => setTimeout(() => console.log("AutoPlayEnd"), 2000)
+        if (CurrentScene == SceneryInfos.length - 1) audio.onended = () => {
+            setTimeout(() => console.log("AutoPlayEnd"), 2000)
+        }
         audio.play()
     }
 
@@ -98,13 +102,17 @@ export default function DemoContextComponent({ children }) {
         //use default playbackRate
         audio.playbackRate = 1.0
         //set volume
-        audio.volume = isNaN(volume) ? 0.5 : volume
+        if (!!audio) audio.volume = isNaN(volume) ? 0.5 : volume * 0.5
         audio.play()
     }
     //autoplayTTSAudio
     useEffect(() => {
         if (!audio) return
-        if (CurrentScene < 0) return
+        if (CurrentScene < 0) {
+            //stop playing
+            audio?.pause()
+            return
+        }
         if (CurrentScene >= SceneryInfos.length) return
         //console.log("CurrentScene changed", CurrentScene)
 
@@ -115,7 +123,7 @@ export default function DemoContextComponent({ children }) {
 
         let Text = SceneryInfos[CurrentScene]?.Text
 
-        var urlObj = { url: GetUrl(Cmd.HGET, "TTSOggSocrates", Text, RspType.ogg), playbackRate: undefined }
+        var urlObj = { url: GetUrl(Cmd.HGET, "TalksOgg", Text, RspType.ogg), playbackRate: undefined }
         if (!!Text) PlayTTSOgg(urlObj)
 
     }, [CurrentScene, SceneryInfos, audio, MindmapRaw])

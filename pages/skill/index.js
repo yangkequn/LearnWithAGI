@@ -62,7 +62,7 @@ export function ExploreComponent() {
     }, [TopicName])
 
     useEffect(() => {
-        setMenuL2(<div className="flex justify-between w-full items-center">
+        setMenuL2(<div className="flex justify-between w-full items-center z-10">
             <HistoryTopics></HistoryTopics>
             <FormControl variant="standard" sx={{ ml: 10, minWidth: 155 }}>
                 <Select labelId="select-related-topic" id="select-related-topic" value={''} displayEmpty
@@ -75,11 +75,11 @@ export function ExploreComponent() {
             </FormControl>
 
 
-            <div key="reward" className="flex flex-row overflow-hidden w-full items-center justify-between">
+            <div key="reward" className="flex flex-row overflow-hidden w-fit items-center justify-between">
                 <Rewards creditTM={creditTM} volume={volume}></Rewards>
             </div>
 
-            <div className="flex flex-row gap-4 items-center justify-between mr-4 ">
+            <div className="flex flex-row gap-4 items-center justify-between mr-4">
 
                 <button className="flex flex-row items-center gap-2 py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded transition duration-300 ease-in-out border border-gray-400 hover:border-gray-500" onClick={() => setShowDemo(!ShowDemo)}>
                     <div className="text-lg font-medium">讲解</div>
@@ -131,7 +131,7 @@ export function ExploreComponent() {
             </div>
         </div>)
     }, [creditTM, volume, RelatedSkills, playbackRate, ShowDemo, ShowAskAnswer, ShowQA])
-    return <div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center " style={{
+    return <div className="flex flex-row h-full w-full justify-between bg-cover bg-no-repeat bg-center z-20 " style={{
         //我有一个学习网站，我希望得到一张作为背景的图片,使得阅读时候有一点灵动的感觉。以使得网站背景不会太过无聊。这个图片有干净的天空，一朵淡淡的云，一个小女孩。整个图片是漫画，看起来是宫崎骏的风格。
         backgroundImage: "url(/bg03.webp)"
         //use boxShadow to create a shadow of 50% opacity

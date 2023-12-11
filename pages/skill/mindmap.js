@@ -34,12 +34,15 @@ export const ToMermaidMindmapFormat = (raw) => {
     if (!raw) return []
     var TonicN = 0;
     var result = raw.map(line => {
+        //remove character '(', ')', '[',']' and ':' in name
+        var name = line.Name?.replace(/[\(\)\[\]\:]/g, "") ?? ""
+
         //repeat \t for leadingTabs times
         let layer = line.NodeID.replace(".", "")
-        if (layer == "0") return `0_0-((${line.Name}))`
-        else if (layer.length == 1) return `${"\t"}${line.NodeID + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
-        else if (layer.length == 2) return `${"\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}{{${line.Name}}}`
-        else if (layer.length == 3) return `${"\t\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}[${line.Name}]`
+        if (layer == "0") return `0_0-((${name}))`
+        else if (layer.length == 1) return `${"\t"}${line.NodeID + "_" + line.SeqNum + "-"}(${++TonicN}: ${name})`
+        else if (layer.length == 2) return `${"\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}{{${name}}}`
+        else if (layer.length == 3) return `${"\t\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}[${name}]`
         return ""
     })
     //console.log("result\n", result)
@@ -51,19 +54,21 @@ export const ToPlayingFormat = (raw, topicID) => {
     if (topicID.length > 1) topicID = topicID.substr(0, 1)
     var TonicN = 0;
     //如果不为空，topicID 是 1.* ,那么只有1.* 的内容会被全部显示。其它2.* 3.* 的内容只显示到第一级为止
+    raw = raw.filter((line) => !!line && !!line.Name && !!line.NodeID && !!line.SeqNum)
     var result = raw.map(line => {
+        //remove character '(', ')', '[',']' and ':' in name
+        var name = line.Name?.replace(/[\(\)\[\]\:]/g, "") ?? ""
         //repeat \t for leadingTabs times
         let layer = line.NodeID.replace(/\./g, ""), focused = line.NodeID.indexOf(topicID) == 0, ret = ""
         if (!(focused || layer.length == 1 || layer == "0")) return ""
 
-        if (layer == "0") ret = `0_0-((${line.Name}))`
-        else if (layer.length == 1) ret = `${"\t"}${line.NodeID + "_" + line.SeqNum + "-"}(${++TonicN}: ${line.Name})`
-        else if (layer.length == 2) ret = `${"\t\t"}${line.NodeID + "_" + line.SeqNum + "-"})${line.Name}(`
-        else if (layer.length == 3) ret = `${"\t\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}[${line.Name}]`
+        if (layer == "0") ret = `0_0-((${name}))`
+        else if (layer.length == 1) ret = `${"\t"}${line.NodeID + "_" + line.SeqNum + "-"}(${++TonicN}: ${name})`
+        else if (layer.length == 2) ret = `${"\t\t"}${line.NodeID + "_" + line.SeqNum + "-"})${name}(`
+        else if (layer.length == 3) ret = `${"\t\t\t"}${line.NodeID + "_" + line.SeqNum + "-"}[${name}]`
         if (focused) ret += "\n:::customAnimate hover:grayscale hover:text-yellow-700"
         return ret
     })
-    result = result.filter((line) => !!line.trim())
     console.log("result\n", result.join("\n"))
     return result;
 }

@@ -17,7 +17,7 @@ export default function DemoTalk({ volume, playbackRate }) {
     const { setCreditTM, debugMode, Params } = useContext(GlobalContext)
     const { paused, setPaused, setPlaybackRate, setVolume, CurrentScene, setCurrentScene, SceneryInfos, setSceneryInfos,
         MindmapRaw, setMindmapRaw, Playing, TalkPassed, SpeechDuration } = useContext(DemoContext)
-    const { skillTree, skillMyTrace, setSkillMyTrace, skillSessionNum,  TopicName, SessionName } = useContext(Context)
+    const { skillTree, skillMyTrace, setSkillMyTrace, skillSessionNum, TopicName, SessionName } = useContext(Context)
     //all QAs about this skill topic
     const [QAs, setQAs] = useState([])
 
@@ -26,31 +26,44 @@ export default function DemoTalk({ volume, playbackRate }) {
 
     //read autoPlay from params
     useEffect(() => {
+        if (!SceneryInfos || SceneryInfos.length == 0) return
+        //for each elemnt in SceneryInfos, If the audio is available, then the durationSeconds is available
+        var AudioIsReady = true
+        for (let i = 0; i < SceneryInfos.length; i++) {
+            if (!SceneryInfos[i]?.DurationSec || SceneryInfos[i]?.DurationSec <= 0) {
+                AudioIsReady = false
+                break
+            }
+        }
         const { autoPlay } = Params;
-        if (autoPlay === "true" && CurrentScene < 0) {
+        if (autoPlay === "true" && AudioIsReady) {
             setTimeout(() => {
                 //notify screen video capture to start
+                console.log("notify screen video capture to start,set window.AutoPlayStart = true")
                 window.AutoPlayStart = true;
                 setTimeout(() => setCurrentScene(0), 1000);
+                
+                //setTimeout(() => setCurrentScene(0), 1000);
             }, 2000);
         }
-    }, [Params]);
+    }, [Params, SceneryInfos]);
 
 
     //QAs and QATrace according to skillTreeSelected
     useEffect(() => {
         setQAs([])
         if (!SessionName || SessionName.indexOf("undefined") >= 0 || SessionName.indexOf("undefined") >= 0 || setSceneryInfos == undefined) return
-        if (!TopicName) return
         //loadskillSessionNumQAs
-        API("SkillSocrates", { SessionName, Topic: TopicName, Rebuild: false }).then((res) => setQAs(res ?? []))
+        HGET("SkillSocrates", SessionName).then((res) => setQAs(res ?? []))
         //Senery TTSInfo
-        API("SkillSocratesTTS", { Session: SessionName, Topic: TopicName }).then((res) => {
+        HGET("TalksTTSInfo", SessionName).then((res) => {
             if (!res || res.length == 0) return setSceneryInfos([])
             setSceneryInfos(res)
+            setPaused(true)
+            setCurrentScene(-1)
         })
 
-    }, [TopicName, SessionName, setSceneryInfos])
+    }, [SessionName, setSceneryInfos,])
 
 
 

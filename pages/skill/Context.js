@@ -44,9 +44,10 @@ export default function ContextComponent({ children }) {
         if (skillSessionNum == -1) setSessionName("")
         if (!skillTree?.Sessions || skillTree.Sessions.length == 0 || skillTree.Sessions.length <= skillSessionNum) return setSessionName("")
         var session = skillTree.Sessions[skillSessionNum]
-        var sessionName = `${session?.Name}:${session?.Detail}`.replace(/:$/, "")
-        //trim : at the end
-        setSessionName(sessionName)
+        var sessionName = []
+        if (!!session.Name) sessionName.push(session.Name)
+        if (!!session.Detail) sessionName.push(session.Detail)
+        setSessionName(sessionName.join(":"))
     }, [skillTree, skillSessionNum])
 
     useEffect(() => {
